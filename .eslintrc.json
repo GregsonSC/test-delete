@@ -1,0 +1,14 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "arrow-body-style": ["error", "as-needed"],
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "indent": ["error", 2],
+    "max-len": ["warn", { "code": 100 }]
+  }
+}
