@@ -14,7 +14,7 @@ const inter600 = Inter({
 export function ContactCard() {
   return (
     <Card
-      className={`bg-[#99CC33] w-full [1440px]:w-1/2 flex flex-col ${inter600.className}`}
+      className={`bg-[#99CC33] w-full [@media(min-width:1440px)]:w-96 flex flex-col ${inter600.className}`}
     >
       <CardContent className="flex-1 p-2 flex flex-col">
         <div className="w-full">
