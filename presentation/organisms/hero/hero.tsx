@@ -4,6 +4,7 @@ import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { PortfolioCard } from "@/presentation/atoms/portfolio-card/portfolio-card";
 
 export function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -11,6 +12,17 @@ export function Hero() {
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  // Portfolio items data
+  const portfolioItems = [
+    {
+      title: "E-commerce Website",
+      description: "Custom online store with seamless checkout experience and product management.",
+      imageUrl: "https://placehold.co/645x577",
+      href: "/portfolio/ecommerce",
+      tags: ["Web Design", "E-commerce", "UI/UX"]
+    },
+  ];
 
   return (
     <section className="pt-32 pb-16 md:pt-40 md:pb-24 relative overflow-hidden">
@@ -79,8 +91,39 @@ export function Hero() {
               </div>
             </div>
           </div>
+          
+          {/* Portfolio section */}
+          <div 
+            className={`w-full mt-16 transition-all duration-1000 delay-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+          >
+            <h2 className="text-3xl font-bold mb-8">Featured Projects</h2>
+         
+            <div className="mt-8 text-center">
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-primary text-primary hover:bg-primary/10"
+              >
+                <Link href="/portfolio">View All Projects</Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
+
+
+      <div className="max-w-[1200px] mx-auto">
+              {portfolioItems.map((item, index) => (
+                <PortfolioCard
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  imageUrl={item.imageUrl}
+                  href={item.href}
+                  tags={item.tags}
+                />
+              ))}
+            </div>
     </section>
   );
 }
