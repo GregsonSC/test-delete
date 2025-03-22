@@ -14,29 +14,28 @@ const inter600 = Inter({
 export function ContactCard() {
   return (
     <Card
-      className={`bg-[#99CC33] w-full [@media(min-width:1440px)]:w-96 flex flex-col ${inter600.className}`}
+      className={`bg-[#99CC33] mt-3 sm:h-[383px] xl:h-[383px] sm:mt-3 flex flex-col ${inter600.className}`}
     >
       <CardContent className="flex-1 p-2 flex flex-col">
-        <div className="w-full">
+        <div className="h-full">
           <iframe
-            className="w-full h-64 md:h-96 "
+            className="w-full h-full "
             src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=150%20S%20Pine%20Island%20Rd,%20Plantation,%20FL%2033324,%20EE.%20UU.+(Senavia%20Corp)&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
           >
             <a href="https://www.gps.ie/collections/drones/">drone quadcopter</a>
           </iframe>
         </div>
       </CardContent>
-
-      <CardFooter className="p-2 flex flex-col items-center gap-2 justify-center">
+      <CardFooter className="flex flex-col items-center gap-2 justify-center">
         <div className="flex items-center gap-2">
           <PhoneCall color="black" />
-          <p className="text-black">(954) 706-4084</p>
+          <p className="text-black text-sm">(954) 706-4084</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col justyfy-center items-center sm:flex sm:flex-row sm:flex-nowrap sm:gap-2">
+        <Mail color="black" />
+          <p className="text-black text-sm">info@senaviacorp.com </p>
           <Mail color="black" />
-          <p className="text-black">
-            info@senaviacorp.com leads@senaviacorp.com
-          </p>
+          <p className="text-black text-sm">leads@senaviacorp.com</p>
         </div>
       </CardFooter>
     </Card>
