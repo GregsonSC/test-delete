@@ -1,5 +1,5 @@
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
-import { Footer } from "@/presentation/organisms/footer/footer";
+import { Footer } from "@/presentation/organisms/layout/footer";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";

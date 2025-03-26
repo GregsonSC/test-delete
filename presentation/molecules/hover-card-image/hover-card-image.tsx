@@ -8,15 +8,8 @@ import {
   } from "@/components/ui/card"
 import Link from 'next/link'
 import { ArrowRight } from "lucide-react";
+import { HoverCardImagesProps } from "@/components/interface/hover-card-image-interface";
 
-interface HoverCardImagesProps {
-  image: string;
-  title: string;
-  content: string;
-  date: string;
-  tag: string;
-
-} 
 
 export function HoverCardImage({ image, title, content, date, tag }: HoverCardImagesProps) {
     return (

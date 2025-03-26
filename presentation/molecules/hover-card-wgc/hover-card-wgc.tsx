@@ -8,14 +8,8 @@ import {
   } from "@/components/ui/card"
 import Link from 'next/link'
 import { ArrowRight } from "lucide-react";
+import {HoverCardWGCProps} from "@/components/interface/hover-card-wgc-interface"
 
-interface HoverCardWGCProps {
-  icon: string;
-  title: string;
-  content: string;
-  link: string;
-
-} 
 export function HoverCardWGC({ icon, title, content, link }: HoverCardWGCProps) {
     return (
         <Card className={`w-80 bg-[#36394B] backdrop-blur-md border-[#99CC33]`}>

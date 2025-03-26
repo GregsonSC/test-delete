@@ -1,14 +1,8 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ReviewCardUserProps } from "@/components/interface/review-card-user-interface";
 
-interface ReviewCardUserProps {
-    profilePicture?: string;
-    name?: string;
-    rating?: number;
-    review?: string;
-    googleLink?: string;
-}
 
 export function ReviewCardUser({
     profilePicture = "/fotos-prueba/joe.jpg",

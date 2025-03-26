@@ -2,12 +2,8 @@
 
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GoogleReviewCardProps } from "@/components/interface/review-card-interface";
 
-interface GoogleReviewCardProps {
-    borderColor?: string;
-    rating?: number;
-    totalReviews?: number;
-}
 
 export function GoogleReviewCard({
     rating = 5.0,
