@@ -1,6 +1,6 @@
 import type React from "react";
 import { Navbar } from "@/presentation/organisms/navbar/navbar";
-import { Footer } from "@/presentation/organisms/footer/footer";
+import { Footer } from "@/presentation/organisms/layout/footer";
 
 interface MainLayoutProps {
   children: React.ReactNode;
