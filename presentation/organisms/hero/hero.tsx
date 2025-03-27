@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
+import { PortfolioCardSmall } from "@/presentation/atoms/portfolio-card/portfolio-card-small";
 
 export function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -115,6 +116,26 @@ export function Hero() {
             {/* Portfolio Carousel */}
             <div className="max-w-[1200px] mx-auto">
               <PortfolioCarousel items={portfolioItems} />
+            </div>
+            
+            {/* Small Portfolio Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 max-w-[1024px] mx-auto">
+              {/* Default variant */}
+              <PortfolioCardSmall
+                title="Page Title"
+                description="Lorem ipsum component variant main layer. Opacity pencil component slice link."
+                href="/portfolio/project-1"
+                imageUrl="https://picsum.photos/500/500?random=1"
+              />
+              
+              {/* Overlay variant with logo */}
+              <PortfolioCardSmall
+                title="UI."
+                description="Lorem ipsum component variant main layer. Opacity pencil component slice link. Library ipsum italic figlam arrow."
+                href="/portfolio/project-2"
+                variant="overlay"
+                imageUrl="https://picsum.photos/500/500?random=2"
+              />
             </div>
             
             <div className="mt-8 text-center">
