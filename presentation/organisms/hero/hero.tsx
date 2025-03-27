@@ -4,7 +4,7 @@ import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { PortfolioCard } from "@/presentation/atoms/portfolio-card/portfolio-card";
+import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
 
 export function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -22,6 +22,20 @@ export function Hero() {
       href: "/portfolio/ecommerce",
       tags: ["Web Design", "E-commerce", "UI/UX"]
     },
+    {
+      title: "Corporate Website",
+      description: "Professional business website with modern design and optimized user experience.",
+      imageUrl: "https://placehold.co/645x577",
+      href: "/portfolio/corporate",
+      tags: ["Web Design", "Corporate", "Branding"]
+    },
+    {
+      title: "Mobile Application",
+      description: "Feature-rich mobile app with intuitive interface and seamless functionality.",
+      imageUrl: "https://placehold.co/645x577",
+      href: "/portfolio/mobile-app",
+      tags: ["Mobile", "UI/UX", "Development"]
+    }
   ];
 
   return (
@@ -97,7 +111,12 @@ export function Hero() {
             className={`w-full mt-16 transition-all duration-1000 delay-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
           >
             <h2 className="text-3xl font-bold mb-8">Featured Projects</h2>
-         
+            
+            {/* Portfolio Carousel */}
+            <div className="max-w-[1200px] mx-auto">
+              <PortfolioCarousel items={portfolioItems} />
+            </div>
+            
             <div className="mt-8 text-center">
               <Button
                 asChild
@@ -110,20 +129,6 @@ export function Hero() {
           </div>
         </div>
       </div>
-
-
-      <div className="max-w-[1200px] mx-auto">
-              {portfolioItems.map((item, index) => (
-                <PortfolioCard
-                  key={index}
-                  title={item.title}
-                  description={item.description}
-                  imageUrl={item.imageUrl}
-                  href={item.href}
-                  tags={item.tags}
-                />
-              ))}
-            </div>
     </section>
   );
 }
