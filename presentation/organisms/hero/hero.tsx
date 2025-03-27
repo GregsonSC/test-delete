@@ -120,7 +120,6 @@ export function Hero() {
             
             {/* Small Portfolio Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 max-w-[1024px] mx-auto">
-              {/* Default variant */}
               <PortfolioCardSmall
                 title="Page Title"
                 description="Lorem ipsum component variant main layer. Opacity pencil component slice link."
@@ -128,12 +127,10 @@ export function Hero() {
                 imageUrl="https://picsum.photos/500/500?random=1"
               />
               
-              {/* Overlay variant with logo */}
               <PortfolioCardSmall
-                title="UI."
-                description="Lorem ipsum component variant main layer. Opacity pencil component slice link. Library ipsum italic figlam arrow."
+                title="Page Title"
+                description="Lorem ipsum component variant main layer. Opacity pencil component slice link. Library ipsum italic figjam arrow. Stroke prototype move library line connection connection follower."
                 href="/portfolio/project-2"
-                variant="overlay"
                 imageUrl="https://picsum.photos/500/500?random=2"
               />
             </div>

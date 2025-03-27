@@ -15,7 +15,7 @@ interface NavCardProps {
 export function NavCard({
   title,
   description,
-  iconUrl = "/icons/default-icon.svg",
+  iconUrl = "/images/navbar/trophy.svg",
   href,
   className,
   onClick,
@@ -23,7 +23,7 @@ export function NavCard({
   return (
     <div
       className={cn(
-        "rounded-xl bg-[#ffffff] p-4 transition-all duration-300 ease-in-out cursor-pointer hover:bg-[#d3e8a9] shadow shadow-gray-200 transform",
+        "rounded-xl bg-[#ffffff] p-4 transition-all duration-300 ease-in-out cursor-pointer hover:bg-[#d3e8a9] shadow shadow-gray-200 transform group",
         className
       )}
       onClick={onClick}
@@ -33,8 +33,8 @@ export function NavCard({
           <div className="flex">
             {/* Círculo con icono */}
             <div className="flex-shrink-0 mr-4">
-              <div className="w-12 h-12 rounded-full bg-[#D8E9A8]/70 flex items-center justify-center transition-all duration-300 group-hover:bg-[#D8E9A8]">
-                <img src={iconUrl} alt="" className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-full bg-[#D8E9A8]/70 flex items-center justify-center transition-all duration-300 group-hover:bg-white">
+                <img src={iconUrl} alt="" className="w-8 h-8" />
               </div>
             </div>
             

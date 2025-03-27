@@ -5,10 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/presentation/atoms/button/button";
 import { cn } from "@/lib/utils";
-import { Menu, X, ChevronDown, Instagram, Facebook, Youtube } from "lucide-react";
+import { Menu, X, ChevronDown, Instagram, Facebook, Youtube, User, LogOut } from "lucide-react";
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { NavCard } from "@/presentation/atoms/nav-card/nav-card";
 import Image from "next/image";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 
 interface NavItem {
   label: string;
@@ -32,19 +40,19 @@ const navItems: NavItem[] = [
         label: "Web Design & Development",
         href: "/websites",
         description: "Custom websites that convert visitors into customers",
-        icon: "/icons/default-service.svg"
+       
       },
       {
         label: "Digital Marketing",
         href: "/marketing",
         description: "Strategies to grow your online presence and generate leads",
-        icon: "/icons/default-service.svg"
+      
       },
       {
         label: "Graphic Design",
         href: "/graphic-design",
         description: "Visual branding that captures your company's essence",
-        icon: "/icons/default-service.svg"
+     
       }
     ]
   },
@@ -83,6 +91,8 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
+  const [isLogged, setIsLogged] = useState(false);
+  const userName = "Name"; // This would come from your auth system
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -97,6 +107,16 @@ export function Navbar() {
     }));
   };
 
+  // Function to handle login
+  const handleLogin = () => {
+    setIsLogged(true);
+  };
+
+  // Function to handle logout
+  const handleLogout = () => {
+    setIsLogged(false);
+  };
+
   return (
     <>
       <header className={cn(
@@ -105,11 +125,9 @@ export function Navbar() {
         "fixed top-0 left-0",
         "lg:z-40 z-50",
         "lg:shadow-none shadow-lg",
-        
-
       )}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between px-0 lg:px-8 py-0 lg:py-1.5">
+          <div className="flex items-center justify-between px-0 lg:px-8 py-0 lg:py-1.5 h-[40px]">
             <Logo />
             
             {/* Navigation - Hidden on mobile/tablet */}
@@ -121,7 +139,7 @@ export function Navbar() {
                       className={cn(
                         "text-[15px] font-normal transition-colors hover:text-[#8ECF0A] flex items-center gap-1 relative",
                         activeDropdown === item.label 
-                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] after:content-[''] after:absolute after:left-1/2 after:transform after:-translate-x-1/2 after:bottom-[-27px] after:h-[2px] after:w-[120%] after:bg-gradient-to-r after:from-[#8ECF0A] after:via-[#39cac0] after:to-[#8ECF0A]" 
+                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] after:content-[''] after:absolute after:left-1/2 after:transform after:-translate-x-1/2 after:bottom-[-25px] after:h-[2px] after:w-[120%] after:bg-gradient-to-r after:from-[#8ECF0A] after:via-[#39cac0] after:to-[#8ECF0A]" 
                           : "text-white"
                       )}
                       onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
@@ -157,18 +175,47 @@ export function Navbar() {
             <div className="flex items-center gap-[20px] lg:gap-3">
               {/* Auth buttons - Different styling on mobile vs desktop */}
               <div className="hidden sm:flex gap-[20px]">
-              
-                <Button
-                  className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
-                >
-                  Register
-                </Button>
+                {!isLogged ? (
+                  <>
+                    <Button
+                      className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
+                    >
+                      Register
+                    </Button>
 
-                <Button
-                  className="rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
-                >
-                  Log In
-                </Button>
+                    <Button
+                      onClick={handleLogin}
+                      className="rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
+                    >
+                      Log In
+                    </Button>
+                  </>
+                ) : (
+                  <Menubar className="border-0 bg-transparent">
+                    <MenubarMenu>
+                      <MenubarTrigger className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent data-[state=open]:bg-transparent h-8 min-h-0 group">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]">
+                          {/* User icon removed */}
+                        </div>
+                        <span className="text-white font-semibold text-[14px]">{userName}</span>
+                      </MenubarTrigger>
+                      <MenubarContent className="rounded-md border-0 shadow-md">
+                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
+                          <User className="h-4 w-4" />
+                          Profile
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarItem 
+                          className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white" 
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Logout
+                        </MenubarItem>
+                      </MenubarContent>
+                    </MenubarMenu>
+                  </Menubar>
+                )}
               </div>
               
               {/* Mobile menu button - Hidden on desktop */}
@@ -233,9 +280,9 @@ export function Navbar() {
           )}>
             <div className="md:hidden opacity-65">
               <Image 
-                src="/logo-alternative.png"
+                src="/images/navbar/senavia-small.png"
                 alt="Logo"
-                width={120}
+                width={40}
                 height={40}
                 className="mb-8"
               />
