@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X, ChevronDown, Instagram, Facebook, Youtube, User, LogOut } from "lucide-react";
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { NavCard } from "@/presentation/atoms/nav-card/nav-card";
+import { NavAreaCard } from "@/presentation/atoms/nav-card/nav-area-card";
 import Image from "next/image";
 import {
   Menubar,
@@ -27,6 +28,10 @@ interface NavItem {
     href: string;
     description: string;
     icon?: string;
+    areaLinks?: Array<{
+      name: string;
+      href: string;
+    }>;
   }>;
 }
 
@@ -57,28 +62,55 @@ const navItems: NavItem[] = [
     ]
   },
   {
-    label: "Portfolio",
-    href: "/portfolio",
+    label: "Service Areas",
+    href: "/service-areas",
     hasDropdown: true,
     dropdownContent: [
       {
-        label: "Project One",
-        href: "/portfolio/project-1",
-        description: "E-commerce website development",
-        icon: "/icons/portfolio-icon.svg"
+        label: "Miami-Dade County",
+        href: "/service-areas/miami-dade",
+        description: "Service areas in Miami-Dade County",
+        icon: "/images/navbar/location.svg",
+        areaLinks: [
+          { name: "Sunny Isles Beach", href: "/service-areas/miami-dade/sunny-isles-beach" },
+          { name: "Coral Gables", href: "/service-areas/miami-dade/coral-gables" },
+          { name: "Key Biscayne", href: "/service-areas/miami-dade/key-biscayne" },
+          { name: "Aventura", href: "/service-areas/miami-dade/aventura" },
+          { name: "Doral", href: "/service-areas/miami-dade/doral" },
+          { name: "Miami Beach", href: "/service-areas/miami-dade/miami-beach" },
+          { name: "Miami", href: "/service-areas/miami-dade/miami" },
+        ]
       },
       {
-        label: "Project Two",
-        href: "/portfolio/project-2",
-        description: "Corporate website redesign",
-        icon: "/icons/portfolio-icon.svg"
+        label: "Broward County",
+        href: "/service-areas/broward",
+        description: "Service areas in Broward County",
+        icon: "/images/navbar/location.svg",
+        areaLinks: [
+          { name: "Fort Lauderdale", href: "/service-areas/broward/fort-lauderdale" },
+          { name: "Hollywood", href: "/service-areas/broward/hollywood" },
+          { name: "Pompano Beach", href: "/service-areas/broward/pompano-beach" },
+          { name: "Coral Springs", href: "/service-areas/broward/coral-springs" },
+          { name: "Plantation", href: "/service-areas/broward/plantation" },
+          { name: "Davie", href: "/service-areas/broward/davie" },
+          { name: "Weston", href: "/service-areas/broward/weston" },
+        ]
       },
       {
-        label: "Project Three",
-        href: "/portfolio/project-3",
-        description: "Mobile app development",
-        icon: "/icons/portfolio-icon.svg"
-      },
+        label: "Palm Beach County",
+        href: "/service-areas/palm-beach",
+        description: "Service areas in Palm Beach County",
+        icon: "/images/navbar/location.svg",
+        areaLinks: [
+          { name: "West Palm Beach", href: "/service-areas/palm-beach/west-palm-beach" },
+          { name: "Boca Raton", href: "/service-areas/palm-beach/boca-raton" },
+          { name: "Delray Beach", href: "/service-areas/palm-beach/delray-beach" },
+          { name: "Boynton Beach", href: "/service-areas/palm-beach/boynton-beach" },
+          { name: "Jupiter", href: "/service-areas/palm-beach/jupiter" },
+          { name: "Palm Beach Gardens", href: "/service-areas/palm-beach/palm-beach-gardens" },
+          { name: "Wellington", href: "/service-areas/palm-beach/wellington" },
+        ]
+      }
     ]
   },
   { label: "About Us", href: "/about" },
@@ -254,15 +286,25 @@ export function Navbar() {
                   )}
                 >
                   {item.dropdownContent?.map((content) => (
-                    <NavCard
-                      key={content.href}
-                      title={content.label}
-                      description={content.description}
-                      iconUrl={content.icon}
-                      href={content.href}
-                      onClick={() => setActiveDropdown(null)}
-                      className="w-full"
-                    />
+                    content.areaLinks ? (
+                      <NavAreaCard
+                        key={content.href}
+                        title={content.label}
+                        links={content.areaLinks}
+                        onClick={() => setActiveDropdown(null)}
+                        className="w-full"
+                      />
+                    ) : (
+                      <NavCard
+                        key={content.href}
+                        title={content.label}
+                        description={content.description}
+                        iconUrl={content.icon}
+                        href={content.href}
+                        onClick={() => setActiveDropdown(null)}
+                        className="w-full"
+                      />
+                    )
                   ))}
                 </div>
               )
