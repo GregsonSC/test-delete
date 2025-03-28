@@ -23,10 +23,31 @@ model User {
   createdAt DateTime @default(now())
   udpatedAt DateTime @updatedAt
 }
+
+
+model Permission {
+  id            Int       @id @default(autoincrement())
+  name          String    
+  description   String
+}
+
+model Invoice{
+  id            Int         @id @default(autoincrement())
+  detail        String
+  totalAmount   Int      
+  createdAt     DateTime    @default(now())
+
+}
+model Project{
+ id            Int         @id @default(autoincrement())
+ name          String 
+ description   String
+
 model Role{
   id Int  @id @default(autoincrement())
   name String
   description String
   createdAt DateTime @default(now())
   udpatedAt DateTime @updatedAt
+
 }
