@@ -4,7 +4,7 @@ import { Button } from '@/presentation/atoms/button/button';
 
 export default function NotFound() {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-[url('/fondos/404.png')] bg-cover bg-center">
             <header>
                 <Navbar />
             </header>
