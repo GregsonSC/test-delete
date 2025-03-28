@@ -37,3 +37,8 @@ model Invoice{
   createdAt     DateTime    @default(now())
 
 }
+model Project{
+ id            Int         @id @default(autoincrement())
+ name          String 
+ description   String
+}
