@@ -1,53 +1,51 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
-// Function POST
+//FUNCTION POST
 export async function POST(request) {
   try {
     const data = await request.json();
 
-    const newPermission = await db.permission.create({
+    const newInvoice = await db.invoice.create({
       data,
     });
-
-    return NextResponse.json(newPermission);
+    return NextResponse.json(newInvoice);
   } catch (error) {
-    console.error("Error creating the permission.: ", error);
+    console.error("Error creating the Invoice: ", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// Function GET
-export async function GET(req: Request) {
+export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
 
-    //If no id is provided, we retrieve all permissions from the database.
+    //If no id is provided, we retrieve all invoices from the database.
     if (!requestId) {
-      const permission = await db.permission.findMany();
-      return NextResponse.json(permission);
+      const invoices = await db.invoice.findMany();
+      return NextResponse.json(invoices);
     }
     //check that id is valid.
     const id = Number(requestId);
-    if (isNaN(id)) {
+    if (isNaN(id) || !id) {
       return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
     }
-    //We search for the permission in the database by its id.
-    const permission = await db.permission.findUnique({
+    //We search for the invoice in the database by its id.
+    const invoice = await db.invoice.findUnique({
       where: { id },
     });
-    //If the permission does not exist, we return an error with status 404.
-    if (!permission) {
-      return NextResponse.json({ error: "Permission not found" }, { status: 404 });
+    //If the invoice does not exist, we return an error with status 404.
+    if (!invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
-
-    return NextResponse.json(permission);
+    return NextResponse.json(invoice);
   } catch (error) {
-    console.error("Error obtaining permissions: ", error);
+    console.error("Error obtaining invoices: ", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 //FUNCTION UPDATE
 export async function PUT(request) {
   try {
@@ -60,36 +58,36 @@ export async function PUT(request) {
       return NextResponse.json({ error: "The update data is required." }, { status: 400 });
     }
 
-    //check that id is valid.
+    //check that idd is valid
     const id = Number(requestId);
     if (isNaN(id) || !requestId) {
       return NextResponse.json({ error: "The ID must be a valid number" }, { status: 400 });
     }
-    //We search for the permission in the database by its id.
-    const permission = await db.permission.findUnique({
+
+    //We search for the invoice in the database by its id.
+    const invoice = await db.invoice.findUnique({
       where: { id },
     });
 
-    //If the permission does not exist, we return an error with status 404.
-    if (!permission) {
-      return NextResponse.json({ error: "Permission not found" }, { status: 404 });
+    //If the invoice does not exist, we return an error with status 404.
+    if (!invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
-
-    //We update the permission with the new data.
-    const updatePermission = await db.permission.update({
+    //We update the invoice with the new data.
+    const updateInvoice = await db.invoice.update({
       where: { id },
       data,
     });
 
     //We return the response with the updated permission.
-    return NextResponse.json(updatePermission);
+    return NextResponse.json(updateInvoice);
   } catch (error) {
-    console.error("Error updating the permission.: ", error);
+    console.error("Error updating the invoice: ", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-//Function DELETE
+//FUNCTION DELETE
 export async function DELETE(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -98,22 +96,23 @@ export async function DELETE(req) {
     const id = Number(requestId);
 
     //If no id is provided.
-
     if (isNaN(id) || !requestId) {
       return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
     }
-    //We search for the permission in the database by its id.
-    const permission = await db.permission.delete({
+
+    //We search for the invoice in the database by its id.
+    const invoice = await db.invoice.delete({
       where: { id },
     });
-    //If the permission does not exist, we return an error with status 404.
-    if (!permission) {
-      return NextResponse.json({ error: "Permission not found" }, { status: 404 });
+
+    //If the invoice does not exist, we return an error with status 404.
+    if (!invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
     //We return a successful response.
-    return NextResponse.json({ message: "Permission deleted successfully." });
+    return NextResponse.json({ message: "Invoice deleted successfully." });
   } catch (error) {
-    console.error("Error deleting the permission.: ", error);
+    console.error("Error updating the invoice: ", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
