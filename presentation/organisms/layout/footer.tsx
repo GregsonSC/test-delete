@@ -9,7 +9,7 @@ import { inter600 } from "@/styles/font";
 
 export function Footer() {
   return (
-    <footer className={` w-11/12 xl:mx-16 border-t border-gray-800 flex flex-col backdrop-blur-md ${inter600.className}`}>
+    <footer className={` w-11/12 xl:mx-16 border-t border-gray-800 flex flex-col ${inter600.className}`}>
         <div className=" flex-wrap justify-start xl:justify-center mt-10 xl:w-full mx-5  xl:flex xl:flex-nowrap 2xl:mx-0 ">
           <div className="space-y-4 flex flex-col xl:w-[324px]">
             <Logo className="mb-3" />

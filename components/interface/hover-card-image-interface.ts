@@ -4,4 +4,5 @@ export interface HoverCardImagesProps {
     content: string;
     date: string;
     tag: string;
+    href: string;
   } 
