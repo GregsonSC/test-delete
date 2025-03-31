@@ -22,6 +22,7 @@ model User {
   imageUrl  String
   role      Role     @relation(fields: [roleId], references: [id]) //Relacion con rol
   roleId    Int //Dato para hacer la relacion
+  leads     Lead[] // Relación Uno a Muchos con Lead
   createdAt DateTime @default(now())
   udpatedAt DateTime @updatedAt
 }
@@ -42,3 +43,24 @@ model Role {
 
 //   @@id([roleId, permissionId]) // Clave primaria compuesta
 // }
+model Lead {
+  id          Int    @id @default(autoincrement())
+  clientName  String
+  clientEmail String
+  clientPhone String
+  name        String
+  state       State
+  starDate    String
+  endDate     String
+  userId      Int // Clave foránea
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  udpatedAt DateTime @updatedAt
+}
+
+enum State {
+  send
+  processing
+  estimating
+  finished
+}
