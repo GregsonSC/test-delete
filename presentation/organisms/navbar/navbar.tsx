@@ -32,6 +32,10 @@ interface NavItem {
       name: string;
       href: string;
     }>;
+    subLinks?: Array<{
+      name: string;
+      href: string;
+    }>;
   }>;
 }
 
@@ -45,19 +49,19 @@ const navItems: NavItem[] = [
         label: "Web Design & Development",
         href: "/websites",
         description: "Custom websites that convert visitors into customers",
-       
+
       },
       {
         label: "Digital Marketing",
         href: "/marketing",
         description: "Strategies to grow your online presence and generate leads",
-      
+
       },
       {
         label: "Graphic Design",
         href: "/graphic-design",
         description: "Visual branding that captures your company's essence",
-     
+
       }
     ]
   },
@@ -75,10 +79,6 @@ const navItems: NavItem[] = [
           { name: "Sunny Isles Beach", href: "/service-areas/miami-dade/sunny-isles-beach" },
           { name: "Coral Gables", href: "/service-areas/miami-dade/coral-gables" },
           { name: "Key Biscayne", href: "/service-areas/miami-dade/key-biscayne" },
-          { name: "Aventura", href: "/service-areas/miami-dade/aventura" },
-          { name: "Doral", href: "/service-areas/miami-dade/doral" },
-          { name: "Miami Beach", href: "/service-areas/miami-dade/miami-beach" },
-          { name: "Miami", href: "/service-areas/miami-dade/miami" },
         ]
       },
       {
@@ -90,10 +90,7 @@ const navItems: NavItem[] = [
           { name: "Fort Lauderdale", href: "/service-areas/broward/fort-lauderdale" },
           { name: "Hollywood", href: "/service-areas/broward/hollywood" },
           { name: "Pompano Beach", href: "/service-areas/broward/pompano-beach" },
-          { name: "Coral Springs", href: "/service-areas/broward/coral-springs" },
-          { name: "Plantation", href: "/service-areas/broward/plantation" },
-          { name: "Davie", href: "/service-areas/broward/davie" },
-          { name: "Weston", href: "/service-areas/broward/weston" },
+
         ]
       },
       {
@@ -105,10 +102,6 @@ const navItems: NavItem[] = [
           { name: "West Palm Beach", href: "/service-areas/palm-beach/west-palm-beach" },
           { name: "Boca Raton", href: "/service-areas/palm-beach/boca-raton" },
           { name: "Delray Beach", href: "/service-areas/palm-beach/delray-beach" },
-          { name: "Boynton Beach", href: "/service-areas/palm-beach/boynton-beach" },
-          { name: "Jupiter", href: "/service-areas/palm-beach/jupiter" },
-          { name: "Palm Beach Gardens", href: "/service-areas/palm-beach/palm-beach-gardens" },
-          { name: "Wellington", href: "/service-areas/palm-beach/wellington" },
         ]
       }
     ]
@@ -162,7 +155,7 @@ export function Navbar() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between px-0 lg:px-8 py-0 lg:py-1.5 h-[40px]">
             <Logo />
-            
+
             {/* Navigation - Hidden on mobile/tablet */}
             <nav className="hidden lg:flex gap-6 items-center">
               {navItems.map((item) => (
@@ -171,15 +164,15 @@ export function Navbar() {
                     <button
                       className={cn(
                         "text-[15px] font-normal transition-colors hover:text-[#8ECF0A] flex items-center gap-1 relative",
-                        activeDropdown === item.label 
-                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] after:content-[''] after:absolute after:left-1/2 after:transform after:-translate-x-1/2 after:bottom-[-25px] after:h-[2px] after:w-[120%] after:bg-gradient-to-r after:from-[#8ECF0A] after:via-[#39cac0] after:to-[#8ECF0A]" 
+                        activeDropdown === item.label
+                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] after:content-[''] after:absolute after:left-1/2 after:transform after:-translate-x-1/2 after:bottom-[-25px] after:h-[2px] after:w-[120%] after:bg-gradient-to-r after:from-[#8ECF0A] after:via-[#39cac0] after:to-[#8ECF0A]"
                           : "text-white"
                       )}
                       onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
                     >
                       {item.label}
                       <span className={activeDropdown === item.label ? "text-[#8ECF0A]" : "text-white"}>
-                        <ChevronDown 
+                        <ChevronDown
                           className={cn(
                             "h-4 w-4 transition-transform duration-300",
                             activeDropdown === item.label && "rotate-180"
@@ -192,8 +185,8 @@ export function Navbar() {
                       href={item.href}
                       className={cn(
                         "text-[15px] font-normal transition-colors hover:text-[#8ECF0A] relative",
-                        pathname === item.href 
-                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] after:content-[''] after:absolute after:left-1/2 after:transform after:-translate-x-1/2 after:bottom-[-28.5px] after:h-[2px] after:w-[130%] after:bg-gradient-to-r after:from-[#8ECF0A] after:via-[#39cac0] after:to-[#8ECF0A]" 
+                        pathname === item.href
+                          ? "text-transparent bg-clip-text bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] after:content-[''] after:absolute after:left-1/2 after:transform after:-translate-x-1/2 after:bottom-[-28.5px] after:h-[2px] after:w-[130%] after:bg-gradient-to-r after:from-[#8ECF0A] after:via-[#39cac0] after:to-[#8ECF0A]"
                           : "text-white"
                       )}
                     >
@@ -238,8 +231,8 @@ export function Navbar() {
                           Profile
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem 
-                          className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white" 
+                        <MenubarItem
+                          className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
                           onClick={handleLogout}
                         >
                           <LogOut className="h-4 w-4" />
@@ -250,7 +243,7 @@ export function Navbar() {
                   </Menubar>
                 )}
               </div>
-              
+
               {/* Mobile menu button - Hidden on desktop */}
               <Button
                 variant="ghost"
@@ -267,11 +260,11 @@ export function Navbar() {
       </header>
 
       {/* Dropdown genérico */}
-      <div 
+      <div
         className={cn(
           "w-full bg-[#fafafa] shadow-lg overflow-hidden hidden lg:block",
-          activeDropdown 
-            ? "transition-all duration-500 ease-in-out opacity-100 max-h-[1000px] transform-gpu" 
+          activeDropdown
+            ? "transition-all duration-500 ease-in-out opacity-100 max-h-[1000px] transform-gpu"
             : "opacity-0 max-h-0"
         )}
       >
@@ -279,7 +272,7 @@ export function Navbar() {
           <div className="max-w-7xl mx-auto">
             {navItems.map((item) => (
               item.hasDropdown && (
-                <div 
+                <div
                   key={item.label}
                   className={cn(
                     "grid grid-cols-3 gap-8",
@@ -291,7 +284,15 @@ export function Navbar() {
                       <NavAreaCard
                         key={content.href}
                         title={content.label}
-                        links={content.areaLinks}
+                        links={content.areaLinks.map(link => ({
+                          name: link.name,
+                          href: link.href,
+                          subLinks: [
+                            { name: "Websites", href: `${link.href}/websites` },
+                            { name: "Marketing", href: `${link.href}/marketing` },
+                            { name: "Graphic Design", href: `${link.href}/graphic-design` }
+                          ]
+                        }))}
                         onClick={() => setActiveDropdown(null)}
                         className="w-full"
                       />
@@ -318,11 +319,11 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden flex pt-[72px]">
           <div className={cn(
-            "bg-[#14171b] h-full p-8",
-            "w-[30%] md:w-auto md:min-w-[200px]"
+            "bg-[#14171b] h-full p-4 md:p-8",
+            "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
           )}>
             <div className="md:hidden opacity-65">
-              <Image 
+              <Image
                 src="/images/navbar/senavia-small.png"
                 alt="Logo"
                 width={40}
@@ -337,15 +338,61 @@ export function Navbar() {
 
           <div className={cn(
             "bg-white h-full relative p-8",
-            "w-[70%] md:flex-1"
+            "w-[70%] max-[500px]:w-[80%] md:flex-1"
           )}>
-            <nav className="flex flex-col h-full justify-center max-w-[400px]">
+            {/* User profile info for mobile only (< 640px) */}
+            <div className="sm:hidden flex items-center gap-3 mb-8">
+              <Menubar className="border-0 bg-transparent">
+                <MenubarMenu>
+                  <MenubarTrigger className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent data-[state=open]:bg-transparent min-h-0 group">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]"></div>
+                    <div className="flex flex-col text-left">
+                      <span className="font-semibold text-[#060B20]">{userName}</span>
+                      <span className="text-sm text-gray-500">user@example.com</span>
+                    </div>
+                  </MenubarTrigger>
+                  <MenubarContent className="rounded-md border-0 shadow-md">
+                    {isLogged ? (
+                      <>
+                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
+                          <User className="h-4 w-4" />
+                          Profile
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarItem
+                          className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Logout
+                        </MenubarItem>
+                      </>
+                    ) : (
+                      <>
+                        <MenubarItem
+                          className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black"
+                          onClick={handleLogin}
+                        >
+                          Log In
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
+                          Register
+                        </MenubarItem>
+                      </>
+                    )}
+                  </MenubarContent>
+                </MenubarMenu>
+              </Menubar>
+            </div>
+
+            <nav className="flex flex-col h-auto max-w-full mx-0 mt-20 sm:mt-8 sm:h-full sm:justify-center">
               {navItems.map((item) => (
-                <div key={item.href} className="py-4 border-b border-gray-200">
+                <div key={item.href} className="py-3 border-b border-gray-200 w-4/5">
                   {item.hasDropdown ? (
                     <>
                       <button
-                        className="group flex items-center w-full text-2xl font-semibold text-[#060B20]"
+                        className="group flex items-center w-full text-2xl font-semibold text-[#060B20] text-left"
                         onClick={() => toggleMobileDropdown(item.label)}
                       >
                         <span className="flex-1 text-left flex items-center">
@@ -361,7 +408,7 @@ export function Navbar() {
 
                       <div className={cn(
                         "overflow-hidden transition-all duration-300",
-                        mobileDropdowns[item.label] ? "max-h-96 mt-4" : "max-h-0"
+                        mobileDropdowns[item.label] ? "max-h-96 mt-3" : "max-h-0"
                       )}>
                         {item.dropdownContent?.map((content) => (
                           <Link
