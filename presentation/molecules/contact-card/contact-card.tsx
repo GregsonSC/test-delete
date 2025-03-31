@@ -1,5 +1,5 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { PhoneCall, Mail } from "lucide-react"; 
+import { PhoneCall, Mail, } from "lucide-react"; 
 import { Inter } from "next/font/google";
 
 const inter600 = Inter({

@@ -20,7 +20,7 @@ export function HoverCardImage({ image, title, content, date, tag, href }: Hover
                     </CardTitle>
                 </CardHeader>
                 <CardContent >
-                    <p className="font-normal text-base">{content}</p>
+                    <p className="font-normal text-base truncate">{content}</p>
                     <img src={image} alt="icon" className="rounded-3xl mt-7" />
                 </CardContent>
                 <CardFooter className=" flex flex-col">

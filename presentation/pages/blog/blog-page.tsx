@@ -1,11 +1,8 @@
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
-import Image from "next/image";
-import Link from "next/link";
-import { Input } from "@/components/ui/input";
+import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
-import { Phone } from "lucide-react";
 
 export function BlogPage() {
   return (
@@ -24,17 +21,17 @@ export function BlogPage() {
         {/* Recent Posts */}
         <section className="py-20">
           <div className="container px-4 md:px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
               {[...Array(6)].map((_, index) => (
                 <HoverCardImage
                   key={index}
                   title={`Blog Post ${index + 1}`}
-                  content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl."
+                  content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl."
                   tag={
                     index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"
                   }
                   date="June 10, 2023"
-                  image={`/placeholder.svg?height=400&width=600&text=Blog+${index + 1}`}
+                  image="fotos-prueba/webdevelpment.png"
                   href= "/"
                 />
               ))}
@@ -49,29 +46,39 @@ export function BlogPage() {
         </section>
 
 {/* Contact info */}
-        <section className="relative py-20">
-          <div className="flex-row">
-            <video
-              className="absolute top-0 left-0 w-full h-full object-cover "
-              src="/fondos/blog-video-background.mp4"
-              autoPlay
-              loop
-              muted
-            />
-            <div className=" relative z-10 text-center w-full mx-auto">
-              <Heading level="h1" className="text-3xl md:text-4xl md:nowr font-bold mb-5 text-[#0A1248]">
-                Let’s talk About Your Project Goals!
-              </Heading>
-              <p className="text-lg mb-8 text-[#0A1248] font-semibold">
-                Connect with one of our digital experts at Senavia to see how we can assist <br /> you in achieving your business objectives.
-              </p>
-              <Button className="rounded-full bg-[#0A1248] text-white">
-                <Phone color="white" />
-                (954) 706-4084
-              </Button>
-            </div>
+        <ContactInfo/>
+
+        {/*Place holder calendar */}
+        <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-md mx-auto mt-10 mb-10">
+      {/* Encabezado con mes y flechas de navegación */}
+      <div className="flex justify-between items-center mb-4">
+        <button className="text-gray-500 hover:text-gray-700">&lt;</button>
+        <span className="font-bold text-lg">Abril 2023</span>
+        <button className="text-gray-500 hover:text-gray-700">&gt;</button>
+      </div>
+      
+      {/* Días de la semana */}
+      <div className="grid grid-cols-7 gap-1 text-center text-sm font-medium">
+        {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day, index) => (
+          <div key={index} className="text-gray-500">
+            {day}
           </div>
-        </section>
+        ))}
+      </div>
+      
+      {/* Celdas del calendario */}
+      <div className="grid grid-cols-7 gap-1 mt-2 text-center">
+        {[...Array(42)].map((_, index) => (
+          <div
+            key={index}
+            className="h-10 flex items-center justify-center border rounded text-gray-700"
+          >
+            {/* Mostrar números del 1 al 30 como ejemplo */}
+            {index < 30 ? index + 1 : ''}
+          </div>
+        ))}
+      </div>
+    </div>
       </MainLayout>
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube} from "lucide-react";
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { Button } from "@/presentation/atoms/button/button";
 
