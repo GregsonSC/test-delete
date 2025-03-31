@@ -1,17 +1,36 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
+function handleError(error: unknown, context: string) {
+  console.error(`Error in ${context}:` + error);
+  return NextResponse.json(
+    {
+      error: `An error occurred in ${context}.`,
+    },
+    { status: 500 }
+  );
+}
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+    const { name, description, expectedDuration, startDate, endDate, currentPhase } = data;
+
+    //Validate that `estimate_id` is an integer.
+    if (!name || !description || !expectedDuration || !startDate || !endDate || !currentPhase) {
+      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+    }
+    //Validate the date format.
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+      return NextResponse.json({ error: "Invalid date format. Use YYYY-MM-DD." }, { status: 400 });
+    }
 
     const newProject = await db.project.create({
       data,
     });
     return NextResponse.json(newProject);
   } catch (error) {
-    console.error("Error creating the Project: ", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleError(error, "POST Project");
   }
 }
 
@@ -40,10 +59,10 @@ export async function GET(req: Request) {
     }
     return NextResponse.json(project);
   } catch (error) {
-    console.error("Error obtaining project: ", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleError(error, "GET Project");
   }
 }
+
 export async function PUT(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -51,8 +70,15 @@ export async function PUT(request: Request) {
     const data = await request.json();
 
     // We validate that the data is not empty.
-    if (!data || Object.keys(data).length === 0) {
-      return NextResponse.json({ error: "The update data is required." }, { status: 400 });
+    const { name, description, expectedDuration, startDate, endDate, currentPhase } = data;
+
+    //Validate that `estimate_id` is an integer.
+    if (!name || !description || !expectedDuration || !startDate || !endDate || !currentPhase) {
+      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+    }
+    //Validate the date format.
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+      return NextResponse.json({ error: "Invalid date format. Use YYYY-MM-DD." }, { status: 400 });
     }
     //check that id is valid.
     const id = Number(requestId);
@@ -67,15 +93,14 @@ export async function PUT(request: Request) {
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
-    //We update the permission with the new data.
+    //We update the project with the new data.
     const updateProject = await db.project.update({
       where: { id },
       data,
     });
     return NextResponse.json(updateProject);
   } catch (error) {
-    console.error("Error updating the project: ", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleError(error, "PUT Project");
   }
 }
 
@@ -87,22 +112,18 @@ export async function DELETE(req: Request) {
     const id = Number(requestId);
 
     //If no id is provided.
-
     if (isNaN(id) || !requestId) {
       return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
     }
+
     //We search for the project in the database by its id.
     const project = await db.project.delete({
       where: { id },
     });
-    //If the project does not exist, we return an error with status 404.
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
+
     //We return a successful response.
     return NextResponse.json({ message: "Project deleted successfully." });
   } catch (error) {
-    console.error("Error deleting the project: ", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return handleError(error, "DELETE Project");
   }
 }

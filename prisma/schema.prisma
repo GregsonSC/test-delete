@@ -25,20 +25,74 @@ model User {
 }
 
 model Permission {
+  id                 Int                @id @default(autoincrement())
+  name               String
+  description        String
+  action             Action
+  active             Boolean
+  serviceAssociated ServiceAssociated
+  createdAt          DateTime           @default(now())
+}
+
+model Project {
+  id               Int          @id @default(autoincrement())
+  name             String
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  estimate_id      Int
+  estimate         Estimate     @relation(fields: [estimate_id], references: [id])
+  currentPhase     CurrentPhase
+  createdAt        DateTime     @default(now())
+}
+
+model Estimate {
   id            Int       @id @default(autoincrement())
-  name          String    
+  estimatedTime String
   description   String
+  state         State
+  lead_id       Int
+  lead          Lead      @relation(fields: [lead_id], references: [id])
+  totalValue    Decimal
+  Project       Project[]
 }
 
-model Invoice{
-  id            Int         @id @default(autoincrement())
-  detail        String
-  totalAmount   Int      
-  createdAt     DateTime    @default(now())
-
+model Lead {
+  id       Int        @id @default(autoincrement())
+  Estimate Estimate[]
 }
-model Project{
- id            Int         @id @default(autoincrement())
- name          String 
- description   String
+
+enum Action {
+  GET
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ServiceAssociated {
+  NORMALUSERS
+  ADMINUSERS
+  LEADS
+  ESTIMATES
+  PROJECTS
+  BLOGS
+  PRODUCTS
+}
+
+enum CurrentPhase {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum State {
+  CREATED
+  PROCESSING
+  INREVIEW
+  REJECTED
+  ACCEPTED
+  INVOICE
+  PAID
 }
