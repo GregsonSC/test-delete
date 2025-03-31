@@ -19,7 +19,7 @@ export function BlogPage() {
         </section>
 
         {/* Recent Posts */}
-        <section className="py-20">
+        <section className="py-14">
           <div className="container px-4 md:px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
               {[...Array(6)].map((_, index) => (
