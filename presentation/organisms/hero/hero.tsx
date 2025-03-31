@@ -4,6 +4,8 @@ import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
+import { PortfolioCardSmall } from "@/presentation/atoms/portfolio-card/portfolio-card-small";
 
 export function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -11,6 +13,31 @@ export function Hero() {
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  // Portfolio items data
+  const portfolioItems = [
+    {
+      title: "E-commerce Website",
+      description: "Custom online store with seamless checkout experience and product management.",
+      imageUrl: "https://placehold.co/645x577",
+      href: "/portfolio/ecommerce",
+      tags: ["Web Design", "E-commerce", "UI/UX"]
+    },
+    {
+      title: "Corporate Website",
+      description: "Professional business website with modern design and optimized user experience.",
+      imageUrl: "https://placehold.co/645x577",
+      href: "/portfolio/corporate",
+      tags: ["Web Design", "Corporate", "Branding"]
+    },
+    {
+      title: "Mobile Application",
+      description: "Feature-rich mobile app with intuitive interface and seamless functionality.",
+      imageUrl: "https://placehold.co/645x577",
+      href: "/portfolio/mobile-app",
+      tags: ["Mobile", "UI/UX", "Development"]
+    }
+  ];
 
   return (
     <section className="pt-32 pb-16 md:pt-40 md:pb-24 relative overflow-hidden">
@@ -77,6 +104,45 @@ export function Hero() {
                   <Link href="/portfolio">See Our Work</Link>
                 </Button>
               </div>
+            </div>
+          </div>
+          
+          {/* Portfolio section */}
+          <div 
+            className={`w-full mt-16 transition-all duration-1000 delay-700 ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+          >
+            <h2 className="text-3xl font-bold mb-8">Featured Projects</h2>
+            
+            {/* Portfolio Carousel */}
+            <div className="max-w-[1200px] mx-auto">
+              <PortfolioCarousel items={portfolioItems} />
+            </div>
+            
+            {/* Small Portfolio Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 max-w-[1024px] mx-auto">
+              <PortfolioCardSmall
+                title="Page Title"
+                description="Lorem ipsum component variant main layer. Opacity pencil component slice link."
+                href="/portfolio/project-1"
+                imageUrl="https://picsum.photos/500/500?random=1"
+              />
+              
+              <PortfolioCardSmall
+                title="Page Title"
+                description="Lorem ipsum component variant main layer. Opacity pencil component slice link. Library ipsum italic figjam arrow. Stroke prototype move library line connection connection follower."
+                href="/portfolio/project-2"
+                imageUrl="https://picsum.photos/500/500?random=2"
+              />
+            </div>
+            
+            <div className="mt-8 text-center">
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-primary text-primary hover:bg-primary/10"
+              >
+                <Link href="/portfolio">View All Projects</Link>
+              </Button>
             </div>
           </div>
         </div>

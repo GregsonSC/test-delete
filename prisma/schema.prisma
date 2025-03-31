@@ -20,13 +20,68 @@ model User {
   password  String
   phone     String
   imageUrl  String
+  role      Role     @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId    Int //Dato para hacer la relacion
+  leads     Lead[] // Relación Uno a Muchos con Lead
   createdAt DateTime @default(now())
   udpatedAt DateTime @updatedAt
 }
-model Role{
-  id Int  @id @default(autoincrement())
-  name String
+
+model Permission {
+  id          Int    @id @default(autoincrement())
+  name        String
   description String
-  createdAt DateTime @default(now())
-  udpatedAt DateTime @updatedAt
 }
+
+model Invoice {
+  id          Int      @id @default(autoincrement())
+  detail      String
+  totalAmount Int
+  createdAt   DateTime @default(now())
+}
+
+model Project {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
+  // rolePermision RolePermision[]
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+// model RolePermision{
+//   role id
+//   role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+//   @@id([roleId, permissionId]) // Clave primaria compuesta
+// }
+model Lead {
+  id          Int      @id @default(autoincrement())
+  clientName  String
+  clientEmail String
+  clientPhone String
+  name        String
+  state       State
+  starDate    String
+  endDate     String
+  userId      Int // Clave foránea
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum State {
+  send
+  processing
+  estimating
+  finished
+}
+
+
