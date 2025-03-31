@@ -26,7 +26,7 @@ interface PortfolioCarouselProps {
 
 export function PortfolioCarousel({ items, className }: PortfolioCarouselProps) {
   return (
-    <Carousel className={cn("w-full", className)}>
+    <Carousel className={cn("w-full relative px-0 md:px-10", className)}>
       <CarouselContent>
         {items.map((item, index) => (
           <CarouselItem key={index} className="md:basis-full lg:basis-full">
@@ -42,8 +42,8 @@ export function PortfolioCarousel({ items, className }: PortfolioCarouselProps) 
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className="bg-white text-[#0f1740] border-none hover:bg-white/90 hover:text-[#0f1740] w-[43px] rounded-full -left-[50px] hidden lg:flex" />
-      <CarouselNext className="bg-white text-[#0f1740] border-none hover:bg-white/90 hover:text-[#0f1740] w-[43px] rounded-full -right-[50px] hidden lg:flex" />
+      <CarouselPrevious className="bg-white text-[#0f1740] border-none hover:bg-white/90 hover:text-[#0f1740] w-[35px] h-[35px] rounded-full left-2 hidden md:flex absolute" />
+      <CarouselNext className="bg-white text-[#0f1740] border-none hover:bg-white/90 hover:text-[#0f1740] w-[35px] h-[35px] rounded-full right-2 hidden md:flex absolute" />
     </Carousel>
   );
 }

@@ -152,7 +152,8 @@ export function Navbar() {
   return (
     <>
       <header className={cn(
-        "w-full py-4 bg-[#191d22]",
+        "w-full py-4",
+        "lg:bg-[#020301] bg-[#191d22]", // Changed to transparent for desktop only
         "lg:static",
         "fixed top-0 left-0",
         "lg:z-40 z-50",
