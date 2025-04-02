@@ -45,8 +45,8 @@ export function BlogPage() {
           </div>
         </section>
 
-{/* Contact info */}
-        <ContactInfo/>
+        {/* Contact info */}
+        {ContactInfo(1)}
 
         {/*Place holder calendar */}
         <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-md mx-auto mt-10 mb-10">
