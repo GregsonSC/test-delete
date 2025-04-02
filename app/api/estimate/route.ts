@@ -65,23 +65,22 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const data = await request.json();
-
-    //Data validation.
-    const { estimatedTime, description, state, lead_id, totalValue } = data;
-    if (!estimatedTime || !description || !state || !lead_id || !totalValue) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
-    }
+    
     //check that id is valid.
     const id = Number(requestId);
     if (isNaN(id) || !requestId) {
       return NextResponse.json({ error: "The ID must be a valid number." }, { status: 400 });
     }
-    //We search for the estimate in the database by its id.
+    //"Check if there is data to update."
+    if(!data || Object.keys(data).length===0){
+      return NextResponse.json({ error: "At least one field must be provided for update." }, { status: 400 });
+    }
+    //Search for the estimate in the database by its id.
     const estimate = await db.estimate.findUnique({
       where: { id },
     });
@@ -92,11 +91,11 @@ export async function PUT(request: Request) {
     //We update the estimate with the new data.
     const updateEstimate = await db.estimate.update({
       where: { id },
-      data,
+      data:{...data},
     });
     return NextResponse.json(updateEstimate);
   } catch (error) {
-    return handleError(error, "PUT estimate.");
+    return handleError(error, "PATCH estimate.");
   }
 }
 export async function DELETE(req: Request) {

@@ -59,27 +59,22 @@ export async function GET(req: Request) {
   }
 }
 //FUNCTION UPDATE
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const data = await request.json();
-
-    // We validate that the data is not empty.
-    //Data validation.
-    const { name, description, action, active, serviceAssociated } = data;
-    if (!name || !description || !action || active === undefined || !serviceAssociated) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-    }
-    if (typeof active !== "boolean") {
-      return NextResponse.json({ error: "Active must be a boolean value." }, { status: 400 });
-    }
 
     //check that id is valid.
     const id = Number(requestId);
     if (isNaN(id) || !requestId) {
       return NextResponse.json({ error: "The ID must be a valid number" }, { status: 400 });
     }
+    //"Check if there is data to update."
+    if(!data || Object.keys(data).length===0){
+      return NextResponse.json({ error: "At least one field must be provided for update." }, { status: 400 });
+    }
+
     //We search for the permission in the database by its id.
     const permission = await db.permission.findUnique({
       where: { id },
@@ -93,7 +88,7 @@ export async function PUT(request: Request) {
     //We update the permission with the new data.
     const updatePermission = await db.permission.update({
       where: { id },
-      data,
+      data:{...data},
     });
 
     //We return the response with the updated permission.

@@ -24,15 +24,15 @@ model User {
   udpatedAt DateTime @updatedAt
 }
 
-
 model Permission {
-  id                 Int                @id @default(autoincrement())
-  name               String
-  description        String
-  action             Action
-  active             Boolean
+  id                Int               @id @default(autoincrement())
+  name              String
+  description       String
+  action            Action
+  active            Boolean
   serviceAssociated ServiceAssociated
-  createdAt          DateTime           @default(now())
+  createdAt         DateTime          @default(now())
+  udpatedAt         DateTime          @updatedAt
 }
 
 model Project {
@@ -46,6 +46,7 @@ model Project {
   estimate         Estimate     @relation(fields: [estimate_id], references: [id])
   currentPhase     CurrentPhase
   createdAt        DateTime     @default(now())
+  udpatedAt        DateTime     @updatedAt
 }
 
 model Estimate {
@@ -57,11 +58,53 @@ model Estimate {
   lead          Lead      @relation(fields: [lead_id], references: [id])
   totalValue    Decimal
   Project       Project[]
+  createdAt     DateTime  @default(now())
+  udpatedAt     DateTime  @updatedAt
 }
 
 model Lead {
-  id       Int        @id @default(autoincrement())
-  Estimate Estimate[]
+  id          Int           @id @default(autoincrement())
+  Estimate    Estimate[]
+  createdAt   DateTime      @default(now())
+  udpatedAt   DateTime      @updatedAt
+  ServiceArea ServiceArea[]
+}
+
+model Blog {
+  id              Int      @id @default(autoincrement())
+  title           String
+  resume          String
+  content         String
+  topic           Topic
+  publicationDate String
+  imageUrl        String
+  createdAt       DateTime @default(now())
+  udpatedAt       DateTime @updatedAt
+}
+
+model ServiceArea {
+  id               Int     @id @default(autoincrement())
+  name             String
+  description      String
+  active           Boolean
+  country          Country
+  heroImageUrl     String
+  benefitsImageUrl String
+  testimonialEmbed String
+  service_id       Int
+  service          Lead    @relation(fields: [service_id], references: [id])
+}
+
+model Service {
+  id               Int     @id @default(autoincrement())
+}
+
+enum Country {
+  SINDEFINIR
+}
+
+enum Topic {
+  SINDEFINIR
 }
 
 enum Action {
@@ -97,4 +140,3 @@ enum State {
   INVOICE
   PAID
 }
-

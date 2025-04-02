@@ -15,8 +15,7 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
     const { name, description, expectedDuration, startDate, endDate, currentPhase } = data;
-
-    //Validate that `estimate_id` is an integer.
+    
     if (!name || !description || !expectedDuration || !startDate || !endDate || !currentPhase) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
@@ -63,23 +62,26 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const data = await request.json();
 
-    // We validate that the data is not empty.
-    const { name, description, expectedDuration, startDate, endDate, currentPhase } = data;
+    // Validate date format if provided.
+    if (data.startDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.startDate)) {
+      return NextResponse.json(
+        { error: "Invalid startDate format. Use YYYY-MM-DD." },
+        { status: 400 }
+      );
+    }
+    if (data.endDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.endDate)) {
+      return NextResponse.json(
+        { error: "Invalid endDate format. Use YYYY-MM-DD." },
+        { status: 400 }
+      );
+    }
 
-    //Validate that `estimate_id` is an integer.
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !currentPhase) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
-    }
-    //Validate the date format.
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
-      return NextResponse.json({ error: "Invalid date format. Use YYYY-MM-DD." }, { status: 400 });
-    }
     //check that id is valid.
     const id = Number(requestId);
     if (isNaN(id) || !requestId) {
@@ -96,7 +98,7 @@ export async function PUT(request: Request) {
     //We update the project with the new data.
     const updateProject = await db.project.update({
       where: { id },
-      data,
+      data: { ...data },
     });
     return NextResponse.json(updateProject);
   } catch (error) {
