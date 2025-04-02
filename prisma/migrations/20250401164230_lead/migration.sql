@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "State" AS ENUM ('send', 'processing', 'estimating', 'finished');
+CREATE TYPE "State" AS ENUM ('SEND', 'PROCESSING', 'ESTIMATING', 'FINISHED');
 
 -- CreateTable
 CREATE TABLE "Lead" (

@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       where: { id },
     });
     if (!role) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Role not found" }, { status: 404 });
     }
     return NextResponse.json(role, { status: 200 });
   } catch (error) {
