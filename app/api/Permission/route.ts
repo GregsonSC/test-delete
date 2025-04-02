@@ -116,7 +116,7 @@ export async function DELETE(req: Request) {
       where: { id },
     });
     
-    //We return a successful response.
+    //We return a successful  response.
     return NextResponse.json({ message: "Permission deleted successfully." });
   } catch (error) {
     console.error("Error deleting the permission.: ", error);
