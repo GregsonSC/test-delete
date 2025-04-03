@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     name,
     description,
     active,
-    country,
+    county,
     heroImageUrl,
     benefitsImageUrl,
     testimonialEmbed,
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     !name ||
     !description ||
     !active ||
-    !country ||
+    !county ||
     !heroImageUrl ||
     !benefitsImageUrl ||
     !testimonialEmbed ||

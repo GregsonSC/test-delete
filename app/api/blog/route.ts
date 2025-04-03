@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
 
-    const newBlog = await db.project.blog.create({
+    const newBlog = await db.blog.create({
       data,
     });
     return NextResponse.json(newBlog);

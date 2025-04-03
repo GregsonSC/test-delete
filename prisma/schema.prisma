@@ -108,7 +108,9 @@ enum County {
 }
 
 enum Topic {
-  SINDEFINIR
+WEBDESIGN
+DIGITALMARKETING
+GRAPHICDESIGN
 }
 
 enum Action {
