@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { Button } from "@/presentation/atoms/button/button";
-
 import { EmailForm } from "@/presentation/molecules/email-form/email-form";
 import { ContactCard } from "@/presentation/molecules/contact-card/contact-card";
 import { inter600 } from "@/styles/font";

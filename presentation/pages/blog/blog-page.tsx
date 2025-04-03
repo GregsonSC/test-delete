@@ -19,8 +19,8 @@ export function BlogPage() {
         </section>
 
         {/* Recent Posts */}
-        <section className="py-14">
-          <div className="container px-4 md:px-6">
+        <section className="mt-14">
+          <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24">
               {[...Array(6)].map((_, index) => (
                 <HoverCardImage
@@ -37,7 +37,7 @@ export function BlogPage() {
               ))}
             </div>
 
-            <div className="flex justify-center mt-12">
+            <div className="flex justify-center mt-12 mb-12">
               <Button variant="outline" className="rounded-full">
                 Load More Articles
               </Button>
