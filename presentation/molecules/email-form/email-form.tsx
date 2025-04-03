@@ -41,9 +41,9 @@ export function EmailForm() {
                   <Input
                     placeholder="email"
                     {...field}
-                    className="bg-white text-black w-full pr-16" // pr-12 crea espacio a la derecha
+                    className="bg-white text-black w-full pr-16" 
                   />
-                  <Button className="absolute inset-y-0 right-0 rounded-full m-0 p-4">
+                  <Button className="absolute inset-y-2 inset-x-72 right-0 rounded-full m-0 p-3 w-2 h-2">
                     <MoveRight className="h-4 w-4 text-white fill-white" />
                   </Button>
                 </div>

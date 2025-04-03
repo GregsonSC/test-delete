@@ -49,7 +49,7 @@ export function Footer() {
                   href="/services/web-development"
                   className="text-muted-foreground hover:text-primary"
                 >
-                  •Web Design & Development
+                  <p className="underline underline-offset-4 text-white font-normal">•Web Design & Development </p>
                 </Link>
               </li>
               <li>
@@ -57,15 +57,15 @@ export function Footer() {
                   href="/services/digital-marketing"
                   className="text-muted-foreground hover:text-primary text-base"
                 >
-                  •Lead Generation & Digital Marketing
+                  <p className="underline underline-offset-4 text-white font-normal">•Lead Generation & Digital Marketing</p>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/services/graphic-design"
-                  className="text-muted-foreground hover:text-primary text-base"
+                  className="text-muted-foreground hover:text-primary text-base "
                 >
-                  •Graphic Design & Branding
+                  <p className="underline underline-offset-4 text-white font-normal">•Graphic Design & Branding</p>
                 </Link>
               </li>
             </ul>
@@ -76,12 +76,12 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-primary text-base">
-                  •Work Portfolio
+                <p className="underline underline-offset-4 text-white font-normal">•Work Portfolio</p>
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-muted-foreground hover:text-primary text-base">
-                  •Book My Free Consultation Call!
+                <p className="underline underline-offset-4 text-white font-normal">•Book My Free Consultation Call!</p>
                 </Link>
               </li>
             </ul>
