@@ -60,13 +60,13 @@ export async function GET(request: Request) {
     );
   }
 }
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const data = await request.json();
 
-    if (!data) {
+    if (!data || Object.keys(data).length === 0) {
       return NextResponse.json({ message: "No data provided" }, { status: 400 });
     }
 
@@ -80,8 +80,10 @@ export async function PUT(request: Request) {
     });
 
     if (!product) {
-      return NextResponse.json({ error: "product not found" }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+
+    // Actualiza solo los campos proporcionados en `data`
     const updatedProduct = await db.product.update({
       where: { id },
       data,
@@ -93,6 +95,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Error updating product", error }, { status: 500 });
   }
 }
+
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

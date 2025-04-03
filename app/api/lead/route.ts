@@ -65,13 +65,14 @@ export async function GET(request: Request) {
     );
   }
 }
-export async function PUT(request: Request) {
+
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const data = await request.json();
 
-    if (!data) {
+    if (!data || Object.keys(data).length === 0) {
       return NextResponse.json({ message: "No data provided" }, { status: 400 });
     }
 
@@ -85,11 +86,12 @@ export async function PUT(request: Request) {
     });
 
     if (!lead) {
-      return NextResponse.json({ error: "Lead state is required in capital " }, { status: 404 });
+      return NextResponse.json({ error: "Lead not found" }, { status: 404 });
     }
+
     const updatedLead = await db.lead.update({
       where: { id },
-      data,
+      data, // PATCH permite actualizar solo los campos proporcionados
     });
 
     return NextResponse.json(updatedLead);
@@ -98,6 +100,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Error updating lead", error }, { status: 500 });
   }
 }
+
 
 export async function DELETE(request: Request) {
   try {

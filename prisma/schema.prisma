@@ -71,15 +71,16 @@ model RolePermission {
 
 model Lead {
   id          Int      @id @default(autoincrement())
-  clientName  String
-  clientEmail String
-  clientPhone String
+  clientName  String?
+  clientEmail String?
+  clientPhone String?
   name        String
+  description String
   state       State
   starDate    String
   endDate     String
-  userId      Int // Clave foránea
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int? // Clave foránea
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   udpatedAt   DateTime @updatedAt
 }
