@@ -83,24 +83,28 @@ model Blog {
 }
 
 model ServiceArea {
-  id               Int     @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   name             String
   description      String
   active           Boolean
-  country          Country
+  county           County
   heroImageUrl     String
   benefitsImageUrl String
   testimonialEmbed String
   service_id       Int
-  service          Lead    @relation(fields: [service_id], references: [id])
+  service          Lead     @relation(fields: [service_id], references: [id])
+  createdAt        DateTime @default(now())
+  udpatedAt        DateTime @updatedAt
 }
 
 model Service {
-  id               Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 }
 
-enum Country {
-  SINDEFINIR
+enum County {
+  MIAMI_DATE
+  BROWARD
+  WEST_PALM_BEACH
 }
 
 enum Topic {
@@ -122,6 +126,7 @@ enum ServiceAssociated {
   PROJECTS
   BLOGS
   PRODUCTS
+  SERVICEAREAS
 }
 
 enum CurrentPhase {
