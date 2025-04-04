@@ -57,7 +57,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
@@ -102,6 +102,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Error updating user", error }, { status: 500 });
   }
 }
+
 
 export async function DELETE(request: Request) {
   try {
