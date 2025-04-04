@@ -12,6 +12,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Button } from "@/presentation/atoms/button/button";
+import {MoveRight} from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -50,4 +52,5 @@ export function EmailForm() {
       </form>
     </Form>
   );
+
 }

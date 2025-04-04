@@ -20,11 +20,15 @@ model User {
   password  String
   phone     String
   imageUrl  String
+  role      Role     @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId    Int //Dato para hacer la relacion
+  leads     Lead[] // Relación Uno a Muchos con Lead
   createdAt DateTime @default(now())
   udpatedAt DateTime @updatedAt
 }
 
 model Permission {
+
   id                Int               @id @default(autoincrement())
   name              String
   description       String
@@ -53,21 +57,13 @@ model Estimate {
   id            Int       @id @default(autoincrement())
   estimatedTime String
   description   String
-  state         State
+  state         EstimateState
   lead_id       Int
   lead          Lead      @relation(fields: [lead_id], references: [id])
   totalValue    Decimal
   Project       Project[]
   createdAt     DateTime  @default(now())
   udpatedAt     DateTime  @updatedAt
-}
-
-model Lead {
-  id          Int           @id @default(autoincrement())
-  Estimate    Estimate[]
-  createdAt   DateTime      @default(now())
-  udpatedAt   DateTime      @updatedAt
-  ServiceArea ServiceArea[]
 }
 
 model Blog {
@@ -138,7 +134,7 @@ enum CurrentPhase {
   DEPLOY
 }
 
-enum State {
+enum EstimateState {
   CREATED
   PROCESSING
   INREVIEW
@@ -147,3 +143,44 @@ enum State {
   INVOICE
   PAID
 }
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
+  // rolePermision RolePermision[]
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+// model RolePermision{
+//   role id
+//   role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+//   @@id([roleId, permissionId]) // Clave primaria compuesta
+// }
+model Lead {
+  id          Int      @id @default(autoincrement())
+  clientName  String
+  clientEmail String
+  clientPhone String
+  name        String
+  state       LeadState
+  starDate    String
+  endDate     String
+  userId      Int // Clave foránea
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum LeadState {
+  send
+  processing
+  estimating
+  finished
+}
+
+
+
