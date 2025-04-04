@@ -29,6 +29,7 @@ model User {
 }
 
 model Permission {
+
   id          Int              @id @default(autoincrement())
   name        String
   description String
@@ -36,17 +37,120 @@ model Permission {
   roles       RolePermission[]
 }
 
-model Invoice {
-  id          Int      @id @default(autoincrement())
-  detail      String
-  totalAmount Int
-  createdAt   DateTime @default(now())
+
+  id                Int               @id @default(autoincrement())
+  name              String
+  description       String
+  action            Action
+  active            Boolean
+  serviceAssociated ServiceAssociated
+  createdAt         DateTime          @default(now())
+  udpatedAt         DateTime          @updatedAt
 }
 
 model Project {
-  id          Int    @id @default(autoincrement())
-  name        String
-  description String
+  id               Int          @id @default(autoincrement())
+  name             String
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  estimate_id      Int
+  estimate         Estimate     @relation(fields: [estimate_id], references: [id])
+  currentPhase     CurrentPhase
+  createdAt        DateTime     @default(now())
+  udpatedAt        DateTime     @updatedAt
+}
+
+model Estimate {
+  id            Int       @id @default(autoincrement())
+  estimatedTime String
+  description   String
+  state         EstimateState
+  lead_id       Int
+  lead          Lead      @relation(fields: [lead_id], references: [id])
+  totalValue    Decimal
+  Project       Project[]
+  createdAt     DateTime  @default(now())
+  udpatedAt     DateTime  @updatedAt
+}
+
+model Blog {
+  id              Int      @id @default(autoincrement())
+  title           String
+  resume          String
+  content         String
+  topic           Topic
+  publicationDate String
+  imageUrl        String
+  createdAt       DateTime @default(now())
+  udpatedAt       DateTime @updatedAt
+}
+
+model ServiceArea {
+  id               Int      @id @default(autoincrement())
+  name             String
+  description      String
+  active           Boolean
+  county           County
+  heroImageUrl     String
+  benefitsImageUrl String
+  testimonialEmbed String
+  service_id       Int
+  service          Lead     @relation(fields: [service_id], references: [id])
+  createdAt        DateTime @default(now())
+  udpatedAt        DateTime @updatedAt
+}
+
+model Service {
+  id Int @id @default(autoincrement())
+}
+
+enum County {
+  MIAMI_DATE
+  BROWARD
+  WEST_PALM_BEACH
+}
+
+enum Topic {
+WEBDESIGN
+DIGITALMARKETING
+GRAPHICDESIGN
+}
+
+enum Action {
+  GET
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ServiceAssociated {
+  NORMALUSERS
+  ADMINUSERS
+  LEADS
+  ESTIMATES
+  PROJECTS
+  BLOGS
+  PRODUCTS
+  SERVICEAREAS
+}
+
+enum CurrentPhase {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum EstimateState {
+  CREATED
+  PROCESSING
+  INREVIEW
+  REJECTED
+  ACCEPTED
+  INVOICE
+  PAID
 }
 
 model Role {
@@ -74,9 +178,9 @@ model Lead {
   clientName  String?
   clientEmail String?
   clientPhone String?
-  name        String
+  name        String  
   description String
-  state       State
+  state       LeadState
   starDate    String
   endDate     String
   userId      Int? // Clave foránea
@@ -85,11 +189,13 @@ model Lead {
   udpatedAt   DateTime @updatedAt
 }
 
-enum State {
-SEND
-PROCESSING
-ESTIMATING
-FINISHED
+
+enum LeadState {
+  SEND
+  PROCESSING
+  ESTIMATING
+  FINISHED
+
 }
 model UserPermission {
   userId       Int
@@ -100,6 +206,7 @@ model UserPermission {
 
   @@id([userId, permissionId]) // Clave primaria compuesta
 }
+
 
 model Product {
   id          Int    @id @default(autoincrement())

@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 import { error } from "console";
@@ -126,4 +127,3 @@ export async function DELETE(request: Request) {
     console.error("Error deleting lead:", error);
     return NextResponse.json({ message: "Error deleting lead", error }, { status: 500 });
   }
-}
