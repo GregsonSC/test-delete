@@ -1,17 +1,18 @@
 -- CreateEnum
-CREATE TYPE "State" AS ENUM ('send', 'processing', 'estimating', 'finished');
+CREATE TYPE "State" AS ENUM ('SEND', 'PROCESSING', 'ESTIMATING', 'FINISHED');
 
 -- CreateTable
 CREATE TABLE "Lead" (
     "id" SERIAL NOT NULL,
-    "clientName" TEXT NOT NULL,
-    "clientEmail" TEXT NOT NULL,
-    "clientPhone" TEXT NOT NULL,
+    "clientName" TEXT,
+    "clientEmail" TEXT,
+    "clientPhone" TEXT,
     "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "state" "State" NOT NULL,
     "starDate" TEXT NOT NULL,
     "endDate" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "udpatedAt" TIMESTAMP(3) NOT NULL,
 

@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       where: { id },
     });
     if (!role) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Role not found" }, { status: 404 });
     }
     return NextResponse.json(role, { status: 200 });
   } catch (error) {
@@ -60,13 +60,13 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const data = await request.json();
 
-    if (!data) {
+    if (!data || Object.keys(data).length === 0) {
       return NextResponse.json({ message: "No data provided" }, { status: 400 });
     }
 
@@ -80,11 +80,13 @@ export async function PUT(request: Request) {
     });
 
     if (!role) {
-      return NextResponse.json({ error: "role not found" }, { status: 404 });
+      return NextResponse.json({ error: "Role not found" }, { status: 404 });
     }
+
+    // Actualizar solo los campos proporcionados en `data`
     const updatedRole = await db.role.update({
       where: { id },
-      data,
+      data, // PATCH permite modificaciones parciales
     });
 
     return NextResponse.json(updatedRole);
@@ -93,6 +95,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: "Error updating role", error }, { status: 500 });
   }
 }
+
 
 export async function DELETE(request: Request) {
   try {

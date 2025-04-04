@@ -14,23 +14,26 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String
-  imageUrl  String
-  role      Role     @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId    Int //Dato para hacer la relacion
-  leads     Lead[] // Relación Uno a Muchos con Lead
-  createdAt DateTime @default(now())
-  udpatedAt DateTime @updatedAt
+  id          Int              @id @default(autoincrement())
+  name        String
+  email       String           @unique
+  password    String
+  phone       String
+  imageUrl    String
+  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId      Int //Dato para hacer la relacion
+  leads       Lead[] // Relación Uno a Muchos con Lead
+  permissions UserPermission[]
+  createdAt   DateTime         @default(now())
+  udpatedAt   DateTime         @updatedAt
 }
 
 model Permission {
-  id          Int    @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   name        String
   description String
+  users       UserPermission[]
+  roles       RolePermission[]
 }
 
 model Invoice {
@@ -47,41 +50,60 @@ model Project {
 }
 
 model Role {
-  id          Int      @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   name        String
   description String
   user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
-  // rolePermision RolePermision[]
-  createdAt   DateTime @default(now())
-  udpatedAt   DateTime @updatedAt
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  udpatedAt   DateTime         @updatedAt
 }
 
-// model RolePermision{
-//   role id
-//   role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+model RolePermission {
+  roleId       Int
+  permissionId Int
 
-//   @@id([roleId, permissionId]) // Clave primaria compuesta
-// }
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId]) // Clave primaria compuesta
+}
+
 model Lead {
   id          Int      @id @default(autoincrement())
-  clientName  String
-  clientEmail String
-  clientPhone String
+  clientName  String?
+  clientEmail String?
+  clientPhone String?
   name        String
+  description String
   state       State
   starDate    String
   endDate     String
-  userId      Int // Clave foránea
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int? // Clave foránea
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   udpatedAt   DateTime @updatedAt
 }
 
 enum State {
-  send
-  processing
-  estimating
-  finished
+SEND
+PROCESSING
+ESTIMATING
+FINISHED
+}
+model UserPermission {
+  userId       Int
+  permissionId Int
+
+  user       User       @relation(fields: [userId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([userId, permissionId]) // Clave primaria compuesta
 }
 
-
+model Product {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  url         String
+}
