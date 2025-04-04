@@ -29,15 +29,6 @@ model User {
 }
 
 model Permission {
-
-  id          Int              @id @default(autoincrement())
-  name        String
-  description String
-  users       UserPermission[]
-  roles       RolePermission[]
-}
-
-
   id                Int               @id @default(autoincrement())
   name              String
   description       String
