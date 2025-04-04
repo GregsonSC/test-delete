@@ -90,14 +90,11 @@ model ServiceArea {
   benefitsImageUrl String
   testimonialEmbed String
   service_id       Int
-  service          Lead     @relation(fields: [service_id], references: [id])
   createdAt        DateTime @default(now())
   udpatedAt        DateTime @updatedAt
 }
 
-model Service {
-  id Int @id @default(autoincrement())
-}
+
 
 enum County {
   MIAMI_DATE
@@ -167,7 +164,7 @@ model RolePermission {
 }
 
 model Lead {
-  id          Int           @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   clientName  String?
   clientEmail String?
   clientPhone String?
@@ -177,11 +174,10 @@ model Lead {
   starDate    String
   endDate     String
   userId      Int? // Clave foránea
-  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime      @default(now())
-  udpatedAt   DateTime      @updatedAt
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  udpatedAt   DateTime   @updatedAt
   Estimate    Estimate[]
-  ServiceArea ServiceArea[]
 }
 
 enum LeadState {
