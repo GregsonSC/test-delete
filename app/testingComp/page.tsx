@@ -45,8 +45,17 @@ export default function TestingComp() {
           <CardDescription>Diferentes tipos de notificaciones emergentes</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <Button variant="outline" onClick={() => DefaultToast()}>
+          <Button variant="outline" onClick={() => DefaultToast.normal("add toast")}>
             Normal
+          </Button>
+          <Button variant="outline" onClick={() => DefaultToast.title("add toast","esta tiene titulo")}>
+            Normal titulo
+          </Button>
+          <Button variant="outline" onClick={() => DefaultToast.normalStart("add toast")}>
+            Normal estrella
+          </Button>
+          <Button variant="outline" onClick={() => DefaultToast.titleStart("add toast","estrella")}>
+            Titulo estrella
           </Button>
           <Button variant="outline" onClick={() => DefaultSucess()}>
             Éxito
