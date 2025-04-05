@@ -19,9 +19,14 @@ import { CircleUser, Phone, Mail, Circle  } from 'lucide-react';
 const userName = "Name";
 
 const formSchema = z.object({
-    name: z.string().min(2).max(50),
-    phone: z.number().max(15, { message: "Please enter a valid phone number." }),
-    email: z.string().email({ message: "Please enter a valid email address." }),
+  name: z
+    .string()
+    .min(2, { message: "Type a valid name" })
+    .max(50, { message: "Type a valid name" }),
+  phone: z
+    .string()
+    .max(15, { message: "Enter a valid number" }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
 });
 
 interface ContactUsProps {
@@ -33,6 +38,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      phone: "",
       email: "",
     },
   });
@@ -76,7 +82,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
           </Card>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="xl:justify-center xl:items-center ">
+            <form onSubmit={form.handleSubmit(onSubmit)} id="contact-form" className="xl:justify-center xl:items-center ">
               <FormField
                 name="name"
                 control={form.control}
@@ -95,7 +101,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                         />
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    
                   </FormItem>
                 )}
               />
@@ -119,7 +125,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                     </div>
                       
                     </FormControl>
-                    <FormMessage />
+                    
                   </FormItem>
                 )}
               />
@@ -140,10 +146,17 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                       className="absolute inset-y-4 xl:inset-y-2 left-2  opacity-60"/>
                     </div>
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
+                          {Object.keys(form.formState.errors).length > 0 && (
+              <div className="mt-4 text-red-600">
+                {Object.entries(form.formState.errors).map(([field, error]) => (
+                  <p key={field}>{error?.message}</p>
+                ))}
+              </div>
+            )}
+
             </form>
           </Form>
         )}
@@ -152,7 +165,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
         </div>
       </div>
       <div className="">
-        <Button className="rounded-full bg-secondary text-white mt-5 text-base px-6 py-5 font-normal hover:bg-[#04081e]">
+        <Button  type="submit" form="contact-form" className="rounded-full bg-secondary text-white mt-5 text-base px-6 py-5 font-normal hover:bg-[#04081e]">
           Schedule event
         </Button>
       </div>
