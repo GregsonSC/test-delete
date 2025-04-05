@@ -3,8 +3,7 @@ import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
-import { Calendar } from "@/components/ui/calendar"
-import { Calendar_molecule } from "@/presentation/molecules/calendar/calendar";
+import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 
 
 export function BlogPage() {
@@ -47,8 +46,8 @@ export function BlogPage() {
             </div>
           </div>
         </section>
-
         {ContactInfo(1)}
+        <ScheduleFreeConsultation />
       </MainLayout>
   );
 }

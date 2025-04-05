@@ -35,21 +35,21 @@ export function EmailForm() {
           control={form.control}
           name="email"
           render={({ field }) => (
-<FormItem>
-  <FormControl>
-    <div className="relative w-full">
-      <Input
-        placeholder="email"
-        {...field}
-        className="bg-white text-black w-full pr-12" 
-      />
-      <Button className="absolute inset-y-2 right-3 rounded-full m-0 p-3 w-3 h-3">
-        <ArrowRight strokeWidth={5} color="white"  />
-      </Button>
-    </div>
-  </FormControl>
-  <FormMessage />
-</FormItem>
+        <FormItem>
+          <FormControl>
+            <div className="relative w-full">
+              <Input
+                placeholder="email"
+                {...field}
+                className="bg-white text-black w-full pr-12" 
+              />
+              <Button className="absolute inset-y-2 right-3 rounded-full m-0 p-3 w-3 h-3">
+                <ArrowRight strokeWidth={5} color="white"  />
+              </Button>
+            </div>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
           )}
         />
       </form>

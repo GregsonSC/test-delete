@@ -3,7 +3,7 @@ import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
-import { ContactUs } from "@/presentation/organisms/contact-us/contact-us";
+import { ContactUs } from "@/presentation/molecules/contact-us/contact-us";
 import { PhoneCall, Mail, } from "lucide-react"; 
 
 
@@ -34,7 +34,7 @@ export function ContactPage() {
           <div className="bg-white h-auto w-auto xl:bg-transparent ">
             <ContactUs isLoggedIn={false} />
           </div>
-        </div>
+        </div> 
 
 
       </div>
