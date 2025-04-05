@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/presentation/atoms/button/button";
 import { Calendar_molecule } from "@/presentation/molecules/calendar/calendar";
-import  Link from "next/link";
+import { CircleUser, Phone, Mail, Circle  } from 'lucide-react';
 
 const userName = "Name";
 
@@ -76,18 +76,24 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
           </Card>
         ) : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="xl:justify-center xl:items-center ">
               <FormField
                 name="name"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <input
-                        {...field}
-                        placeholder="Full Name"
-                        className="bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#0A1248] placeholder-opacity-55 py-3 px-4 text-lg"
-                      />
+                      <div className="relative w-full">
+                        <input
+                          {...field}
+                          placeholder="Full Name"
+                          className="text-[#0A1248] bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#0A1248] placeholder-opacity-60 py-3 px-4 pl-10 text-lg xl:py-2 xl:text-sm xl:pr-24 xl:pl-10 xl:mb-12 xl:mt-12 xl:mr-12"
+                        />
+                        <CircleUser 
+                          color="#0A1248" 
+                          className="absolute inset-y-4 xl:inset-y-14 left-2  opacity-60" 
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -99,12 +105,19 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
+                    <div className="relative w-full">
                       <input
-                        {...field}
-                        placeholder="Phone Number"
-                        className="bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#0A1248] placeholder-opacity-55 py-3 px-4 text-lg"
-                        type="tel"
+                          {...field}
+                          placeholder="Phone Number"
+                          className="text-[#0A1248] bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#0A1248] placeholder-opacity-60 py-3 px-4 pl-10 text-lg xl:py-2 xl:text-sm xl:pr-24 xl:pl-10 xl:mb-12 xl:mr-12"
+                          type="tel"
+                        />
+                      <Phone
+                        color="#0A1248" 
+                        className="absolute inset-y-4 xl:inset-y-2 left-2  opacity-60"
                       />
+                    </div>
+                      
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -116,12 +129,16 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <input
+                    <div className="relative w-full">
+                    <input
                         {...field}
                         placeholder="Email"
-                        className="bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#0A1248] placeholder-opacity-55 py-3 px-4 text-lg"
+                        className="text-[#0A1248] bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#0A1248] placeholder-opacity-60 py-3 px-4 pl-10 text-lg xl:py-2 xl:text-sm xl:pr-24 xl:pl-10 xl:mb-12 xl:mr-12"
                         type="email"
                       />
+                      <Mail color="#0A1248" 
+                      className="absolute inset-y-4 xl:inset-y-2 left-2  opacity-60"/>
+                    </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

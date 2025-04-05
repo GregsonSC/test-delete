@@ -32,7 +32,7 @@ export function ContactPage() {
 
         <div className="flex flex-row items-center justify-center xl:mb-40">
           <div className="bg-white h-auto w-auto xl:bg-transparent ">
-            <ContactUs isLoggedIn={true} />
+            <ContactUs isLoggedIn={false} />
           </div>
         </div>
 
