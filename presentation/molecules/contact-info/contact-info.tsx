@@ -20,7 +20,7 @@ export function ContactInfo(type:number){
                 muted
               />
               <div className=" relative z-10 text-center w-full mx-auto">
-                <Heading level="h1" className="text-3xl md:text-4xl md:nowr font-bold mb-5 text-[#0A1248]">
+                <Heading level="h1" className="px-2 text-3xl md:text-4xl md:nowr font-bold mb-5 text-[#0A1248]">
                   Let’s talk About Your Project Goals!
                 </Heading>
                 <p className="text-lg mb-8 text-[#0A1248] font-semibold">
@@ -46,7 +46,7 @@ export function ContactInfo(type:number){
               muted
             />
             <div className=" relative z-10 text-center w-full mx-auto">
-              <Heading level="h1" className="text-3xl md:text-4xl md:nowr font-bold mb-5 text-[#0A1248]">
+              <Heading level="h1" className="px-2 text-3xl md:text-4xl md:nowr font-bold mb-5 text-[#0A1248]">
                 Ready to Dominate the Miami Beach Market?
               </Heading>
               <p className="text-lg mb-8 text-[#0A1248] font-semibold">
