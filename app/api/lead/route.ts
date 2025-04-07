@@ -118,12 +118,13 @@ export async function DELETE(request: Request) {
     if (!leadExist) {
       return NextResponse.json({ message: "lead not found " }, { status: 400 });
     }
-    const lead = await db.lead.delete({where:{id}})
-    if(!lead){
-      return NextResponse.json({message:"lead not found"},{status:404})
+    const lead = await db.lead.delete({ where: { id } });
+    if (!lead) {
+      return NextResponse.json({ message: "lead not found" }, { status: 404 });
     }
-    return NextResponse.json({message:"Lead delete Succefull"},{status: 200})
+    return NextResponse.json({ message: "Lead delete Succefull" }, { status: 200 });
   } catch (error) {
     console.error("Error deleting lead:", error);
     return NextResponse.json({ message: "Error deleting lead", error }, { status: 500 });
   }
+}
