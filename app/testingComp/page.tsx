@@ -7,6 +7,8 @@ import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/presentation/atoms/button/button";
 import { toast } from "sonner";
+import { DefaultToast } from "@/presentation/atoms/toast/default/default-toast";
+import { DefaultSucess } from "@/presentation/atoms/toast/sucess/default-sucess";
 
 export default function TestingComp() {
   const promise = () =>
@@ -29,6 +31,7 @@ export default function TestingComp() {
           content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquam risus nec elit luctus, sed vehicula magna suscipit. Donec et sem a"
           date="2023-01-01"
           tag="DefaultTag"
+          href="/"
         />
       </div>
       <Footer />
@@ -42,20 +45,19 @@ export default function TestingComp() {
           <CardDescription>Diferentes tipos de notificaciones emergentes</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <Button variant="outline" onClick={() => toast("Event has been created")}>
+          <Button variant="outline" onClick={() => DefaultToast.normal("add toast")}>
             Normal
           </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast("Event has been created", {
-                description: "Sunday, December 03, 2023 at 9:00 AM",
-              })
-            }
-          >
-            Con descripción
+          <Button variant="outline" onClick={() => DefaultToast.title("add toast","esta tiene titulo")}>
+            Normal titulo
           </Button>
-          <Button variant="outline" onClick={() => toast.success("Event has been created")}>
+          <Button variant="outline" onClick={() => DefaultToast.normalStart("add toast")}>
+            Normal estrella
+          </Button>
+          <Button variant="outline" onClick={() => DefaultToast.titleStart("add toast","estrella")}>
+            Titulo estrella
+          </Button>
+          <Button variant="outline" onClick={() => DefaultSucess()}>
             Éxito
           </Button>
           <Button variant="outline" onClick={() => toast.info("Event has been created")}>

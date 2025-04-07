@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // # TODO: revisar aqui el cambio de estilos
           toastOptions={{
             style: {
-              background: "red", // aqui markus !!!
+              background: "#04081E", // aqui markus !!!
             },
           }}
         />
