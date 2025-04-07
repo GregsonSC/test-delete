@@ -48,8 +48,8 @@ model Project {
   expectedDuration String
   startDate        String
   endDate          String
-  estimate_id      Int
-  estimate         Estimate     @relation(fields: [estimate_id], references: [id])
+  estimate_id      Int?
+  estimate         Estimate?     @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
   currentPhase     CurrentPhase
   createdAt        DateTime     @default(now())
   udpatedAt        DateTime     @updatedAt
@@ -60,8 +60,8 @@ model Estimate {
   estimatedTime String
   description   String
   state         EstimateState
-  lead_id       Int
-  lead          Lead          @relation(fields: [lead_id], references: [id])
+  lead_id       Int?
+  lead          Lead?          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
   totalValue    Decimal
   Project       Project[]
   createdAt     DateTime      @default(now())
@@ -89,12 +89,16 @@ model ServiceArea {
   heroImageUrl     String
   benefitsImageUrl String
   testimonialEmbed String
-  service_id       Int
+  service_id       Int?
+  service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
   createdAt        DateTime @default(now())
   udpatedAt        DateTime @updatedAt
 }
 
-
+model Service {
+  id          Int           @id @default(autoincrement())
+  ServiceArea ServiceArea[]
+}
 
 enum County {
   MIAMI_DATE
