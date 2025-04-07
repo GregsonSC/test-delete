@@ -268,7 +268,7 @@ export function Navbar() {
             : "opacity-0 max-h-0"
         )}
       >
-        <div className="container mx-auto px-4 md:px-8 py-12">
+        <div className="container mx-auto px-4 md:px-8 py-12 pb-4">
           <div className="max-w-7xl mx-auto">
             {navItems.map((item) => (
               item.hasDropdown && (
@@ -311,6 +311,14 @@ export function Navbar() {
                 </div>
               )
             ))}
+            
+            <div className="flex justify-center mt-8 mb-2">
+              <Button 
+                className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
+              >
+                Get a free consultation!
+              </Button>
+            </div>
           </div>
         </div>
       </div>
