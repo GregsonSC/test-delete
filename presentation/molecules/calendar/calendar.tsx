@@ -11,7 +11,11 @@ export function Calendar_molecule() {
             mode="single"
             selected={date}
             onSelect={setDate}
-            className="text-black rounded-sm border border-[#E4E4E7]" //Colocar estilos :b
+            className="text-black rounded-sm border border-[#E4E4E7]"
+            classNames={{ day_selected: "bg-[#04081E] text-white",
+                cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-none [&:has([aria-selected])]:text-white"
+                
+             }}
         />
     );
 }
