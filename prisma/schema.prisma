@@ -13,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id          Int              @id @default(autoincrement())
   name        String
@@ -24,6 +25,7 @@ model User {
   roleId      Int //Dato para hacer la relacion
   leads       Lead[] // Relación Uno a Muchos con Lead
   permissions UserPermission[]
+  // Comment     Comment[]
   createdAt   DateTime         @default(now())
   udpatedAt   DateTime         @updatedAt
 }
@@ -60,10 +62,12 @@ model Estimate {
   estimatedTime String
   description   String
   state         EstimateState
-  lead_id       Int?
-  lead          Lead?          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  lead_id       Int
+  lead          Lead          @relation(fields: [lead_id], references: [id])
   totalValue    Decimal
   Project       Project[]
+  costs         Cost[]
+  // comments      Comment[]
   createdAt     DateTime      @default(now())
   udpatedAt     DateTime      @updatedAt
 }
@@ -207,3 +211,36 @@ model Product {
   description String
   url         String
 }
+model Cost {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  type        CostType
+  value       Float
+  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  estimateId  Int
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum CostType {
+  MANPOWER
+  TECHNOLOGIES
+  LICENSE
+  OTHERS
+}
+
+// model Comment {
+//   id         Int      @id @default(autoincrement())
+//   content    String
+//   sendData   String
+//   sendTime   String
+//   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId     Int
+//   estimateId Int
+//   estimate   Estimate @relation(fields: [estimateId], references: [id])
+//   //  phaseId    Int
+//   // phase      Phase    @relation(fields: [phaseId], references: [id])
+//   createdAt  DateTime @default(now())
+//   udpatedAt  DateTime @updatedAt
+// }
