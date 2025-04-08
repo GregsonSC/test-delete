@@ -25,7 +25,7 @@ model User {
   roleId      Int //Dato para hacer la relacion
   leads       Lead[] // Relación Uno a Muchos con Lead
   permissions UserPermission[]
-  // Comment     Comment[]
+  Comment     Comment[]
   createdAt   DateTime         @default(now())
   udpatedAt   DateTime         @updatedAt
 }
@@ -68,7 +68,7 @@ model Estimate {
   totalValue    Decimal
   Project       Project[]
   costs         Cost[]
-  // comments      Comment[]
+  comments      Comment[]
   createdAt     DateTime      @default(now())
   udpatedAt     DateTime      @updatedAt
 }
@@ -212,6 +212,7 @@ model Product {
   description String
   url         String
 }
+
 model Phase {
   id               Int        @id @default(autoincrement())
   name             PhaseName
@@ -222,6 +223,7 @@ model Phase {
   project_id       Int?
   project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
   state            PhaseState
+  Comment          Comment[]
   createdAt        DateTime   @default(now())
   udpatedAt        DateTime   @updatedAt
 }
@@ -239,6 +241,7 @@ enum PhaseState {
   TESTING
   FINISHED
 }
+
 model Cost {
   id          Int      @id @default(autoincrement())
   name        String
@@ -258,17 +261,17 @@ enum CostType {
   OTHERS
 }
 
-// model Comment {
-//   id         Int      @id @default(autoincrement())
-//   content    String
-//   sendData   String
-//   sendTime   String
-//   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   userId     Int
-//   estimateId Int
-//   estimate   Estimate @relation(fields: [estimateId], references: [id])
-//   //  phaseId    Int
-//   // phase      Phase    @relation(fields: [phaseId], references: [id])
-//   createdAt  DateTime @default(now())
-//   udpatedAt  DateTime @updatedAt
-// }
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  sendData   String
+  sendTime   String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  estimateId Int
+  estimate   Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phaseId    Int
+  phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
+}
