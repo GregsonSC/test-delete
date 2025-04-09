@@ -1,4 +1,5 @@
 "use client"
+import { useState, useEffect } from "react";
 import {
     Card,
     CardContent,
@@ -17,32 +18,37 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react"
-
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { schedules } from "@/components/const/schedules"
 import { ChevronLeft } from 'lucide-react';
 
 interface HourSelection {
     timezone: string
-    hour: string}
+    hour: string
+}
 
 interface HourSelectorProps {
-    onBack: () => void;}
+    onSelectionChange: (selection: HourSelection) => void;
+    onBack: () => void;
+}
+export function HourSelector({ onSelectionChange, onBack }: HourSelectorProps) {
+    const [selection, setSelection] = useState<HourSelection>({ timezone: "", hour: "" });
 
-export function HourSelector({ onBack }: HourSelectorProps) {
-    const [selection, setSelection] = useState<HourSelection>({ timezone: "", hour: "" })
+    useEffect(() => {
+        if (selection.timezone !== "" && selection.hour !== "") {
+            onSelectionChange(selection);
+        }
+        }, [selection, onSelectionChange]);
 
     return (
-        <Card className="bg-white w-72 h-auto border-[#E4E4E7]">
+        <Card className="bg-white w-72 h-80 border-[#E4E4E7]">
             <CardHeader className="items-start text-center p-0 ">
                 <Button className="bg-white w-3 h-6 mt-4 ml-2" onClick={onBack}><ChevronLeft strokeWidth={3}/></Button>
             </CardHeader>
             <CardContent className="flex flex-col text-center items-center">
                 <CardTitle className="font-medium text-base text-secondary mb-5">Select an hour for the call</CardTitle>
                 <div>
-                    <Select>
+                    <Select onValueChange={(value) =>setSelection((prev) => ({ ...prev, timezone: value }))}>
                         <SelectTrigger className=" rounded-full bg-transparent text-[#636A9C] border-[#636A9C] h-7 w-60 mb-2">
                             <SelectValue placeholder="Select a timezone" />
                         </SelectTrigger>
@@ -72,18 +78,18 @@ export function HourSelector({ onBack }: HourSelectorProps) {
 
                     </Select>
                 </div>
-                <div className="h-44 mb-5">
+                <div className="h-48 pb-4">
                     <ScrollArea className="w-full h-full">
                         <div className="flex flex-col space-y-2 p-4">
                             {schedules.map((hour) => (
                             <Button
                                 key={hour}
                                 variant={selection.hour === hour ? "default" : "outline"}
-                                onClick={() => setSelection((prev) => ({ ...prev, hour: hour }))}
+                                onClick={() =>setSelection((prev) => ({ ...prev, hour: hour }))}
                                 className={`rounded-full h-7 w-60 border-0 ${
                                     selection.hour === hour? "bg-[#D3E8A9] text-black text-lg" // estilo cuando se presiona el botón
                                       : "bg-[#EBEDF2] text-[#636A9C] text-lg" // estilo por defecto
-                                  }`}
+                                }`}
                             >
                                 {hour}
                             </Button>
@@ -91,7 +97,6 @@ export function HourSelector({ onBack }: HourSelectorProps) {
                         </div>
                     </ScrollArea>
                 </div>  
-                <Button className = "rounded-full bg-primary font-semibold h-8 text-lg">Confirm Date</Button>
             </CardContent>
 
     
