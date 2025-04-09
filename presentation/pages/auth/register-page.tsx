@@ -9,6 +9,7 @@ import { Facebook, Github, Mail } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Logo } from "@/presentation/atoms/logo/logo";
+import { MainLayout } from "@/presentation/templates/main-layout";
 
 const projects = [
   {
@@ -41,6 +42,7 @@ export function RegisterPage() {
   }, []);
 
   return (
+    <MainLayout>
     <div className="flex min-h-screen bg-secondary">
       {/* Left side - Carousel */}
       <div className="hidden lg:block lg:w-1/2 relative bg-secondary-900">
@@ -65,13 +67,12 @@ export function RegisterPage() {
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white">Our Projects</h2>
+              <h2 className="text-3xl font-bold text-white">Success Stories</h2>
               <div className="w-12 h-1 bg-primary"></div>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-2xl font-bold text-white">{projects[activeIndex].title}</h3>
-              <p className="text-gray-300">{projects[activeIndex].description}</p>
+              <p className="text-gray-300">"{projects[activeIndex].description}"</p>
             </div>
 
             <div className="flex space-x-2">
@@ -183,5 +184,6 @@ export function RegisterPage() {
         </div>
       </div>
     </div>
+    </MainLayout>
   );
 }
