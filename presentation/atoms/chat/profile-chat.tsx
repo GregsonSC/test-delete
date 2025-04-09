@@ -10,7 +10,18 @@ interface Message {
   createdAt: Date;
 }
 
-export function ProfileChat() {
+// Define the chat history message format from props
+interface ChatMessage {
+  sender: "client" | "agent";
+  message: string;
+  timestamp: Date;
+}
+
+interface ProfileChatProps {
+  messages?: ChatMessage[];
+}
+
+export function ProfileChat({ messages: initialMessages }: ProfileChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -22,6 +33,19 @@ export function ProfileChat() {
   const [isTyping, setIsTyping] = useState(false);
   const [input, setInput] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Update messages when initialMessages prop changes
+  useEffect(() => {
+    if (initialMessages && initialMessages.length > 0) {
+      const formattedMessages = initialMessages.map((msg, index) => ({
+        id: `imported-${index}`,
+        content: msg.message,
+        role: msg.sender === "client" ? "user" as const : "assistant" as const,
+        createdAt: msg.timestamp
+      }));
+      setMessages(formattedMessages);
+    }
+  }, [initialMessages]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {

@@ -21,6 +21,7 @@ const projectDocuments = [
 
 export function ProfileProjects() {
     const [activeTab, setActiveTab] = useState<"leads" | "projects">("projects");
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
     // Sample projects data
     const projects = [
@@ -29,11 +30,93 @@ export function ProfileProjects() {
             name: "Beach Resort Website",
             progress: 75,
             phase: "Project Phase",
+            details: [
+                {
+                    description: "Initial design mockups completed. Waiting for client feedback.",
+                    documents: projectDocuments.slice(0, 2),
+                    date: new Date(2023, 5, 15)
+                },
+                {
+                    description: "Homepage and about page development completed.",
+                    documents: projectDocuments.slice(2, 4),
+                    date: new Date(2023, 6, 1)
+                }
+            ],
+            chatHistory: [
+                { sender: "client" as const, message: "How's the progress on the homepage?", timestamp: new Date(2023, 5, 20) },
+                { sender: "agent" as const, message: "We've completed the initial design. I'll send you the mockups today.", timestamp: new Date(2023, 5, 20) }
+            ]
         },
-        { id: "2", name: "Corporate Portal", progress: 45, phase: "Design" },
-        { id: "3", name: "E-commerce Platform", progress: 90, phase: "Testing" },
-        { id: "4", name: "Mobile App", progress: 30, phase: "Development" },
+        { 
+            id: "2", 
+            name: "Corporate Portal", 
+            progress: 45, 
+            phase: "Design",
+            details: [
+                {
+                    description: "User research and competitor analysis completed.",
+                    documents: projectDocuments.slice(4, 6),
+                    date: new Date(2023, 4, 10)
+                }
+            ],
+            chatHistory: [
+                { sender: "agent" as const, message: "We've completed the user research phase. Would you like to schedule a call to discuss the findings?", timestamp: new Date(2023, 4, 12) },
+                { sender: "client" as const, message: "Yes, that would be great. How about tomorrow at 2pm?", timestamp: new Date(2023, 4, 12) }
+            ]
+        },
+        { 
+            id: "3", 
+            name: "E-commerce Platform", 
+            progress: 90, 
+            phase: "Testing",
+            details: [
+                {
+                    description: "Product catalog and checkout functionality implemented.",
+                    documents: projectDocuments.slice(0, 3),
+                    date: new Date(2023, 3, 5)
+                },
+                {
+                    description: "User testing completed with minor issues identified.",
+                    documents: projectDocuments.slice(3, 5),
+                    date: new Date(2023, 3, 20)
+                },
+                {
+                    description: "Final revisions based on user feedback.",
+                    documents: projectDocuments.slice(5, 7),
+                    date: new Date(2023, 4, 1)
+                }
+            ],
+            chatHistory: [
+                { sender: "client" as const, message: "When can we expect the platform to go live?", timestamp: new Date(2023, 4, 5) },
+                { sender: "agent" as const, message: "We're aiming for next week. Just finalizing some minor fixes from the user testing.", timestamp: new Date(2023, 4, 5) }
+            ]
+        },
+        { 
+            id: "4", 
+            name: "Mobile App", 
+            progress: 30, 
+            phase: "Development",
+            details: [
+                {
+                    description: "Initial wireframes and app architecture defined.",
+                    documents: projectDocuments.slice(2, 4),
+                    date: new Date(2023, 5, 1)
+                }
+            ],
+            chatHistory: [
+                { sender: "agent" as const, message: "We've started the development phase. Would you like to see the current progress?", timestamp: new Date(2023, 5, 10) },
+                { sender: "client" as const, message: "Yes, please share a demo when available.", timestamp: new Date(2023, 5, 10) }
+            ]
+        },
     ];
+
+    // Find the selected project
+    const selectedProject = projects.find(project => project.id === selectedProjectId) || projects[0];
+
+    // Handle project selection
+    const handleProjectSelect = (projectId: string) => {
+        setSelectedProjectId(projectId);
+    };
 
     return (
         <MainLayout>
@@ -82,12 +165,18 @@ export function ProfileProjects() {
                                     }
                                 `}</style>
                                 {activeTab === "projects" && projects.map((project) => (
-                                    <ProfileProjectCard
-                                        key={project.id}
-                                        projectName={project.name}
-                                        progress={project.progress}
-                                        phase={project.phase}
-                                    />
+                                    <div 
+                                        key={project.id} 
+                                        onClick={() => handleProjectSelect(project.id)}
+                                        className="cursor-pointer"
+                                    >
+                                        <ProfileProjectCard
+                                            projectName={project.name}
+                                            progress={project.progress}
+                                            phase={project.phase}
+                                            isSelected={selectedProjectId === project.id}
+                                        />
+                                    </div>
                                 ))}
                                 {activeTab === "leads" && (
                                     <div className="text-center text-gray-500 mt-10">
@@ -107,12 +196,12 @@ export function ProfileProjects() {
                                     }
                                 `}</style>
                                 <div className="grid grid-cols-1 gap-4 h-full overflow-y-auto">
-                                    {[...Array(5)].map((_, index) => (
+                                    {selectedProject.details.map((detail, index) => (
                                         <div key={index} className="h-[120px]">
                                             <ProfileProjectDetail
-                                                description={`Project description ${index + 1}. Lorem ipsum dolor sit amet.`}
-                                                documents={projectDocuments.slice(0, 2)}
-                                                date={new Date()}
+                                                description={detail.description}
+                                                documents={detail.documents}
+                                                date={detail.date}
                                             />
                                         </div>
                                     ))}
@@ -136,7 +225,7 @@ export function ProfileProjects() {
                                             display: none;
                                         }
                                     `}</style>
-                                    <ProfileChat />
+                                    <ProfileChat messages={selectedProject.chatHistory} />
                                 </div>
                             </div>
                         </div>
