@@ -50,16 +50,16 @@ export async function POST(request: Request) {
       });
     }
 
-    const newPhase = await db.phase.create({ data });
+    const newActivity = await db.activity.create({ data });
 
     return createResponse({
       success: true,
-      data: newPhase,
-      message: "Phase created successfully.",
+      data: newActivity,
+      message: "Activity created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Phase");
+    return handleError(error, "POST Activity");
   }
 }
 
@@ -69,11 +69,11 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const phases = await db.phase.findMany();
+      const activities = await db.activity.findMany();
       return createResponse({
         success: true,
-        data: phases,
-        message: "Phases retrieved successfully.",
+        data: activities,
+        message: "Activities retrieved successfully.",
         status: 200,
       });
     }
@@ -88,24 +88,24 @@ export async function GET(req: Request) {
       });
     }
 
-    const phase = await db.phase.findUnique({ where: { id } });
-    if (!phase) {
+    const activity = await db.activity.findUnique({ where: { id } });
+    if (!activity) {
       return createResponse({
         success: false,
-        message: "Phase not found.",
-        errors: ["No Phase exists with the given ID."],
+        message: "Activity not found.",
+        errors: ["No Activity exists with the given ID."],
         status: 404,
       });
     }
 
     return createResponse({
       success: true,
-      data: phase,
-      message: "Phase retrieved successfully.",
+      data: activity,
+      message: "Activity retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Phase");
+    return handleError(error, "GET Activity");
   }
 }
 
@@ -137,26 +137,29 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const phase = await db.phase.findUnique({ where: { id } });
-    if (!phase) {
+    const activity = await db.activity.findUnique({ where: { id } });
+    if (!activity) {
       return createResponse({
         success: false,
-        message: "Phase not found.",
-        errors: ["No phase exists with the given ID."],
+        message: "Activity not found.",
+        errors: ["No Activity exists with the given ID."],
         status: 404,
       });
     }
 
-    const updatedPhase = await db.phase.update({ where: { id }, data: { ...data } });
+    const updateActivity = await db.activity.update({
+      where: { id },
+      data: { ...data },
+    });
 
     return createResponse({
       success: true,
-      data: updatedPhase,
-      message: "Phase updated successfully.",
+      data: updateActivity,
+      message: "Activity updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH Phase");
+    return handleError(error, "PATCH Activity");
   }
 }
 
@@ -175,14 +178,14 @@ export async function DELETE(req: Request) {
       });
     }
 
-    await db.phase.delete({ where: { id } });
+    await db.activity.delete({ where: { id } });
 
     return createResponse({
       success: true,
-      message: "Phase deleted successfully.",
+      message: "Activity deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE Phase");
+    return handleError(error, "DELETE Activity");
   }
 }

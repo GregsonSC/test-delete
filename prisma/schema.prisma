@@ -14,18 +14,19 @@ datasource db {
 }
 
 model User {
-  id          Int              @id @default(autoincrement())
-  name        String
-  email       String           @unique
-  password    String
-  phone       String
-  imageUrl    String
-  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId      Int //Dato para hacer la relacion
-  leads       Lead[] // Relación Uno a Muchos con Lead
-  permissions UserPermission[]
-  createdAt   DateTime         @default(now())
-  udpatedAt   DateTime         @updatedAt
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String
+  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId       Int //Dato para hacer la relacion
+  leads        Lead[] // Relación Uno a Muchos con Lead
+  permissions  UserPermission[]
+  createdAt    DateTime         @default(now())
+  udpatedAt    DateTime         @updatedAt
+  UserActivity UserActivity[]
 }
 
 model Permission {
@@ -221,6 +222,7 @@ model Phase {
   state            PhaseState
   createdAt        DateTime   @default(now())
   udpatedAt        DateTime   @updatedAt
+  Activity         Activity[]
 }
 
 enum PhaseName {
@@ -235,4 +237,43 @@ enum PhaseState {
   INPROCESS
   TESTING
   FINISHED
+}
+
+model Activity {
+  id               Int            @id @default(autoincrement())
+  name             NameActivity
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  phase_id         Int?
+  phase            Phase?         @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  state            StateActivity
+  createdAt        DateTime       @default(now())
+  udpatedAt        DateTime       @updatedAt
+  UserActivity     UserActivity[]
+}
+
+enum NameActivity {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum StateActivity {
+  PENDING
+  ASSIGNED
+  INPROCESS
+  REVIEWING
+  FINISHED
+}
+
+model UserActivity {
+  user_id     Int
+  activity_id Int
+  user        User     @relation(fields: [user_id], references: [id])
+  activity    Activity @relation(fields: [activity_id], references: [id])
+
+  @@id([user_id, activity_id])
 }
