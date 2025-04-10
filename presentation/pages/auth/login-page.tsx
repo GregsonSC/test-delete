@@ -110,9 +110,8 @@ export function LoginPage() {
             </div>
 
           </div>
-          <div className="space-y-6">
 
-            <Button className="text-bold text-lg w-full bg-primary text-secondary rounded-full mb-2 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
+            <Button className="text-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
             Log In
             </Button>
 
@@ -122,7 +121,6 @@ export function LoginPage() {
                 Register
               </Link>
             </div>
-          </div>
         </div>
       </div>
     </div>

@@ -143,7 +143,7 @@ export function RegisterPage() {
         </div>
 
         <Button
-          className="text-bold text-lg w-full bg-primary text-secondary rounded-full mb-2 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
+          className="text-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
           Register
         </Button>
             <div className="text-center text-sm">
