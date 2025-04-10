@@ -5,13 +5,9 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Button } from "@/presentation/atoms/button/button";
+import { ArrowRight } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -27,7 +23,7 @@ export function EmailForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>){
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     alert("correo registrado");
     form.reset();
   }
@@ -39,12 +35,21 @@ export function EmailForm() {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="email" {...field} className="bg-white text-black" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+        <FormItem>
+          <FormControl>
+            <div className="relative w-full">
+              <Input
+                placeholder="Email"
+                {...field}
+                className="bg-white text-black w-full pr-12" 
+              />
+              <Button className="absolute inset-y-2 right-3 rounded-full m-0 p-3 w-3 h-3">
+                <ArrowRight strokeWidth={5} color="white"  />
+              </Button>
+            </div>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
           )}
         />
       </form>

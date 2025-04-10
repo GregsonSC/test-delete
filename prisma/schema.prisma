@@ -11,77 +11,200 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String
-  imageUrl  String
-  role      Role     @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId    Int //Dato para hacer la relacion
-  leads     Lead[] // Relación Uno a Muchos con Lead
-  createdAt DateTime @default(now())
-  udpatedAt DateTime @updatedAt
+  id          Int              @id @default(autoincrement())
+  name        String
+  email       String           @unique
+  password    String
+  phone       String
+  imageUrl    String
+  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId      Int //Dato para hacer la relacion
+  leads       Lead[] // Relación Uno a Muchos con Lead
+  permissions UserPermission[]
+  createdAt   DateTime         @default(now())
+  udpatedAt   DateTime         @updatedAt
 }
 
 model Permission {
-  id          Int    @id @default(autoincrement())
-  name        String
-  description String
-}
-
-model Invoice {
-  id          Int      @id @default(autoincrement())
-  detail      String
-  totalAmount Int
-  createdAt   DateTime @default(now())
+  id                Int               @id @default(autoincrement())
+  name              String
+  description       String
+  action            Action
+  active            Boolean
+  serviceAssociated ServiceAssociated
+  createdAt         DateTime          @default(now())
+  udpatedAt         DateTime          @updatedAt
+  RolePermission    RolePermission[]
+  UserPermission    UserPermission[]
 }
 
 model Project {
-  id          Int    @id @default(autoincrement())
-  name        String
-  description String
+  id               Int          @id @default(autoincrement())
+  name             String
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  estimate_id      Int?
+  estimate         Estimate?     @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
+  currentPhase     CurrentPhase
+  createdAt        DateTime     @default(now())
+  udpatedAt        DateTime     @updatedAt
+}
+
+model Estimate {
+  id            Int           @id @default(autoincrement())
+  estimatedTime String
+  description   String
+  state         EstimateState
+  lead_id       Int?
+  lead          Lead?          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  totalValue    Decimal
+  Project       Project[]
+  createdAt     DateTime      @default(now())
+  udpatedAt     DateTime      @updatedAt
+}
+
+model Blog {
+  id              Int      @id @default(autoincrement())
+  title           String
+  resume          String
+  content         String
+  topic           Topic
+  publicationDate String
+  imageUrl        String
+  createdAt       DateTime @default(now())
+  udpatedAt       DateTime @updatedAt
+}
+
+model ServiceArea {
+  id               Int      @id @default(autoincrement())
+  name             String
+  description      String
+  active           Boolean
+  county           County
+  heroImageUrl     String
+  benefitsImageUrl String
+  testimonialEmbed String
+  service_id       Int?
+  service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  udpatedAt        DateTime @updatedAt
+}
+
+model Service {
+  id          Int           @id @default(autoincrement())
+  ServiceArea ServiceArea[]
+}
+
+enum County {
+  MIAMI_DATE
+  BROWARD
+  WEST_PALM_BEACH
+}
+
+enum Topic {
+  WEBDESIGN
+  DIGITALMARKETING
+  GRAPHICDESIGN
+}
+
+enum Action {
+  GET
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ServiceAssociated {
+  NORMALUSERS
+  ADMINUSERS
+  LEADS
+  ESTIMATES
+  PROJECTS
+  BLOGS
+  PRODUCTS
+  SERVICEAREAS
+}
+
+enum CurrentPhase {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum EstimateState {
+  CREATED
+  PROCESSING
+  INREVIEW
+  REJECTED
+  ACCEPTED
+  INVOICE
+  PAID
 }
 
 model Role {
-  id          Int      @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   name        String
   description String
   user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
-  // rolePermision RolePermision[]
-  createdAt   DateTime @default(now())
-  udpatedAt   DateTime @updatedAt
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  udpatedAt   DateTime         @updatedAt
 }
 
-// model RolePermision{
-//   role id
-//   role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+model RolePermission {
+  roleId       Int
+  permissionId Int
 
-//   @@id([roleId, permissionId]) // Clave primaria compuesta
-// }
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId]) // Clave primaria compuesta
+}
+
 model Lead {
-  id          Int      @id @default(autoincrement())
-  clientName  String
-  clientEmail String
-  clientPhone String
+  id          Int        @id @default(autoincrement())
+  clientName  String?
+  clientEmail String?
+  clientPhone String?
   name        String
-  state       State
+  description String
+  state       LeadState
   starDate    String
   endDate     String
-  userId      Int // Clave foránea
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  udpatedAt   DateTime @updatedAt
+  userId      Int? // Clave foránea
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  udpatedAt   DateTime   @updatedAt
+  Estimate    Estimate[]
 }
 
-enum State {
-  send
-  processing
-  estimating
-  finished
+enum LeadState {
+  SEND
+  PROCESSING
+  ESTIMATING
+  FINISHED
 }
 
+model UserPermission {
+  userId       Int
+  permissionId Int
 
+  user       User       @relation(fields: [userId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([userId, permissionId]) // Clave primaria compuesta
+}
+
+model Product {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  url         String
+}

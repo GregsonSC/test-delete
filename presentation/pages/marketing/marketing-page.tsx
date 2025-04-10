@@ -5,38 +5,85 @@ import Link from "next/link";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
 import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
+import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
+import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 
 export function MarketingPage() {
   // Portfolio items data
   const portfolioItems = [
     {
       title: "E-commerce Redesign",
-      description: "Increased conversion rates by 45% through strategic UX improvements and targeted marketing campaigns.",
+      description:
+        "Increased conversion rates by 45% through strategic UX improvements and targeted marketing campaigns.",
       imageUrl: "https://picsum.photos/645/577?random=1",
       href: "/portfolio/ecommerce",
-      tags: ["Fashion Industry", "E-commerce", "UX Design"]
+      tags: ["Fashion Industry", "E-commerce", "UX Design"],
     },
     {
       title: "Social Media Growth",
-      description: "Developed a comprehensive social strategy that grew audience by 200% and engagement by 78% in 6 months.",
+      description:
+        "Developed a comprehensive social strategy that grew audience by 200% and engagement by 78% in 6 months.",
       imageUrl: "https://picsum.photos/645/577?random=2",
       href: "/portfolio/social",
-      tags: ["Food & Beverage", "Social Media", "Content Strategy"]
+      tags: ["Food & Beverage", "Social Media", "Content Strategy"],
     },
     {
       title: "SEO Transformation",
-      description: "Achieved first page rankings for 15 competitive keywords, resulting in 87% increase in organic traffic.",
+      description:
+        "Achieved first page rankings for 15 competitive keywords, resulting in 87% increase in organic traffic.",
       imageUrl: "https://picsum.photos/645/577?random=3",
       href: "/portfolio/seo",
-      tags: ["Real Estate", "SEO", "Content Marketing"]
-    }
+      tags: ["Real Estate", "SEO", "Content Marketing"],
+    },
+  ];
+
+  // Review items data
+  const reviewItems = [
+    {
+      profilePicture: "/fotos-prueba/joe.jpg",
+      name: "Sarah Johnson",
+      rating: 5.0,
+      review: "Review",
+    },
+    {
+      profilePicture: "/fotos-prueba/joe.jpg",
+      name: "Michael Chen",
+      rating: 5.0,
+      review: "Review",
+    },
+    {
+      profilePicture: "/fotos-prueba/joe.jpg",
+      name: "Emily Rodriguez",
+      rating: 5.0,
+      review: "Review",
+    },
+    {
+      profilePicture: "/fotos-prueba/joe.jpg",
+      name: "David Wilson",
+      rating: 5.0,
+      review: "Review",
+    },
+    {
+      profilePicture: "/fotos-prueba/joe.jpg",
+      name: "Jessica Lee",
+      rating: 5.0,
+      review: "Review",
+    },
+    {
+      profilePicture: "/fotos-prueba/joe.jpg",
+      name: "Robert Taylor",
+      rating: 5.0,
+      review: "Review",
+    },
   ];
 
   return (
     <MainLayout>
       {/* First Section - Hero */}
-      <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden" style={{ backgroundColor: "#020301" }}>
-
+      <section
+        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
+        style={{ backgroundColor: "#020301" }}
+      >
         <div className="container px-4 md:px-6 text-center max-w-5xl mx-auto">
           <Heading level="h1" className="text-[36px] md:text-[48px] font-[700] mb-6">
             Boost Your Online Success
@@ -44,50 +91,52 @@ export function MarketingPage() {
           <p className="text-[24px] md:text-[30px] font-[600] text-muted-foreground mb-8 max-w-4xl mx-auto">
             Attract New Leads With a Personalized Marketing Strategy
           </p>
-          <Button 
-            asChild 
-            size="lg" 
-            className="rounded-full px-8 text-[20px] font-[600]"
-          >
+          <Button asChild size="lg" className="rounded-full px-8 text-[20px] font-[600]">
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
         </div>
       </section>
 
       {/* Second Section */}
-      <section 
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat" 
+      <section
+        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
-            <Heading level="h2" className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0">
-              Take Your Business To The Next <br />Level
+            <Heading
+              level="h2"
+              className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0"
+            >
+              Take Your Business To The Next <br />
+              Level
             </Heading>
             <p className="text-[16px] font-[600] text-muted-foreground mb-24 text-left mx-2 sm:mx-10 md:mx-0">
-              Convert your website into a lead-generating machine. We build websites that attract <br />your ideal clients and turn every visit into a golden opportunity.
+              Convert your website into a lead-generating machine. We build websites that attract{" "}
+              <br />
+              your ideal clients and turn every visit into a golden opportunity.
             </p>
-          
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
-              <HoverCardWGC 
+              <HoverCardWGC
                 icon="/images/marketing/icon1.png"
                 title="Advertising & Paid Marketing"
                 content="With our innovative ideas, we'll boost your business visibility on paid marketing platforms such as Google Ads & Facebook ads. Our targeted advertising campaigns are fully designed to attract your ideal customers who are actively seeking your products or services."
                 link="/services/advertising"
               />
-              
+
               {/* Second Card */}
-              <HoverCardWGC 
+              <HoverCardWGC
                 icon="/images/marketing/icon2.png"
                 title="Social Media Management"
                 content="Using proven strategies and engaging content across all social media platforms, Senavia Corp will help your company build a strong online presence by promoting your brand, products, and services."
                 link="/services/social-media"
               />
-              
+
               {/* Third Card - Wrapped in a div for positioning */}
               <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
-                <HoverCardWGC 
+                <HoverCardWGC
                   icon="/images/marketing/icon3.png"
                   title="SEO & Local Business Positioning"
                   content="Based on your niche market, our SEO specialists will implement optimization strategies using the most profitable keywords for your business. This approach will make your website climb the search engine ranks and steal the spotlight at the top of the search results."
@@ -98,10 +147,13 @@ export function MarketingPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Portfolio Section */}
       <section className="container px-4 md:px-6 mx-auto">
-        <Heading level="h2" className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]">
+        <Heading
+          level="h2"
+          className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
+        >
           Portfolio
         </Heading>
         <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
@@ -109,42 +161,89 @@ export function MarketingPage() {
         </div>
       </section>
 
+      {/* New Section with same container and background */}
+      <section
+        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+      >
+        <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
+          <div className="max-w-5xl mx-auto w-full">
+            {/* Content container */}
+            <div className="bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-3xl p-8 md:p-12 mx-auto max-w-5xl relative overflow-hidden my-[120px]">
+              <div className="text-center mb-8">
+                <h3 className="text-[32px] md:text-[36px] font-bold text-white mb-4">
+                  See Why Clients Love Our Services!
+                </h3>
+                <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
+                  We aim to surpass our client's expectations, becoming your trusted partner in
+                  achieving goals and identifying the best path forward for your business.
+                </p>
+              </div>
+
+              {/* Google Reviews Summary */}
+              <div className="flex justify-center mb-12">
+                <GoogleReviewCard rating={5.0} totalReviews={25} />
+              </div>
+
+              {/* Individual Reviews Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {reviewItems.map((review, index) => (
+                  <ReviewCardUser
+                    key={index}
+                    profilePicture={review.profilePicture}
+                    name={review.name}
+                    rating={review.rating}
+                    review={review.review}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Fourth Section - Blog/Resources */}
-      <section 
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat" 
+      <section
+        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
-            <Heading level="h2" className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0">
-            Latest News
+            <Heading
+              level="h2"
+              className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0"
+            >
+              Latest News
             </Heading>
             <p className="text-[16px] font-[600] text-muted-foreground mb-24 text-left mx-2 sm:mx-10 md:mx-0">
-            Stay up-to-date with our latest industry news on marketing and web design trends.
+              Stay up-to-date with our latest industry news on marketing and web design trends.
             </p>
-          
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
-              <HoverCardImage 
+              <HoverCardImage
                 image="/images/marketing/mk1.png"
+                href={"#"} // Add the link to the article here
                 title="Title"
                 content="Contents"
                 date="Date"
                 tag="Tag"
               />
-              
+
               {/* Second Card */}
-              <HoverCardImage 
+              <HoverCardImage
                 image="/images/marketing/mk2.png"
+                href={"#"} // Add the link to the article here
                 title="Title"
                 content="Contents"
                 date="Date"
                 tag="Tag"
               />
-              
+
               {/* Third Card */}
-              <HoverCardImage 
+              <HoverCardImage
                 image="/images/marketing/mk3.png"
+                href={"#"} // Add the link to the article here
                 title="Title"
                 content="Contents"
                 date="Date"
