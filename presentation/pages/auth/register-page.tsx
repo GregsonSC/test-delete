@@ -99,7 +99,7 @@ export function RegisterPage() {
 
             <div className="relative w-80 h-10 mb-3">
               <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                <CircleUser />
+                <CircleUser color="#A2ABE7"/>
               </div>
               <Input
                 id="full-name"
@@ -111,21 +111,21 @@ export function RegisterPage() {
 
               <div className="relative w-80 h-10 mb-3">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                  <Phone/>
+                  <Phone color="#A2ABE7"/>
                 </div>
                 <Input id="phone" type="phone" placeholder="Phone Number" className="w-full rounded-lg bg-background pl-10"/>
               </div>
 
               <div className="relative w-80 h-10 mb-3">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                  <Mail/>
+                  <Mail color="#A2ABE7"/>
                 </div>
                 <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-10" />
               </div>
 
               <div className="relative w-80 h-10 mb-3">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                  <Lock />
+                  <Lock color="#A2ABE7"/>
                 </div>
                 <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-10" />
               </div>

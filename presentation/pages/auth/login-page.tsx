@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
-import Image from "next/image";
-import { Logo } from "@/presentation/atoms/logo/logo";
 import { Navbar } from "@/presentation/organisms/navbar/navbar";
+import { Mail,Lock   } from 'lucide-react';
 
 const testimonials = [
   {
@@ -93,14 +90,25 @@ export function LoginPage() {
           </div>
 
           <div className=" items-center justify-center">
+
             <div className=" flex flex-col items-center justify-center mb-9">
-              <div className="space-y-2 w-80 h-10 mb-3">
-                <Input id="email" type="email" placeholder="Email" />
+
+              <div className="relative w-80 h-10 mb-3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <Mail color="#A2ABE7"/>
+                </div>
+                <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-10" />
               </div>
-              <div className="space-y-2 w-80 h-10 mb-3">
-                <Input id="password" type="password" placeholder="Password" />
+
+              <div className="relative w-80 h-10 mb-3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <Lock color="#A2ABE7"/>
+                </div>
+                <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-10" />
               </div>
+
             </div>
+
           </div>
           <div className="space-y-6">
 
