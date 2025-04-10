@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { ProfileChat } from "@/presentation/atoms/chat/profile-chat";
@@ -22,6 +22,7 @@ const projectDocuments = [
 export function ProfileProjects() {
     const [activeTab, setActiveTab] = useState<"leads" | "projects">("projects");
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [activeView, setActiveView] = useState<"chat" | "documents">("chat");
 
     // Sample projects data
     const projects = [
@@ -33,12 +34,12 @@ export function ProfileProjects() {
             details: [
                 {
                     description: "Initial design mockups completed. Waiting for client feedback.",
-                    documents: projectDocuments.slice(0, 2),
+                    documents: projectDocuments.slice(0, 3),
                     date: new Date(2023, 5, 15)
                 },
                 {
                     description: "Homepage and about page development completed.",
-                    documents: projectDocuments.slice(2, 4),
+                    documents: projectDocuments.slice(2, 5),
                     date: new Date(2023, 6, 1)
                 }
             ],
@@ -77,7 +78,7 @@ export function ProfileProjects() {
                 },
                 {
                     description: "User testing completed with minor issues identified.",
-                    documents: projectDocuments.slice(3, 5),
+                    documents: projectDocuments.slice(0, 5),
                     date: new Date(2023, 3, 20)
                 },
                 {
@@ -108,6 +109,75 @@ export function ProfileProjects() {
                 { sender: "client" as const, message: "Yes, please share a demo when available.", timestamp: new Date(2023, 5, 10) }
             ]
         },
+        { 
+            id: "5", 
+            name: "Healthcare Portal", 
+            progress: 60, 
+            phase: "Integration",
+            details: [
+                {
+                    description: "Patient management system integrated with database.",
+                    documents: projectDocuments.slice(1, 4),
+                    date: new Date(2023, 7, 5)
+                },
+                {
+                    description: "Security audit completed with recommendations.",
+                    documents: projectDocuments.slice(3, 6),
+                    date: new Date(2023, 7, 20)
+                }
+            ],
+            chatHistory: [
+                { sender: "agent" as const, message: "The security audit has been completed. We need to implement a few changes.", timestamp: new Date(2023, 7, 22) },
+                { sender: "client" as const, message: "What's the timeline for these security updates?", timestamp: new Date(2023, 7, 23) },
+                { sender: "agent" as const, message: "We can implement them within the next two weeks.", timestamp: new Date(2023, 7, 23) }
+            ]
+        },
+        { 
+            id: "6", 
+            name: "Educational Platform", 
+            progress: 85, 
+            phase: "Final Review",
+            details: [
+                {
+                    description: "Course creation tools and student dashboard completed.",
+                    documents: projectDocuments.slice(2, 5),
+                    date: new Date(2023, 6, 10)
+                },
+                {
+                    description: "Video streaming functionality optimized for various devices.",
+                    documents: projectDocuments.slice(0, 3),
+                    date: new Date(2023, 6, 25)
+                }
+            ],
+            chatHistory: [
+                { sender: "client" as const, message: "Can we add a feature for downloadable resources?", timestamp: new Date(2023, 7, 1) },
+                { sender: "agent" as const, message: "Yes, we can implement that. It would take about 3-4 days to complete.", timestamp: new Date(2023, 7, 1) },
+                { sender: "client" as const, message: "Great, please proceed with that addition.", timestamp: new Date(2023, 7, 2) }
+            ]
+        },
+        { 
+            id: "7", 
+            name: "Fitness Tracking App", 
+            progress: 40, 
+            phase: "Development",
+            details: [
+                {
+                    description: "User profile and goal setting features implemented.",
+                    documents: projectDocuments.slice(4, 7),
+                    date: new Date(2023, 8, 5)
+                },
+                {
+                    description: "Integration with wearable devices in progress.",
+                    documents: projectDocuments.slice(1, 3),
+                    date: new Date(2023, 8, 15)
+                }
+            ],
+            chatHistory: [
+                { sender: "agent" as const, message: "We're making good progress on the wearable device integration. Would you like to see a demo?", timestamp: new Date(2023, 8, 18) },
+                { sender: "client" as const, message: "Yes, that would be great. Also, have you started on the nutrition tracking feature?", timestamp: new Date(2023, 8, 19) },
+                { sender: "agent" as const, message: "We'll begin work on the nutrition tracking next week after finalizing the current integration.", timestamp: new Date(2023, 8, 19) }
+            ]
+        },
     ];
 
     // Find the selected project
@@ -116,20 +186,39 @@ export function ProfileProjects() {
     // Handle project selection
     const handleProjectSelect = (projectId: string) => {
         setSelectedProjectId(projectId);
+        
+        // Add history entry for back button functionality
+        window.history.pushState({ projectId }, '', window.location.pathname);
     };
+
+    // Listen for popstate event (browser back button)
+    useEffect(() => {
+        const handlePopState = () => {
+            setSelectedProjectId(null);
+        };
+        
+        window.addEventListener('popstate', handlePopState);
+        
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
 
     return (
         <MainLayout>
-            <section className="bg-gray-50 ">
-                <div className="w-full px-5 py-4 overflow-x-hidden lg:mt-0 mt-20">
-                    <div className="grid grid-cols-1 md:grid-cols-[35%_1fr] gap-6">
+            <section className="bg-gray-50">
+                <div className="w-full md:px-5 md:py-4 overflow-x-hidden lg:mt-0 mt-20 ">
+                    <div className="grid grid-cols-1 md:grid-cols-[35%_1fr] md:gap-6">
                         {/* Left column - Projects list */}
-                        <div className="bg-white rounded-lg p-4" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+                        <div className={cn(
+                            "bg-white md:rounded-lg md:p-4 p-0 pt-2 sm:pt-0",
+                            selectedProjectId ? "md:block hidden" : "block"
+                        )} style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
                             {/* Tabs */}
-                            <div className="flex mb-4">
+                            <div className="flex mb-4 px-4 md:p-0 pt-3 md:pt-0">
                                 <button
                                     className={cn(
-                                        "px-6 py-0 rounded-full mr-2 text-lg font-bold",
+                                        "px-6 py-0 rounded-full mr-2 text-base font-bold md:text-lg",
                                         activeTab === "leads"
                                             ? "bg-[#99CC33] text-white"
                                             : "bg-transparent text-[#739926] border border-[#99CC33]"
@@ -140,7 +229,7 @@ export function ProfileProjects() {
                                 </button>
                                 <button
                                     className={cn(
-                                        "px-6 py-0 rounded-full text-lg font-bold",
+                                        "px-6 py-0 rounded-full text-base font-bold md:text-lg",
                                         activeTab === "projects"
                                             ? "bg-[#99CC33] text-white"
                                             : "bg-transparent text-[#739926] border border-[#99CC33]"
@@ -153,7 +242,7 @@ export function ProfileProjects() {
 
                             {/* Project cards container */}
                             <div
-                                className="h-[650px] overflow-y-auto space-y-4 pr-2"
+                                className="overflow-y-auto space-y-4 px-4 md:pr-2 md:pl-0 flex-1 max-h-[900px]"
                                 style={{
                                     msOverflowStyle: 'none',
                                     scrollbarWidth: 'none'
@@ -187,9 +276,44 @@ export function ProfileProjects() {
                         </div>
 
                         {/* Right column - Project details and chat */}
-                        <div className="flex flex-col space-y-6">
-                            {/* Project details section */}
-                            <div className="bg-white rounded-lg p-4 max-w-full h-[300px] overflow-auto" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+                        <div className={cn(
+                            "flex flex-col md:space-y-4 pt-2 sm:pt-0 px-2", 
+                            !selectedProjectId ? "md:block hidden" : "block"
+                        )}>
+                            {/* Project header with name - Mobile only */}
+                            <h2 className="text-[20px] font-bold text-[#060B20] px-4 py-1 md:hidden">
+                                {selectedProject.name}
+                            </h2>
+                            
+                            {/* Chat/Documents toggle buttons - Mobile only */}
+                            <div className="flex mb-2 px-4 pt-2 md:rounded-lg md:shadow-sm md:hidden">
+                                <button
+                                    className={cn(
+                                        "px-6 py-0 rounded-full mr-2 text-base font-bold",
+                                        activeView === "chat"
+                                            ? "bg-[#99CC33] text-white"
+                                            : "bg-transparent text-[#739926] border border-[#99CC33]"
+                                    )}
+                                    onClick={() => setActiveView("chat")}
+                                >
+                                    Chat
+                                </button>
+                                <button
+                                    className={cn(
+                                        "px-6 py-0 rounded-full mr-2 text-base font-bold",
+                                        activeView === "documents"
+                                            ? "bg-[#99CC33] text-white"
+                                            : "bg-transparent text-[#739926] border border-[#99CC33]"
+                                    )}
+                                    onClick={() => setActiveView("documents")}
+                                >
+                                    Documents
+                                </button>
+                            </div>
+                            
+                            {/* Desktop view - Project details */}
+                            <div className="bg-white rounded-lg p-4 max-w-full flex-1 overflow-auto md:block hidden md:mt-0 md:h-[380px]" 
+                                 style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
                                 <style jsx>{`
                                     div::-webkit-scrollbar {
                                         display: none;
@@ -197,7 +321,7 @@ export function ProfileProjects() {
                                 `}</style>
                                 <div className="grid grid-cols-1 gap-4 h-full overflow-y-auto">
                                     {selectedProject.details.map((detail, index) => (
-                                        <div key={index} className="h-[120px]">
+                                        <div key={index} className="h-[164px]">
                                             <ProfileProjectDetail
                                                 description={detail.description}
                                                 documents={detail.documents}
@@ -208,25 +332,75 @@ export function ProfileProjects() {
                                 </div>
                             </div>
 
-                            {/* Chat section */}
-                            <div className="bg-white rounded-lg p-4 flex-1 max-h-[420px]" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+                            {/* Desktop view - Chat section */}
+                            <div className="bg-white rounded-lg p-4 md:block hidden h-[600px]" 
+                                 style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
                                 <div className="mb-4">
                                     <div className="px-6 py-0 rounded-full bg-[#99CC33] text-white text-center font-bold text-lg w-24">
                                         Chat
                                     </div>
                                 </div>
-                                <div className="h-[calc(100%-48px)] overflow-y-auto"
-                                     style={{ 
-                                         msOverflowStyle: 'none',
-                                         scrollbarWidth: 'none'
-                                     }}>
-                                    <style jsx>{`
-                                        div::-webkit-scrollbar {
-                                            display: none;
-                                        }
-                                    `}</style>
-                                    <ProfileChat messages={selectedProject.chatHistory} />
+                                <div className="h-[calc(100%-3rem)] flex flex-col">
+                                    <div className="flex-1 overflow-y-auto"
+                                         style={{ 
+                                             msOverflowStyle: 'none',
+                                             scrollbarWidth: 'none'
+                                         }}>
+                                        <style jsx>{`
+                                            div::-webkit-scrollbar {
+                                                display: none;
+                                            }
+                                        `}</style>
+                                        <ProfileChat messages={selectedProject.chatHistory} />
+                                    </div>
                                 </div>
+                            </div>
+                            
+                            {/* Mobile view - Content area (shows either chat or documents) */}
+                            <div className="bg-white  p-4 flex-1 h-[calc(100vh-165px)] md:hidden md:rounded-lg md:shadow-sm">
+                                {activeView === "chat" && (
+                                    <div className="h-full flex flex-col">
+                                        <div className="flex-1 overflow-y-auto"
+                                             style={{ 
+                                                 msOverflowStyle: 'none',
+                                                 scrollbarWidth: 'none'
+                                             }}>
+                                            <style jsx>{`
+                                                div::-webkit-scrollbar {
+                                                    display: none;
+                                                }
+                                            `}</style>
+                                            <ProfileChat messages={selectedProject.chatHistory} />
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {activeView === "documents" && (
+                                    <div className="h-full flex flex-col">
+                                        <div className="flex-1 overflow-y-auto"
+                                             style={{ 
+                                                 msOverflowStyle: 'none',
+                                                 scrollbarWidth: 'none'
+                                             }}>
+                                            <style jsx>{`
+                                                div::-webkit-scrollbar {
+                                                    display: none;
+                                                }
+                                            `}</style>
+                                            <div className="grid grid-cols-1 gap-4">
+                                                {selectedProject.details.map((detail, index) => (
+                                                    <div key={index}>
+                                                        <ProfileProjectDetail
+                                                            description={detail.description}
+                                                            documents={detail.documents}
+                                                            date={detail.date}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

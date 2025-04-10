@@ -54,8 +54,8 @@ export function ProfileProjectDetail({
               rel="noopener noreferrer"
               className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
-              <FileText size={18} className="text-gray-500" />
-              <span className="text-gray-600 text-sm truncate">{doc.name}</span>
+              <FileText size={16} className="text-gray-500 flex-shrink-0" />
+              <span className="text-gray-600 text-sm truncate max-w-[calc(100%-24px)]">{doc.name}</span>
             </a>
           ))}
           {documents.length === 0 && (
