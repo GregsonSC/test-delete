@@ -247,8 +247,8 @@ export function MarketingPage() {
 
       {/* New Section with same container and background */}
       <section
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
+        style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
           <div className="max-w-5xl mx-auto w-full">

@@ -112,7 +112,7 @@ export default async function BlogDetailPage({ params }: { params: { blogId: str
               <div className="sticky top-24">
                 {/* Consultation button */}
                 <Button 
-                  className="w-full rounded-full bg-[#99CC33] text-black hover:bg-[#8ab82e] hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all mb-12"
+                  className="w-full rounded-full bg-[#99CC33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all mb-12"
                 >
                   Get a free consultation!
                 </Button>
