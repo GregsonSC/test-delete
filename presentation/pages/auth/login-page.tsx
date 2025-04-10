@@ -13,7 +13,6 @@ const testimonials = [
       "Senavia transformed our online presence. Their team was professional, creative, and delivered beyond our expectations.",
     author: "Sarah Johnson",
     company: "Fashion Boutique Owner",
-    image: "/placeholder.svg?height=400&width=600&text=Project+1",
   },
   {
     quote:
@@ -93,30 +92,32 @@ export function LoginPage() {
 
             <div className=" flex flex-col items-center justify-center mb-9">
 
-              <div className="relative w-80 h-10 mb-3">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+              <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-[10px] pointer-events-none">
                   <Mail color="#A2ABE7"/>
                 </div>
-                <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-10" />
+                <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-11 placeholder:text-[#A2ABE7] " />
               </div>
 
-              <div className="relative w-80 h-10 mb-3">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+              <div className="relative w-80 h-10 xl:w-[330px]">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-[10px] pointer-events-none">
                   <Lock color="#A2ABE7"/>
                 </div>
-                <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-10" />
+                <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-11 placeholder:text-[#A2ABE7] " />
               </div>
 
             </div>
 
           </div>
-
-            <Button className="text-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
+          
+          <div className="px-16">
+            <Button className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
             Log In
             </Button>
+          </div>
 
-            <div className="text-center text-sm">
-              Don't have an account?{" "}
+            <div className="text-center text-xs font-medium">
+              New to Senavia? Go to{" "}
               <Link href="/register" className="text-primary hover:underline">
                 Register
               </Link>
