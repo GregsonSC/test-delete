@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 import { error } from "console";
@@ -102,28 +101,27 @@ export async function PATCH(request: Request) {
   }
 }
 
+// export async function DELETE(request: Request) {
+//   try {
+//     const { searchParams } = new URL(request.url);
+//     const requestId = searchParams.get("id");
 
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const requestId = searchParams.get("id");
+//     const id = Number(requestId);
 
-    const id = Number(requestId);
-
-    const leadExist = await db.lead.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!leadExist) {
-      return NextResponse.json({ message: "lead not found " }, { status: 400 });
-    }
-    const lead = await db.lead.delete({where:{id}})
-    if(!lead){
-      return NextResponse.json({message:"lead not found"},{status:404})
-    }
-    return NextResponse.json({message:"Lead delete Succefull"},{status: 200})
-  } catch (error) {
-    console.error("Error deleting lead:", error);
-    return NextResponse.json({ message: "Error deleting lead", error }, { status: 500 });
-  }
+//     const leadExist = await db.lead.findUnique({
+//       where: {
+//         id,
+//       },
+//     });
+//     if (!leadExist) {
+//       return NextResponse.json({ message: "lead not found " }, { status: 400 });
+//     }
+//     const lead = await db.lead.delete({where:{id}})
+//     if(!lead){
+//       return NextResponse.json({message:"lead not found"},{status:404})
+//     }
+//     return NextResponse.json({message:"Lead delete Succefull"},{status: 200})
+//   } catch (error) {
+//     console.error("Error deleting lead:", error);
+//     return NextResponse.json({ message: "Error deleting lead", error }, { status: 500 });
+//   }
