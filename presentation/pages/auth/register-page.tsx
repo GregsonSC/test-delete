@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 import { Navbar } from "@/presentation/organisms/navbar/navbar";
+import { CircleUser,Phone,Mail,Lock   } from 'lucide-react';
 
 const testimonials = [
   {
@@ -95,21 +96,40 @@ export function RegisterPage() {
           <div className=" items-center justify-center">
 
           <div className=" flex flex-col items-center justify-center mb-9">
-            <div className="space-y-2 w-80 h-10 mb-3">
-              <Input id="full-name" type="full-name" placeholder="Full Name" />
+
+            <div className="relative w-80 h-10 mb-3">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                <CircleUser />
+              </div>
+              <Input
+                id="full-name"
+                type="full-name"
+                placeholder="Full Name"
+                className="w-full rounded-lg bg-background pl-10"
+              />
             </div>
 
-            <div className="space-y-2 w-80 h-10 mb-3">
-              <Input id="phone" type="phone" placeholder="Phone Number"/>
-            </div>
+              <div className="relative w-80 h-10 mb-3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <Phone/>
+                </div>
+                <Input id="phone" type="phone" placeholder="Phone Number" className="w-full rounded-lg bg-background pl-10"/>
+              </div>
 
-            <div className="space-y-2 w-80 h-10 mb-3">
-              <Input id="email" type="email" placeholder="Email" />
-            </div>
+              <div className="relative w-80 h-10 mb-3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <Mail/>
+                </div>
+                <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-10" />
+              </div>
 
-            <div className="space-y-2 w-80 h-10 mb-3">
-              <Input id="password" type="password" placeholder="Password" />
-            </div>
+              <div className="relative w-80 h-10 mb-3">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                  <Lock />
+                </div>
+                <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-10" />
+              </div>
+
           </div>
           
           <div className="flex justify-center mb-9">
@@ -122,10 +142,10 @@ export function RegisterPage() {
             </div>
         </div>
 
-            <Button className="w-full bg-primary text-secondary hover:bg-primary/90 rounded-full mb-2">
-              Register
-            </Button>
-
+        <Button
+          className="text-bold text-lg w-full bg-primary text-secondary rounded-full mb-2 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
+          Register
+        </Button>
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link href="/login" className="text-primary hover:underline">
