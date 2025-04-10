@@ -48,9 +48,9 @@ export function BlogPage() {
       {/* Recent Posts */}
       <section className="mt-14">
         <div className="container mx-auto">
-          <div className="flex flex-wrap justify-center gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {[...Array(postsCount)].map((_, index) => (
-              <div key={index} className="w-full sm:w-1/2 lg:w-1/3 flex justify-center">
+              <div key={index} className="w-full flex justify-center">
                 <HoverCardImage
                   title={`Blog Post ${index + 1}`}
                   content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl."
