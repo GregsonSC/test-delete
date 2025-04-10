@@ -22,9 +22,8 @@ export function PortfolioCard({
 }: PortfolioCardProps) {
   return (
     <div className={cn(
-      "grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-lg shadow-lg p-4",
-      "bg-[#0f1740] text-white",
-      "transition-all duration-300 hover:shadow-xl",
+      "grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-lg p-4",
+      "bg-[#0A1248] text-white border border-[#8ECF0A] shadow-[0_0_15px_rgba(142,207,10,0.5)]",
       "max-w-[1000px] mx-auto", // Reduced max width from 1142px
       className
     )}>

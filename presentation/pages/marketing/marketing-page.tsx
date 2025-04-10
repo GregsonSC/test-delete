@@ -7,6 +7,8 @@ import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-c
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { LatestNews, NewsItem } from "@/presentation/molecules/news/latest-news";
+import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
+import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 
 export function MarketingPage() {
   // Portfolio items data
@@ -222,15 +224,24 @@ export function MarketingPage() {
       </section>
 
       {/* Portfolio Section */}
-      <section className="container px-4 md:px-6 mx-auto">
-        <Heading
-          level="h2"
-          className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
-        >
-          Portfolio
-        </Heading>
-        <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
-          <PortfolioCarousel items={portfolioItems} />
+      <section className=" px-4 md:px-6 mx-auto relative">
+        <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
+          <img 
+            src="/images/marketing/portfolio-background.png" 
+            alt="Portfolio background" 
+            className="h-full object-contain"
+          />
+        </div>
+        <div className="relative z-10">
+          <Heading
+            level="h2"
+            className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
+          >
+            Portfolio
+          </Heading>
+          <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
+            <PortfolioCarousel items={portfolioItems} />
+          </div>
         </div>
       </section>
 
@@ -275,8 +286,15 @@ export function MarketingPage() {
         </div>
       </section>
 
-      {/* Fourth Section - Blog/Resources */}
-      <section
+    
+
+
+      {ContactInfo(1)}
+
+      <ScheduleFreeConsultation />
+
+        {/* Fourth Section - Blog/Resources */}
+        <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
@@ -284,7 +302,6 @@ export function MarketingPage() {
         <LatestNews blogItems={blogItems} caseItems={caseItems} />
 
       </section>
-
 
     </MainLayout>
   );
