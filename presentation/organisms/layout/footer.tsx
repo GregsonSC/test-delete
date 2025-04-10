@@ -1,119 +1,147 @@
 import Link from "next/link";
-import { Facebook, Instagram, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { Button } from "@/presentation/atoms/button/button";
 import { EmailForm } from "@/presentation/molecules/email-form/email-form";
-import { ContactCard } from "@/presentation/molecules/contact-card/contact-card";
 import { inter600 } from "@/styles/font";
 
 export function Footer() {
   return (
-    <footer
-      className={`xl:w-11/12 xl:mx-16  xl:border-t xl:border-gray-800 flex flex-col ${inter600.className}`}
-    >
-      <div className="flex flex-col items-center text-center xl:items-start xl:text-left xl:flex-row xl:justify-center xl:flex-nowrap mt-10 xl:w-full xl:mx-5 2xl:mx-0">
-        <div className="space-y-4 flex flex-col xl:w-[324px] sm:items-center sm:text-center xl:items-start xl:text-left">
-          <Logo className="mb-3 md:mx-0 ml-10  " />
-          <div className="flex space-x-2 justify-center">
+    <footer className={`w-full flex flex-col ${inter600.className}`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 px-4 xl:px-16 py-8 bg-[#14171F] place-items-center xl:place-items-start text-center xl:text-left">
+        {/* logos */}
+        <div className="space-y-4 flex flex-col">
+          <Logo className="mb-3" />
+          <div className="flex space-x-2">
             <a href="https://www.facebook.com">
-              <Button className="text-muted-foreground hover:text-primary rounded-full h-8 w-8">
-                <Facebook color="black" />
+              <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
+                <Facebook className="h-4 w-4" color="black" />
                 <span className="sr-only">Facebook</span>
               </Button>
             </a>
             <a href="https://www.instagram.com">
-              <Button className="text-muted-foreground hover:text-primary rounded-full h-8 w-8">
-                <Instagram color="black" />
+              <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
+                <Instagram className="h-4 w-4" color="black" />
                 <span className="sr-only">Instagram</span>
               </Button>
             </a>
             <a href="https://www.youtube.com">
-              <Button className="text-muted-foreground hover:text-primary rounded-full h-8 w-8">
-                <Youtube color="black" />
+              <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
+                <Youtube className="h-4 w-4" color="black" />
                 <span className="sr-only">Youtube</span>
               </Button>
             </a>
           </div>
-          <div>
-            <h3 className="text-2xl mt-3">Subscribe to our stories</h3>
-            <div>
-              <EmailForm />
+        </div>
+
+        {/* services */}
+        <div className="mt-8 xl:mt-0">
+          <h3 className="text-2xl mb-4 text-white">Services</h3>
+          <ul className="space-y-2">
+            <li>
+            <span className="text-white mr-1">&bull;</span>
+              <Link
+                href="/services/web-development"
+                className="text-white hover:text-[#99CC33] underline "
+              >
+                Web Design & Development
+              </Link>
+            </li>
+            <li>
+            <span className="text-white mr-1">&bull;</span>
+              <Link
+                href="/services/digital-marketing"
+                className="text-white hover:text-[#99CC33] underline"
+              >
+                Lead Generation & Digital Marketing
+              </Link>
+            </li>
+            <li>
+            <span className="text-white mr-1">&bull;</span>
+              <Link
+                href="/services/graphic-design"
+                className="text-white hover:text-[#99CC33] underline"
+              >
+                Graphic Design & Branding
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* helpful links */}
+        <div className="mt-8 xl:mt-0">
+          <h3 className="text-2xl mb-4 text-white">Helpful Links</h3>
+          <ul className="space-y-2">
+            <li>
+              <span className="text-white mr-1">&bull;</span>
+              <Link href="/portfolio" className="text-white hover:text-[#99CC33] underline">
+                Work Portfolio
+              </Link>
+            </li>
+            <li>
+            <span className="text-white mr-1">&bull;</span>
+              <Link href="/consultation" className="text-white hover:text-[#99CC33] underline">
+                Book My Free Consultation Call!
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* subscribe to our stories */}
+        <div className="mt-8 xl:mt-0">
+          <h3 className="text-2xl mb-4 text-white">Subscribe to our stories</h3>
+          <EmailForm />
+        </div>
+      </div>
+
+      {/* contact info */}
+      <div className="bg-[#99CC33] py-6">
+        <div className="container mx-auto px-4 xl:px-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-center">
+            <div className="flex items-center justify-center md:justify-start gap-4">
+              <div className=" bg-[#04081E] rounded-full p-[10px]">
+                <Phone className="text-white" size={26} />
+              </div>
+              <span className="text-[#14171F] text-lg font-bold">(954) 706-4084</span>
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-4">
+              <div className=" bg-[#04081E] rounded-full p-[10px]">
+                <Mail className="text-white" size={26} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[#14171F] text-lg font-bold">info@senaviacorp.com</span>
+                <span className="text-[#14171F] text-lg font-bold">leads@senaviacorp.com</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-4">
+              <div className=" bg-[#04081E] rounded-full p-[10px]">
+                <MapPin className="text-white" size={26} />
+              </div>
+              <span className="text-[#14171F] text-lg font-bold">Location Info</span>
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-4">
+              <div className=" bg-[#04081E] rounded-full p-[10px]">
+                <Clock className="text-white" size={26} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[#14171F] text-lg font-bold">Service Days</span>
+                <span className="text-[#14171F] text-lg font-bold">Service Hours</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-5 xl:mx-8 xl:size-60 xl:mt-3  items-center text-start xl:items-start xl:text-left ml-6">
-          <h3 className="text-2xl mb-2">Services</h3>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                href="/services/web-development"
-                className="text-muted-foreground hover:text-primary"
-              >
-                <p className="underline underline-offset-4 text-white font-normal">
-                  •Web Design & Development
-                </p>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/services/digital-marketing"
-                className="text-muted-foreground hover:text-primary text-base"
-              >
-                <p className="underline underline-offset-4 text-white font-normal">
-                  •Lead Generation & Digital Marketing
-                </p>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/services/graphic-design"
-                className="text-muted-foreground hover:text-primary text-base"
-              >
-                <p className="underline underline-offset-4 text-white font-normal">
-                  •Graphic Design & Branding
-                </p>
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className="mt-10 text-start xl:mx-8 xl:size-60 xl:mt-3 items-center xl:items-start xl:text-left">
-          <h3 className="text-2xl mb-2">Helpful Links</h3>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                href="/about"
-                className="text-muted-foreground hover:text-primary text-base"
-              >
-                <p className="underline underline-offset-4 text-white font-normal">
-                  •Work Portfolio
-                </p>
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contact"
-                className="text-muted-foreground hover:text-primary text-base"
-              >
-                <p className="underline underline-offset-4 text-white font-normal">
-                  •Book My Free Consultation Call!
-                </p>
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className="sm:flex sm:justify-center xl:block mt-5 xl:mt-0">
-          <ContactCard />
-        </div>
       </div>
-      <div className="flex flex-col-reverse lg:flex-row justify-between items-center text-center lg:text-left lg:items-center lg:ml-16 mt-4 mb-16 pt-8 text-muted-foreground">
-        <p className="mt-4 lg:mt-0">
-          © {new Date().getFullYear()} Senavia Corp. All rights reserved.
-        </p>
-        <div className="flex space-x-2 mb-2 lg:mb-0 xl:mr-0 2xl:mr-4">
-          <div className="bg-[#99CC33] w-[100px] h-[60px] md:w-[90px] md:h-[50px] lg:w-[83px] lg:h-[46px]"></div>
-          <div className="bg-[#99CC33] w-[100px] h-[60px] md:w-[90px] md:h-[50px] lg:w-[83px] lg:h-[46px]"></div>
-          <div className="bg-[#99CC33] w-[100px] h-[60px] md:w-[90px] md:h-[50px] lg:w-[83px] lg:h-[46px]"></div>
+
+      <div className="bg-[#14171F] py-4">
+        <div className="container mx-auto px-4 xl:px-16 flex flex-col-reverse lg:flex-row justify-between items-center">
+          <p className="text-gray-400 mt-4 lg:mt-0">
+            Copyright {new Date().getFullYear()} Senavia Corp. All rights reserved.
+          </p>
+          <div className="flex space-x-2">
+            <div className="bg-[#99CC33] w-20 h-12"></div>
+            <div className="bg-[#99CC33] w-20 h-12"></div>
+            <div className="bg-[#99CC33] w-20 h-12"></div>
+          </div>
         </div>
       </div>
     </footer>
