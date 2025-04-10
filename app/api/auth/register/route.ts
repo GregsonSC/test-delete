@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
+import { verifyToken, hashPassword } from "@/middleware/Secure-middleware";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,12 +16,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "User with this email already exists" }, { status: 400 });
     }
 
-    const newUser = await db.user.create({ data });
+    // Encriptar la contraseña
+    const hashedPassword = await hashPassword(data.password);
+
+    data.password = hashedPassword;
+
+    const newUser = await db.user.create({
+      data,
+      include: {
+        role: true,
+      },
+    });
 
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
-    return NextResponse.json({ message: "Error creating role", error }, { status: 500 });
+    return NextResponse.json({ message: "Error creating user", error }, { status: 500 });
   }
 }
 export async function GET(request: Request) {
@@ -33,9 +44,11 @@ export async function GET(request: Request) {
         select: {
           id: true,
           name: true,
+          password: true,
           email: true,
           phone: true,
           imageUrl: true,
+          role: true,
         },
       });
       return NextResponse.json(users);
@@ -46,6 +59,7 @@ export async function GET(request: Request) {
     }
     const user = await db.user.findUnique({
       where: { id },
+      include: { role: true },
     });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -74,6 +88,7 @@ export async function PATCH(request: Request) {
 
     const user = await db.user.findUnique({
       where: { id },
+      include: { role: true },
     });
 
     if (!user) {
@@ -91,18 +106,26 @@ export async function PATCH(request: Request) {
       }
     }
 
+    // Encripta la contraseña si viene en el payload
+    if (data.password) {
+      data.password = await hashPassword(data.password);
+    }
+
     const updatedUser = await db.user.update({
       where: { id },
       data,
+      include: { role: true },
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json({
+      message: "Usuario actualizado correctamente.",
+      user: updatedUser,
+    });
   } catch (error) {
     console.error("Error updating user:", error);
     return NextResponse.json({ message: "Error updating user", error }, { status: 500 });
   }
 }
-
 
 export async function DELETE(request: Request) {
   try {

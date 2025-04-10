@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse ,NextRequest} from "next/server";
 import db from "@/lib/prisma";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.name) {
-      return NextResponse.json({ message: "Comment name is required" }, { status: 400 });
+    if (!data.content) {
+      return NextResponse.json({ message: "Comment cotent is required" }, { status: 400 });
     }
     const newComment = await db.comment.create({
       data,
