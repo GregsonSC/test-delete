@@ -6,11 +6,13 @@ function createResponse({
   data = null,
   message = "",
   errors = [],
+  status = 200
 }: {
   success: boolean;
   data?: any;
   message: string;
   errors?: string[];
+  status?: number;
 }) {
   return NextResponse.json({ success, data, message, errors });
 }
@@ -21,6 +23,7 @@ function handleError(error: unknown, context: string) {
     success: false,
     message: `An error occurred in ${context}.`,
     errors: [error instanceof Error ? error.message : "Unknown error"],
+    status: 500,
   });
 }
 
@@ -35,6 +38,7 @@ export async function POST(request: Request) {
         success: false,
         message: "Missing required fields.",
         errors: ["All fields are required."],
+        status: 400,
       });
     }
 
@@ -43,6 +47,7 @@ export async function POST(request: Request) {
         success: false,
         message: "Invalid field type.",
         errors: ["'active' must be a boolean."],
+        status: 400,
       });
     }
 
@@ -52,6 +57,7 @@ export async function POST(request: Request) {
       success: true,
       data: newPermission,
       message: "Permission created successfully.",
+      status: 201,
     });
   } catch (error) {
     return handleError(error, "POST permission");
@@ -70,6 +76,7 @@ export async function GET(req: Request) {
         success: true,
         data: permissions,
         message: "Permissions retrieved successfully.",
+        status: 200,
       });
     }
 
@@ -79,6 +86,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
+        status: 400,
       });
     }
 
@@ -89,6 +97,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Permission not found.",
         errors: ["No permission exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -96,6 +105,7 @@ export async function GET(req: Request) {
       success: true,
       data: permission,
       message: "Permission retrieved successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "GET permission");
@@ -115,6 +125,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -122,8 +133,11 @@ export async function PATCH(request: Request) {
       return createResponse({
         success: false,
         message: "No update data provided.",
+        
         errors: ["At least one field must be provided for update."],
+        status: 400,
       });
+
     }
 
     const permission = await db.permission.findUnique({ where: { id } });
@@ -133,6 +147,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Permission not found.",
         errors: ["No permission exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -145,6 +160,7 @@ export async function PATCH(request: Request) {
       success: true,
       data: updatePermission,
       message: "Permission updated successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "PATCH permission");
@@ -163,6 +179,7 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
+        status: 400,
       });
     }
 
@@ -171,6 +188,7 @@ export async function DELETE(req: Request) {
     return createResponse({
       success: true,
       message: "Permission deleted successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "DELETE permission");
