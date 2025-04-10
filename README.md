@@ -129,12 +129,24 @@ la escalabilidad y la experiencia del usuario.
 
 # Generar migración
 
+```bash
 npx prisma migrate dev --name <nombre_migracion>
+```
 
 # Actualizar cliente Prisma
 
+```bash
 npx prisma generate
+```
 
 # Visualizar BD en interfaz web
 
+```bash
 npx prisma studio
+```
+
+# Actualizar dependecias de forma interactiva
+
+```bash
+yarn upgrade-interactive --latest
+```
