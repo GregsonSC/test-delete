@@ -15,7 +15,7 @@ function createResponse({
   errors?: string[];
   status?: number;
 }) {
-  return NextResponse.json({ success, data, message, errors });
+  return NextResponse.json({ success, data, message, errors },{status});
 }
 
 // Manejo de errores
