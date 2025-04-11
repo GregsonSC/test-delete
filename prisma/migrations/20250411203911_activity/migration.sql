@@ -1,13 +1,10 @@
 -- CreateEnum
-CREATE TYPE "NameActivity" AS ENUM ('ANALYSIS', 'DESIGN', 'DEVELOPMENT', 'DEPLOY');
-
--- CreateEnum
 CREATE TYPE "StateActivity" AS ENUM ('PENDING', 'ASSIGNED', 'INPROCESS', 'REVIEWING', 'FINISHED');
 
 -- CreateTable
 CREATE TABLE "Activity" (
     "id" SERIAL NOT NULL,
-    "name" "NameActivity" NOT NULL,
+    "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "expectedDuration" TEXT NOT NULL,
     "startDate" TEXT NOT NULL,

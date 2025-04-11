@@ -241,7 +241,7 @@ enum PhaseState {
 
 model Activity {
   id               Int            @id @default(autoincrement())
-  name             NameActivity
+  name             String
   description      String
   expectedDuration String
   startDate        String
@@ -252,13 +252,6 @@ model Activity {
   createdAt        DateTime       @default(now())
   udpatedAt        DateTime       @updatedAt
   UserActivity     UserActivity[]
-}
-
-enum NameActivity {
-  ANALYSIS
-  DESIGN
-  DEVELOPMENT
-  DEPLOY
 }
 
 enum StateActivity {
