@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Button } from "@/presentation/atoms/button/button";
 import { Calendar_molecule } from "@/presentation/molecules/calendar/calendar";
 import { CircleUser, Phone, Mail, Circle  } from 'lucide-react';
-
+import { Planner } from "@/presentation/organisms/planner/planner";
 const userName = "Name";
 
 const formSchema = z.object({
@@ -160,7 +160,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
               </Form>
             )}
             <div className="">
-              <Calendar_molecule />
+              <Planner/>
             </div>
           </div>
           <div className="">
