@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 import { verifyToken, hashPassword } from "@/middleware/Secure-middleware";
-
+// import {formatResponse,validateId } from "@/middleware/response-middleware"
 /**
  * @route POST /api/users
  * @desc Crear un nuevo usuario
@@ -187,26 +187,24 @@ export async function PATCH(request: Request) {
         { status: 404 }
       );
     }
-
-    if (data.email) {
-      const existingUser = await db.user.findUnique({ where: { email: data.email } });
-
-      if (existingUser && existingUser.id !== id) {
-        return NextResponse.json(
-          {
-            success: false,
-            data: [],
-            message: "Email already in use",
-            errors: ["Duplicate email"],
-          },
-          { status: 400 }
-        );
-      }
+    if (data.email && data.email !== user.email) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Email cannot be modified",
+          errors: ["Email change is not allowed"],
+        },
+        { status: 400 }
+      );
     }
 
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
+
+    // Eliminar el campo email antes de actualizar por seguridad extra
+    delete data.email;
 
     const updatedUser = await db.user.update({
       where: { id },
