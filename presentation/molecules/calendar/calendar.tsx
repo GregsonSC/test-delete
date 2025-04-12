@@ -18,6 +18,7 @@ export function Calendar_molecule({
             onSelect={onDateChange}
             className="text-black rounded-sm border border-[#E4E4E7]"
             classNames={{
+                day_today: "bg-[#04081E] text-white",
                 day_selected: "bg-[#04081E] text-white",
                 cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-none [&:has([aria-selected])]:text-white",
             }}
