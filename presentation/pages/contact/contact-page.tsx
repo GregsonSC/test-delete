@@ -1,10 +1,49 @@
 import Link from "next/link";
 import { MainLayout } from "@/presentation/templates/main-layout";
-import { Heading } from "@/presentation/atoms/heading/heading";
-import { Button } from "@/presentation/atoms/button/button";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { ContactUs } from "@/presentation/organisms/contact-us/contact-us";
 import { PhoneCall, Mail } from "lucide-react"; 
+import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
+import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
+const reviewItems = [
+  {
+    profilePicture: "/fotos-prueba/joe.jpg",
+    name: "Sarah Johnson",
+    rating: 5.0,
+    review: "Review",
+  },
+  {
+    profilePicture: "/fotos-prueba/joe.jpg",
+    name: "Michael Chen",
+    rating: 5.0,
+    review: "Review",
+  },
+  {
+    profilePicture: "/fotos-prueba/joe.jpg",
+    name: "Emily Rodriguez",
+    rating: 5.0,
+    review: "Review",
+  },
+  {
+    profilePicture: "/fotos-prueba/joe.jpg",
+    name: "David Wilson",
+    rating: 5.0,
+    review: "Review",
+  },
+  {
+    profilePicture: "/fotos-prueba/joe.jpg",
+    name: "Jessica Lee",
+    rating: 5.0,
+    review: "Review",
+  },
+  {
+    profilePicture: "/fotos-prueba/joe.jpg",
+    name: "Robert Taylor",
+    rating: 5.0,
+    review: "Review",
+  },
+];
+
 
 export function ContactPage() {
   
@@ -38,8 +77,46 @@ export function ContactPage() {
             <ContactUs isLoggedIn={false} />
           </div>
         </div> 
-
       </div>
+            <section
+              className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: "url('/fondos/ReviewsGreenBurblesBackground.jpg')" }}
+            >
+              <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
+                <div className="max-w-5xl mx-auto w-full">
+                  {/* Content container */}
+                  <div className="bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-3xl p-8 md:p-12 mx-auto max-w-5xl relative overflow-hidden my-[120px]">
+                    <div className="text-center mb-8">
+                      <h3 className="text-[32px] md:text-[36px] font-bold text-white mb-4">
+                        See Why Clients Love Our Services!
+                      </h3>
+                      <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
+                        We aim to surpass our client's expectations, becoming your trusted partner in
+                        achieving goals and identifying the best path forward for your business.
+                      </p>
+                    </div>
+      
+                    {/* Google Reviews Summary */}
+                    <div className="flex justify-center mb-12">
+                      <GoogleReviewCard rating={5.0} totalReviews={25} />
+                    </div>
+      
+                    {/* Individual Reviews Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {reviewItems.map((review, index) => (
+                        <ReviewCardUser
+                          key={index}
+                          profilePicture={review.profilePicture}
+                          name={review.name}
+                          rating={review.rating}
+                          review={review.review}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
       {ContactInfo(1)}
       
     </MainLayout>
