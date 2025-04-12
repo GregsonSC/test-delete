@@ -1,4 +1,4 @@
-import { ContactUs } from "@/presentation/molecules/contact-us/contact-us";
+import { ContactUs } from "@/presentation/organisms/contact-us/contact-us";
 import { Section } from "lucide-react";
 
 export function ScheduleFreeConsultation() {
