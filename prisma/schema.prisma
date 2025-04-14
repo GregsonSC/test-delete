@@ -277,7 +277,7 @@ model UserActivity {
   activity    Activity @relation(fields: [activity_id], references: [id])
 
   @@id([user_id, activity_id])
-
+}
 model Cost {
   id          Int      @id @default(autoincrement())
   name        String
