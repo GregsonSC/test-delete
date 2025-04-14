@@ -14,6 +14,7 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+
 model User {
   id          Int              @id @default(autoincrement())
   name        String
@@ -25,6 +26,7 @@ model User {
   roleId      Int //Dato para hacer la relacion
   leads       Lead[] // Relación Uno a Muchos con Lead
   permissions UserPermission[]
+  Comment     Comment[]
   createdAt   DateTime         @default(now())
   udpatedAt   DateTime         @updatedAt
 }
@@ -50,10 +52,11 @@ model Project {
   startDate        String
   endDate          String
   estimate_id      Int?
-  estimate         Estimate?     @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
+  estimate         Estimate?    @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
   currentPhase     CurrentPhase
   createdAt        DateTime     @default(now())
   udpatedAt        DateTime     @updatedAt
+  Phase            Phase[]
 }
 
 model Estimate {
@@ -62,9 +65,11 @@ model Estimate {
   description   String
   state         EstimateState
   lead_id       Int?
-  lead          Lead?          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
   totalValue    Decimal
   Project       Project[]
+  costs         Cost[]
+  comments      Comment[]
   createdAt     DateTime      @default(now())
   udpatedAt     DateTime      @updatedAt
 }
@@ -91,7 +96,7 @@ model ServiceArea {
   benefitsImageUrl String
   testimonialEmbed String
   service_id       Int?
-  service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  service          Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
   createdAt        DateTime @default(now())
   udpatedAt        DateTime @updatedAt
 }
@@ -207,4 +212,67 @@ model Product {
   name        String
   description String
   url         String
+}
+
+model Phase {
+  id               Int        @id @default(autoincrement())
+  name             PhaseName
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  project_id       Int?
+  project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  state            PhaseState
+  Comment          Comment[]
+  createdAt        DateTime   @default(now())
+  udpatedAt        DateTime   @updatedAt
+}
+
+enum PhaseName {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum PhaseState {
+  PLANNING
+  INPROCESS
+  TESTING
+  FINISHED
+}
+
+model Cost {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  type        CostType
+  value       Float
+  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  estimateId  Int
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum CostType {
+  MANPOWER
+  TECHNOLOGIES
+  LICENSE
+  OTHERS
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  sendData   String
+  sendTime   String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  estimateId Int
+  estimate   Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phaseId    Int
+  phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }

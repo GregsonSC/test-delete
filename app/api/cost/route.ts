@@ -1,44 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/leads
- * @desc Crear un nuevo lead
+ * @route POST /api/costs
+ * @desc Crear un nuevo costo
  */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.state) {
+    if (!data.name) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead state is required in capital",
-          errors: ["Missing 'state' field"],
+          message: "Cost name is required",
+          errors: ["Missing 'name' field"],
         },
         { status: 400 }
       );
     }
 
-    const newLead = await db.lead.create({ data, include: { user: true } });
+    const newCost = await db.cost.create({ data, include: { estimate: true } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [newLead],
-        message: "Lead created successfully",
+        data: [newCost],
+        message: "Cost created successfully",
         errors: [],
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating lead:", error);
+    console.error("Error creating cost:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating lead",
+        message: "Error creating cost",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/leads
- * @desc Obtener todos los leads o uno específico por ID (?id=)
+ * @route GET /api/costs
+ * @desc Obtener todos los costos o uno por ID (?id=)
  */
 export async function GET(request: Request) {
   try {
@@ -56,24 +56,21 @@ export async function GET(request: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const leads = await db.lead.findMany({
+      const costs = await db.cost.findMany({
         select: {
           id: true,
-          clientName: true,
-          clientEmail: true,
-          clientPhone: true,
           name: true,
-          state: true,
-          starDate: true,
-          endDate: true,
-          user: true,
+          description: true,
+          type: true,
+          value: true,
+          estimate: true,
         },
       });
 
       return NextResponse.json({
         success: true,
-        data: leads,
-        message: "Leads fetched successfully",
+        data: costs,
+        message: "Costs fetched successfully",
         errors: [],
       });
     }
@@ -91,15 +88,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id }, include: { user: true } });
+    const cost = await db.cost.findUnique({ where: { id }, include: { estimate: true } });
 
-    if (!lead) {
+    if (!cost) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead not found",
-          errors: ["Lead does not exist"],
+          message: "Cost not found",
+          errors: ["Cost with given ID does not exist"],
         },
         { status: 404 }
       );
@@ -108,8 +105,8 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        data: [lead],
-        message: "Lead fetched successfully",
+        data: [cost],
+        message: "Cost fetched successfully",
         errors: [],
       },
       { status: 200 }
@@ -119,7 +116,7 @@ export async function GET(request: Request) {
       {
         success: false,
         data: [],
-        message: "Error fetching lead",
+        message: "Error fetching cost",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -128,8 +125,8 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/leads?id={id}
- * @desc Actualizar un lead parcialmente
+ * @route PATCH /api/costs?id={id}
+ * @desc Actualizar un costo parcialmente
  */
 export async function PATCH(request: Request) {
   try {
@@ -162,39 +159,39 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id } });
+    const cost = await db.cost.findUnique({ where: { id }, include: { estimate: true } });
 
-    if (!lead) {
+    if (!cost) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead not found",
-          errors: ["Lead does not exist"],
+          message: "Cost not found",
+          errors: ["Cost does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const updatedLead = await db.lead.update({
+    const updatedCost = await db.cost.update({
       where: { id },
       data,
-      include: { user: true },
+      include: { estimate: true }
     });
 
     return NextResponse.json({
       success: true,
-      data: [updatedLead],
-      message: "Lead updated successfully",
+      data: [updatedCost],
+      message: "Cost updated successfully",
       errors: [],
     });
   } catch (error) {
-    console.error("Error updating lead:", error);
+    console.error("Error updating cost:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error updating lead",
+        message: "Error updating cost",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -203,8 +200,8 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/leads?id={id}
- * @desc Eliminar un lead por ID
+ * @route DELETE /api/costs?id={id}
+ * @desc Eliminar un costo por ID
  */
 export async function DELETE(request: Request) {
   try {
@@ -212,38 +209,39 @@ export async function DELETE(request: Request) {
     const requestId = searchParams.get("id");
 
     const id = Number(requestId);
-    const leadExist = await db.lead.findUnique({ where: { id } });
 
-    if (!leadExist) {
+    const costExists = await db.cost.findUnique({ where: { id } });
+
+    if (!costExists) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead not found",
-          errors: ["Lead with that ID does not exist"],
+          message: "Cost not found",
+          errors: ["No cost found with that ID"],
         },
         { status: 404 }
       );
     }
 
-    const deletedLead = await db.lead.delete({ where: { id } });
+    const deletedCost = await db.cost.delete({ where: { id } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [deletedLead],
-        message: "Lead deleted successfully",
+        data: [deletedCost],
+        message: "Cost deleted successfully",
         errors: [],
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting lead:", error);
+    console.error("Error deleting cost:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error deleting lead",
+        message: "Error deleting cost",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }

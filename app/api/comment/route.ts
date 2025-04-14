@@ -1,44 +1,47 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/leads
- * @desc Crear un nuevo lead
+ * @route POST /api/comments
+ * @desc Crear un nuevo comentario
  */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.state) {
+    if (!data.content) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead state is required in capital",
-          errors: ["Missing 'state' field"],
+          message: "Comment content is required",
+          errors: ["Missing 'content' field"],
         },
         { status: 400 }
       );
     }
 
-    const newLead = await db.lead.create({ data, include: { user: true } });
+    const newComment = await db.comment.create({
+      data,
+      include: { user: true, estimate: true, phase: true },
+    });
 
     return NextResponse.json(
       {
         success: true,
-        data: [newLead],
-        message: "Lead created successfully",
+        data: [newComment],
+        message: "Comment created successfully",
         errors: [],
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating lead:", error);
+    console.error("Error creating comment:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating lead",
+        message: "Error creating comment",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -47,8 +50,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/leads
- * @desc Obtener todos los leads o uno específico por ID (?id=)
+ * @route GET /api/comments
+ * @desc Obtener todos los comentarios o uno específico por ID (?id=)
  */
 export async function GET(request: Request) {
   try {
@@ -56,24 +59,22 @@ export async function GET(request: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const leads = await db.lead.findMany({
+      const comments = await db.comment.findMany({
         select: {
           id: true,
-          clientName: true,
-          clientEmail: true,
-          clientPhone: true,
-          name: true,
-          state: true,
-          starDate: true,
-          endDate: true,
+          content: true,
+          sendData: true,
+          sendTime: true,
           user: true,
+          estimate: true,
+          phase: true,
         },
       });
 
       return NextResponse.json({
         success: true,
-        data: leads,
-        message: "Leads fetched successfully",
+        data: comments,
+        message: "Comments fetched successfully",
         errors: [],
       });
     }
@@ -91,15 +92,18 @@ export async function GET(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id }, include: { user: true } });
+    const comment = await db.comment.findUnique({
+      where: { id },
+      include: { user: true, estimate: true, phase: true },
+    });
 
-    if (!lead) {
+    if (!comment) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead not found",
-          errors: ["Lead does not exist"],
+          message: "Comment not found",
+          errors: ["Comment with given ID does not exist"],
         },
         { status: 404 }
       );
@@ -108,8 +112,8 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        data: [lead],
-        message: "Lead fetched successfully",
+        data: [comment],
+        message: "Comment fetched successfully",
         errors: [],
       },
       { status: 200 }
@@ -119,7 +123,7 @@ export async function GET(request: Request) {
       {
         success: false,
         data: [],
-        message: "Error fetching lead",
+        message: "Error fetching comment",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -128,8 +132,8 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/leads?id={id}
- * @desc Actualizar un lead parcialmente
+ * @route PATCH /api/comments?id={id}
+ * @desc Actualizar un comentario parcialmente
  */
 export async function PATCH(request: Request) {
   try {
@@ -162,39 +166,41 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id } });
+    const comment = await db.comment.findUnique({
+      where: { id },
+    });
 
-    if (!lead) {
+    if (!comment) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead not found",
-          errors: ["Lead does not exist"],
+          message: "Comment not found",
+          errors: ["Comment does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const updatedLead = await db.lead.update({
+    const updatedComment = await db.comment.update({
       where: { id },
       data,
-      include: { user: true },
+      include: { user: true, estimate: true, phase: true }
     });
 
     return NextResponse.json({
       success: true,
-      data: [updatedLead],
-      message: "Lead updated successfully",
+      data: [updatedComment],
+      message: "Comment updated successfully",
       errors: [],
     });
   } catch (error) {
-    console.error("Error updating lead:", error);
+    console.error("Error updating comment:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error updating lead",
+        message: "Error updating comment",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -203,8 +209,8 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/leads?id={id}
- * @desc Eliminar un lead por ID
+ * @route DELETE /api/comments?id={id}
+ * @desc Eliminar un comentario por ID
  */
 export async function DELETE(request: Request) {
   try {
@@ -212,38 +218,38 @@ export async function DELETE(request: Request) {
     const requestId = searchParams.get("id");
 
     const id = Number(requestId);
-    const leadExist = await db.lead.findUnique({ where: { id } });
+    const commentExists = await db.comment.findUnique({ where: { id } });
 
-    if (!leadExist) {
+    if (!commentExists) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead not found",
-          errors: ["Lead with that ID does not exist"],
+          message: "Comment not found",
+          errors: ["Comment with given ID does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const deletedLead = await db.lead.delete({ where: { id } });
+    const deletedComment = await db.comment.delete({ where: { id } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [deletedLead],
-        message: "Lead deleted successfully",
+        data: [deletedComment],
+        message: "Comment deleted successfully",
         errors: [],
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting lead:", error);
+    console.error("Error deleting comment:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error deleting lead",
+        message: "Error deleting comment",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
