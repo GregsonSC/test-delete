@@ -6,7 +6,7 @@ function createResponse({
   data = null,
   message = "",
   errors = [],
-  status = 200
+  status = 200,
 }: {
   success: boolean;
   data?: any;
@@ -14,7 +14,7 @@ function createResponse({
   errors?: string[];
   status?: number;
 }) {
-  return NextResponse.json({ success, data, message, errors },{status});
+  return NextResponse.json({ success, data, message, errors }, { status });
 }
 
 function handleError(error: unknown, context: string) {
@@ -23,21 +23,21 @@ function handleError(error: unknown, context: string) {
     success: false,
     message: `An error occurred in ${context}.`,
     errors: [error instanceof Error ? error.message : "Unknown error"],
-    status: 500
+    status: 500,
   });
 }
 
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, currentPhase } = data;
+    const { name, description, expectedDuration, startDate, endDate, state } = data;
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !currentPhase) {
+    if (!name || !description || !expectedDuration || !startDate || !endDate || !state) {
       return createResponse({
         success: false,
         message: "Missing required fields.",
         errors: ["All fields are required."],
-        status: 400
+        status: 400,
       });
     }
 
@@ -46,20 +46,20 @@ export async function POST(request: Request) {
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for startDate and endDate."],
-        status: 400
+        status: 400,
       });
     }
 
-    const newProject = await db.project.create({ data });
+    const newActivity = await db.activity.create({ data });
 
     return createResponse({
       success: true,
-      data: newProject,
-      message: "Project created successfully.",
-      status: 201
+      data: newActivity,
+      message: "Activity created successfully.",
+      status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Project");
+    return handleError(error, "POST Activity");
   }
 }
 
@@ -69,12 +69,12 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const projects = await db.project.findMany();
+      const activities = await db.activity.findMany();
       return createResponse({
         success: true,
-        data: projects,
-        message: "Projects retrieved successfully.",
-        status: 200
+        data: activities,
+        message: "Activities retrieved successfully.",
+        status: 200,
       });
     }
 
@@ -84,29 +84,28 @@ export async function GET(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
-        status: 400
+        status: 400,
       });
     }
 
-    const project = await db.project.findUnique({ where: { id } });
-
-    if (!project) {
+    const activity = await db.activity.findUnique({ where: { id } });
+    if (!activity) {
       return createResponse({
         success: false,
-        message: "Project not found.",
-        errors: ["No project exists with the given ID."],
-        status: 404
+        message: "Activity not found.",
+        errors: ["No Activity exists with the given ID."],
+        status: 404,
       });
     }
 
     return createResponse({
       success: true,
-      data: project,
-      message: "Project retrieved successfully.",
-      status: 200
+      data: activity,
+      message: "Activity retrieved successfully.",
+      status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Project");
+    return handleError(error, "GET Activity");
   }
 }
 
@@ -122,7 +121,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
-        status: 400
+        status: 400,
       });
     }
 
@@ -134,34 +133,33 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid date format.",
         errors: ["Invalid startDate format. Use YYYY-MM-DD."],
-        status: 400
+        status: 400,
       });
     }
 
-    const project = await db.project.findUnique({ where: { id } });
-
-    if (!project) {
+    const activity = await db.activity.findUnique({ where: { id } });
+    if (!activity) {
       return createResponse({
         success: false,
-        message: "Project not found.",
-        errors: ["No project exists with the given ID."],
-        status: 404
+        message: "Activity not found.",
+        errors: ["No Activity exists with the given ID."],
+        status: 404,
       });
     }
 
-    const updateProject = await db.project.update({
+    const updateActivity = await db.activity.update({
       where: { id },
       data: { ...data },
     });
 
     return createResponse({
       success: true,
-      data: updateProject,
-      message: "Project updated successfully.",
-      status: 200
+      data: updateActivity,
+      message: "Activity updated successfully.",
+      status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH Project");
+    return handleError(error, "PATCH Activity");
   }
 }
 
@@ -176,18 +174,18 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
-        status: 400
+        status: 400,
       });
     }
 
-    await db.project.delete({ where: { id } });
+    await db.activity.delete({ where: { id } });
 
     return createResponse({
       success: true,
-      message: "Project deleted successfully.",
-      status: 200
+      message: "Activity deleted successfully.",
+      status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE Project");
+    return handleError(error, "DELETE Activity");
   }
 }

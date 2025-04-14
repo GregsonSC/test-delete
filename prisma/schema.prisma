@@ -16,6 +16,7 @@ datasource db {
 
 
 model User {
+
   id          Int              @id @default(autoincrement())
   name        String
   email       String           @unique
@@ -29,6 +30,7 @@ model User {
   Comment     Comment[]
   createdAt   DateTime         @default(now())
   udpatedAt   DateTime         @updatedAt
+
 }
 
 model Permission {
@@ -227,6 +229,7 @@ model Phase {
   Comment          Comment[]
   createdAt        DateTime   @default(now())
   udpatedAt        DateTime   @updatedAt
+  Activity         Activity[]
 }
 
 enum PhaseName {
@@ -242,6 +245,38 @@ enum PhaseState {
   TESTING
   FINISHED
 }
+
+
+model Activity {
+  id               Int            @id @default(autoincrement())
+  name             String
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  phase_id         Int?
+  phase            Phase?         @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  state            StateActivity
+  createdAt        DateTime       @default(now())
+  udpatedAt        DateTime       @updatedAt
+  UserActivity     UserActivity[]
+}
+
+enum StateActivity {
+  PENDING
+  ASSIGNED
+  INPROCESS
+  REVIEWING
+  FINISHED
+}
+
+model UserActivity {
+  user_id     Int
+  activity_id Int
+  user        User     @relation(fields: [user_id], references: [id])
+  activity    Activity @relation(fields: [activity_id], references: [id])
+
+  @@id([user_id, activity_id])
 
 model Cost {
   id          Int      @id @default(autoincrement())
@@ -275,4 +310,5 @@ model Comment {
   phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   udpatedAt  DateTime @updatedAt
+
 }

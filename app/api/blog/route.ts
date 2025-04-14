@@ -7,13 +7,15 @@ function createResponse({
   data = null,
   message,
   errors = [],
+  status = 200,
 }: {
   success: boolean;
   data?: any;
   message: string;
   errors?: string[];
+  status?: number;
 }) {
-  return NextResponse.json({ success, data, message, errors });
+  return NextResponse.json({ success, data, message, errors }, { status });
 }
 
 // Manejo centralizado de errores
@@ -23,6 +25,7 @@ function handleError(error: unknown, context: string) {
     success: false,
     message: `An error occurred in ${context}.`,
     errors: [error instanceof Error ? error.message : "Unknown error"],
+    status: 500,
   });
 }
 
@@ -38,6 +41,7 @@ export async function POST(request: Request) {
         success: false,
         message: "All fields are required.",
         errors: ["Missing one or more required fields."],
+        status: 400,
       });
     }
 
@@ -47,6 +51,7 @@ export async function POST(request: Request) {
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
       });
     }
 
@@ -56,6 +61,7 @@ export async function POST(request: Request) {
       success: true,
       data: newBlog,
       message: "Blog created successfully.",
+      status: 201,
     });
   } catch (error) {
     return handleError(error, "POST Blog");
@@ -74,6 +80,7 @@ export async function GET(req: Request) {
         success: true,
         data: blogs,
         message: "Blogs retrieved successfully.",
+        status: 200,
       });
     }
 
@@ -83,6 +90,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -93,6 +101,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Blog not found.",
         errors: ["No blog exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -100,6 +109,7 @@ export async function GET(req: Request) {
       success: true,
       data: blog,
       message: "Blog retrieved successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "GET Blog");
@@ -119,6 +129,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -127,6 +138,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
       });
     }
 
@@ -137,6 +149,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Blog not found.",
         errors: ["No blog exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -149,6 +162,7 @@ export async function PATCH(request: Request) {
       success: true,
       data: updateBlog,
       message: "Blog updated successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "PATCH Blog");
@@ -167,6 +181,7 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -175,6 +190,7 @@ export async function DELETE(req: Request) {
     return createResponse({
       success: true,
       message: "Blog deleted successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "DELETE Blog");
