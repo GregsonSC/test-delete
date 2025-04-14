@@ -1,41 +1,13 @@
-import { NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-// Función reutilizable para respuestas
-function createResponse({
-  success,
-  data = null,
-  message,
-  errors = [],
-  status = 200,
-}: {
-  success: boolean;
-  data?: any;
-  message: string;
-  errors?: string[];
-  status?: number;
-}) {
-  return NextResponse.json({ success, data, message, errors }, { status });
-}
-
-// Manejo centralizado de errores
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:`, error);
-  return createResponse({
-    success: false,
-    message: `An error occurred in ${context}.`,
-    errors: [error instanceof Error ? error.message : "Unknown error"],
-    status: 500,
-  });
-}
-
+const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
 // POST - Crear blog
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     const { title, resume, content, topic, publicationDate, imageUrl } = data;
 
-    // Validaciones básicas
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
       return createResponse({
         success: false,
@@ -45,7 +17,15 @@ export async function POST(request: Request) {
       });
     }
 
-    // Validar formato de fecha
+    if (!validTopics.includes(topic)) {
+      return createResponse({
+        success: false,
+        message: "Invalid topic.",
+        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+        status: 400,
+      });
+    }
+
     if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
       return createResponse({
         success: false,
@@ -68,7 +48,6 @@ export async function POST(request: Request) {
   }
 }
 
-// GET - Obtener blog(s)
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -140,6 +119,17 @@ export async function PATCH(request: Request) {
         errors: ["Use YYYY-MM-DD format for the publicationDate."],
         status: 400,
       });
+    }
+
+    if (data.topic) {
+      if (!validTopics.includes(data.topic)) {
+        return createResponse({
+          success: false,
+          message: "Invalid topic.",
+          errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+          status: 400,
+        });
+      }
     }
 
     const blog = await db.blog.findUnique({ where: { id } });

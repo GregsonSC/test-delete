@@ -25,7 +25,7 @@ model User {
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   createdAt    DateTime         @default(now())
-  udpatedAt    DateTime         @updatedAt
+  updatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
 }
 
@@ -37,7 +37,7 @@ model Permission {
   active            Boolean
   serviceAssociated ServiceAssociated
   createdAt         DateTime          @default(now())
-  udpatedAt         DateTime          @updatedAt
+  updatedAt         DateTime          @updatedAt
   RolePermission    RolePermission[]
   UserPermission    UserPermission[]
 }
@@ -53,7 +53,7 @@ model Project {
   estimate         Estimate?    @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
   currentPhase     CurrentPhase
   createdAt        DateTime     @default(now())
-  udpatedAt        DateTime     @updatedAt
+  updatedAt        DateTime     @updatedAt
   Phase            Phase[]
 }
 
@@ -67,7 +67,7 @@ model Estimate {
   totalValue    Decimal
   Project       Project[]
   createdAt     DateTime      @default(now())
-  udpatedAt     DateTime      @updatedAt
+  updatedAt     DateTime      @updatedAt
 }
 
 model Blog {
@@ -79,7 +79,7 @@ model Blog {
   publicationDate String
   imageUrl        String
   createdAt       DateTime @default(now())
-  udpatedAt       DateTime @updatedAt
+  updatedAt       DateTime @updatedAt
 }
 
 model ServiceArea {
@@ -94,7 +94,7 @@ model ServiceArea {
   service_id       Int?
   service          Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
   createdAt        DateTime @default(now())
-  udpatedAt        DateTime @updatedAt
+  updatedAt        DateTime @updatedAt
 }
 
 model Service {
@@ -156,7 +156,7 @@ model Role {
   user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
   permissions RolePermission[]
   createdAt   DateTime         @default(now())
-  udpatedAt   DateTime         @updatedAt
+  updatedAt   DateTime         @updatedAt
 }
 
 model RolePermission {
@@ -182,7 +182,7 @@ model Lead {
   userId      Int? // Clave foránea
   user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime   @default(now())
-  udpatedAt   DateTime   @updatedAt
+  updatedAt   DateTime   @updatedAt
   Estimate    Estimate[]
 }
 
@@ -221,7 +221,7 @@ model Phase {
   project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
   state            PhaseState
   createdAt        DateTime   @default(now())
-  udpatedAt        DateTime   @updatedAt
+  updatedAt        DateTime   @updatedAt
   Activity         Activity[]
 }
 
@@ -250,7 +250,7 @@ model Activity {
   phase            Phase?         @relation(fields: [phase_id], references: [id], onDelete: Cascade)
   state            StateActivity
   createdAt        DateTime       @default(now())
-  udpatedAt        DateTime       @updatedAt
+  updatedAt        DateTime       @updatedAt
   UserActivity     UserActivity[]
 }
 
