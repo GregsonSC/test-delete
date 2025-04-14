@@ -31,11 +31,12 @@ export function ContactCard() {
           <PhoneCall color="black" />
           <p className="text-black text-sm">(954) 706-4084</p>
         </div>
-        <div className="flex flex-col justyfy-center items-center sm:flex sm:flex-row sm:flex-nowrap sm:gap-2">
-        <Mail color="black" />
-          <p className="text-black text-sm">info@senaviacorp.com </p>
+        <div className="flex items-center">
           <Mail color="black" />
-          <p className="text-black text-sm">leads@senaviacorp.com</p>
+          <div className="flex flex-col sm:flex-row gap-2 ml-2">
+            <p className="text-black text-sm">info@senaviacorp.com</p>
+            <p className="text-black text-sm">leads@senaviacorp.com</p>
+          </div>
         </div>
       </CardFooter>
     </Card>

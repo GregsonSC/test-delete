@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/presentation/atoms/button/button";
 import { cn } from "@/lib/utils";
-import { Menu, X, ChevronDown, Instagram, Facebook, Youtube, User, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown, Instagram, Facebook, Youtube, User, LogOut, Settings, MapPinned } from "lucide-react";
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { NavCard } from "@/presentation/atoms/nav-card/nav-card";
 import { NavAreaCard } from "@/presentation/atoms/nav-card/nav-area-card";
@@ -31,10 +31,10 @@ interface NavItem {
     areaLinks?: Array<{
       name: string;
       href: string;
-    }>;
-    subLinks?: Array<{
-      name: string;
-      href: string;
+      subLinks?: Array<{
+        name: string;
+        href: string;
+      }>;
     }>;
   }>;
 }
@@ -76,9 +76,33 @@ const navItems: NavItem[] = [
         description: "Service areas in Miami-Dade County",
         icon: "/images/navbar/location.svg",
         areaLinks: [
-          { name: "Sunny Isles Beach", href: "/service-areas/miami-dade/sunny-isles-beach" },
-          { name: "Coral Gables", href: "/service-areas/miami-dade/coral-gables" },
-          { name: "Key Biscayne", href: "/service-areas/miami-dade/key-biscayne" },
+          { 
+            name: "Sunny Isles Beach", 
+            href: "/service-areas/miami-dade/sunny-isles-beach",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/miami-dade/sunny-isles-beach/websites" },
+              { name: "Marketing", href: "/service-areas/miami-dade/sunny-isles-beach/marketing" },
+              { name: "Graphic Design", href: "/service-areas/miami-dade/sunny-isles-beach/graphic-design" }
+            ]
+          },
+          { 
+            name: "Coral Gables", 
+            href: "/service-areas/miami-dade/coral-gables",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/miami-dade/coral-gables/websites" },
+              { name: "Marketing", href: "/service-areas/miami-dade/coral-gables/marketing" },
+              { name: "Graphic Design", href: "/service-areas/miami-dade/coral-gables/graphic-design" }
+            ]
+          },
+          { 
+            name: "Key Biscayne", 
+            href: "/service-areas/miami-dade/key-biscayne",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/miami-dade/key-biscayne/websites" },
+              { name: "Marketing", href: "/service-areas/miami-dade/key-biscayne/marketing" },
+              { name: "Graphic Design", href: "/service-areas/miami-dade/key-biscayne/graphic-design" }
+            ]
+          },
         ]
       },
       {
@@ -87,10 +111,33 @@ const navItems: NavItem[] = [
         description: "Service areas in Broward County",
         icon: "/images/navbar/location.svg",
         areaLinks: [
-          { name: "Fort Lauderdale", href: "/service-areas/broward/fort-lauderdale" },
-          { name: "Hollywood", href: "/service-areas/broward/hollywood" },
-          { name: "Pompano Beach", href: "/service-areas/broward/pompano-beach" },
-
+          { 
+            name: "Fort Lauderdale", 
+            href: "/service-areas/broward/fort-lauderdale",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/broward/fort-lauderdale/websites" },
+              { name: "Marketing", href: "/service-areas/broward/fort-lauderdale/marketing" },
+              { name: "Graphic Design", href: "/service-areas/broward/fort-lauderdale/graphic-design" }
+            ]
+          },
+          { 
+            name: "Hollywood", 
+            href: "/service-areas/broward/hollywood",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/broward/hollywood/websites" },
+              { name: "Marketing", href: "/service-areas/broward/hollywood/marketing" },
+              { name: "Graphic Design", href: "/service-areas/broward/hollywood/graphic-design" }
+            ]
+          },
+          { 
+            name: "Pompano Beach", 
+            href: "/service-areas/broward/pompano-beach",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/broward/pompano-beach/websites" },
+              { name: "Marketing", href: "/service-areas/broward/pompano-beach/marketing" },
+              { name: "Graphic Design", href: "/service-areas/broward/pompano-beach/graphic-design" }
+            ]
+          },
         ]
       },
       {
@@ -99,9 +146,33 @@ const navItems: NavItem[] = [
         description: "Service areas in Palm Beach County",
         icon: "/images/navbar/location.svg",
         areaLinks: [
-          { name: "West Palm Beach", href: "/service-areas/palm-beach/west-palm-beach" },
-          { name: "Boca Raton", href: "/service-areas/palm-beach/boca-raton" },
-          { name: "Delray Beach", href: "/service-areas/palm-beach/delray-beach" },
+          { 
+            name: "West Palm Beach", 
+            href: "/service-areas/palm-beach/west-palm-beach",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/palm-beach/west-palm-beach/websites" },
+              { name: "Marketing", href: "/service-areas/palm-beach/west-palm-beach/marketing" },
+              { name: "Graphic Design", href: "/service-areas/palm-beach/west-palm-beach/graphic-design" }
+            ]
+          },
+          { 
+            name: "Boca Raton", 
+            href: "/service-areas/palm-beach/boca-raton",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/palm-beach/boca-raton/websites" },
+              { name: "Marketing", href: "/service-areas/palm-beach/boca-raton/marketing" },
+              { name: "Graphic Design", href: "/service-areas/palm-beach/boca-raton/graphic-design" }
+            ]
+          },
+          { 
+            name: "Delray Beach", 
+            href: "/service-areas/palm-beach/delray-beach",
+            subLinks: [
+              { name: "Websites", href: "/service-areas/palm-beach/delray-beach/websites" },
+              { name: "Marketing", href: "/service-areas/palm-beach/delray-beach/marketing" },
+              { name: "Graphic Design", href: "/service-areas/palm-beach/delray-beach/graphic-design" }
+            ]
+          },
         ]
       }
     ]
@@ -116,6 +187,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
+  const [areaDropdowns, setAreaDropdowns] = useState<Record<string, boolean>>({});
   const [isLogged, setIsLogged] = useState(false);
   const userName = "Name"; // This would come from your auth system
 
@@ -126,9 +198,16 @@ export function Navbar() {
   // Function to handle mobile dropdown toggle
   const toggleMobileDropdown = (label: string) => {
     setMobileDropdowns(prev => ({
-      // If clicking the same dropdown that's open, close it
-      // Otherwise, only open the clicked dropdown
-      [label]: !prev[label] ? true : false
+      ...prev,
+      [label]: !prev[label]
+    }));
+  };
+
+  // Function to handle area dropdown toggle
+  const toggleAreaDropdown = (areaName: string) => {
+    setAreaDropdowns(prev => ({
+      ...prev,
+      [areaName]: !prev[areaName]
     }));
   };
 
@@ -268,7 +347,7 @@ export function Navbar() {
             : "opacity-0 max-h-0"
         )}
       >
-        <div className="container mx-auto px-4 md:px-8 py-12">
+        <div className="container mx-auto px-4 md:px-8 py-12 pb-4">
           <div className="max-w-7xl mx-auto">
             {navItems.map((item) => (
               item.hasDropdown && (
@@ -287,11 +366,7 @@ export function Navbar() {
                         links={content.areaLinks.map(link => ({
                           name: link.name,
                           href: link.href,
-                          subLinks: [
-                            { name: "Websites", href: `${link.href}/websites` },
-                            { name: "Marketing", href: `${link.href}/marketing` },
-                            { name: "Graphic Design", href: `${link.href}/graphic-design` }
-                          ]
+                          subLinks: link.subLinks || []
                         }))}
                         onClick={() => setActiveDropdown(null)}
                         className="w-full"
@@ -311,6 +386,14 @@ export function Navbar() {
                 </div>
               )
             ))}
+            
+            <div className="flex justify-end mt-8 mb-2">
+              <Button 
+                className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
+              >
+                Get a free consultation!
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -337,62 +420,29 @@ export function Navbar() {
           </div>
 
           <div className={cn(
-            "bg-white h-full relative p-8",
+            "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
             "w-[70%] max-[500px]:w-[80%] md:flex-1"
           )}>
             {/* User profile info for mobile only (< 640px) */}
-            <div className="sm:hidden flex items-center gap-3 mb-8">
-              <Menubar className="border-0 bg-transparent">
-                <MenubarMenu>
-                  <MenubarTrigger className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent data-[state=open]:bg-transparent min-h-0 group">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]"></div>
-                    <div className="flex flex-col text-left">
-                      <span className="font-semibold text-[#060B20]">{userName}</span>
-                      <span className="text-sm text-gray-500">user@example.com</span>
-                    </div>
-                  </MenubarTrigger>
-                  <MenubarContent className="rounded-md border-0 shadow-md">
-                    {isLogged ? (
-                      <>
-                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
-                          <User className="h-4 w-4" />
-                          Profile
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem
-                          className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
-                          onClick={handleLogout}
-                        >
-                          <LogOut className="h-4 w-4" />
-                          Logout
-                        </MenubarItem>
-                      </>
-                    ) : (
-                      <>
-                        <MenubarItem
-                          className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black"
-                          onClick={handleLogin}
-                        >
-                          Log In
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
-                          Register
-                        </MenubarItem>
-                      </>
-                    )}
-                  </MenubarContent>
-                </MenubarMenu>
-              </Menubar>
+            <div className="sm:hidden">
+              {isLogged ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all"></div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-semibold text-[#060B20]">{userName}</span>
+                    <span className="text-sm text-gray-500">user@example.com</span>
+                  </div>
+                </div>
+              ) : null}
             </div>
 
-            <nav className="flex flex-col h-auto max-w-full mx-0 mt-20 sm:mt-8 sm:h-full sm:justify-center">
+            <nav className="flex flex-col space-y-4 flex-1 justify-center py-8">
               {navItems.map((item) => (
-                <div key={item.href} className="py-3 border-b border-gray-200 w-4/5">
+                <div key={item.href} className="py-2 border-b border-gray-200 w-4/5">
                   {item.hasDropdown ? (
                     <>
                       <button
-                        className="group flex items-center w-full text-2xl font-semibold text-[#060B20] text-left"
+                        className="group flex items-center w-full max-[400px]:text-xl text-2xl font-semibold text-[#060B20] text-left"
                         onClick={() => toggleMobileDropdown(item.label)}
                       >
                         <span className="flex-1 text-left flex items-center">
@@ -408,23 +458,84 @@ export function Navbar() {
 
                       <div className={cn(
                         "overflow-hidden transition-all duration-300",
-                        mobileDropdowns[item.label] ? "max-h-96 mt-3" : "max-h-0"
+                        mobileDropdowns[item.label] ? "mt-3 max-h-[500px] overflow-y-auto" : "max-h-0"
                       )}>
                         {item.dropdownContent?.map((content) => (
-                          <Link
-                            key={content.href}
-                            href={content.href}
-                            className="block py-2 text-lg text-[#060B20]/80 hover:text-[#8ECF0A]"
-                          >
-                            {content.label}
-                          </Link>
+                          content.areaLinks ? (
+                            <div key={content.href} className="mb-4">
+                              <button
+                                onClick={() => toggleAreaDropdown(content.label)}
+                                className="w-full py-2 max-[400px]:text-base text-lg font-semibold text-[#060B20]/80 hover:text-[#8ECF0A] flex items-center justify-between"
+                              >
+                                <span>{content.label}</span>
+                                <ChevronDown
+                                  className={cn(
+                                    "h-4 w-4 transition-transform duration-300",
+                                    areaDropdowns[content.label] && "rotate-180"
+                                  )}
+                                />
+                              </button>
+                              
+                              <div className={cn(
+                                "ml-4 overflow-hidden transition-all duration-300",
+                                areaDropdowns[content.label] ? "max-h-[300px]" : "max-h-0"
+                              )}>
+                                {content.areaLinks.map(areaLink => (
+                                  <div key={areaLink.href} className="mb-2">
+                                    <button
+                                      onClick={() => toggleAreaDropdown(areaLink.name)}
+                                      className="w-full py-1 max-[400px]:text-sm text-base text-[#060B20]/80 hover:text-[#8ECF0A] flex items-center justify-between"
+                                    >
+                                      <div className="flex items-center">
+                                        <span className="w-5 h-5 mr-2 flex items-center justify-center">
+                                          <MapPinned className="h-4 w-4" />
+                                        </span>
+                                        {areaLink.name}
+                                      </div>
+                                      <ChevronDown
+                                        className={cn(
+                                          "h-4 w-4 transition-transform duration-300",
+                                          areaDropdowns[areaLink.name] && "rotate-180"
+                                        )}
+                                      />
+                                    </button>
+                                    
+                                    {areaLink.subLinks && (
+                                      <div className={cn(
+                                        "ml-7 mt-1 flex flex-wrap gap-1 overflow-hidden transition-all duration-300",
+                                        areaDropdowns[areaLink.name] ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+                                      )}>
+                                        {areaLink.subLinks.map(subLink => (
+                                          <Link
+                                            key={subLink.href}
+                                            href={subLink.href}
+                                            className="inline-block py-1 px-3 max-[400px]:text-xs text-sm text-[#060B20]/70 hover:text-[#8ECF0A] rounded-full bg-[#f0f0f0]"
+                                          >
+                                            {subLink.name}
+                                          </Link>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <Link
+                              key={content.href}
+                              href={content.href}
+                              className="block py-2 max-[400px]:text-base text-lg text-[#060B20]/80 hover:text-[#8ECF0A]"
+                            >
+                              {content.label}
+                            </Link>
+                          )
                         ))}
                       </div>
                     </>
                   ) : (
                     <Link
                       href={item.href}
-                      className="block text-2xl font-semibold text-[#060B20] hover:text-[#8ECF0A]"
+                      className="block max-[400px]:text-xl text-2xl font-semibold text-[#060B20] hover:text-[#8ECF0A]"
                     >
                       {item.label}
                     </Link>
@@ -432,8 +543,44 @@ export function Navbar() {
                 </div>
               ))}
             </nav>
+              
+            {/* Botones de Settings y Log Out o Register y Login - solo para móvil (<640px) */}
+            <div className="sm:hidden mb-20 flex flex-col gap-4 w-4/5">
+              {isLogged ? (
+                <>        
+                  <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
+                    <Settings className="h-5 w-5" />
+                    Settings
+                  </Button>
+                
+                  <Button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
+                    style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Log Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
+                    <User className="h-5 w-5" />
+                    Register
+                  </Button>
+                  <Button 
+                    onClick={handleLogin}
+                    className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
+                    style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Log In
+                  </Button>
+                </>
+              )}
+            </div>
 
-            <div className="absolute bottom-8 right-8 flex gap-4">
+            <div className="fixed bottom-5 right-8 flex gap-4">
               <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
                 <Facebook className="h-4 w-4" />
               </a>

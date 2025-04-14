@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/presentation/atoms/button/button";
-import { Facebook, Github, Mail } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { Logo } from "@/presentation/atoms/logo/logo";
+import { Navbar } from "@/presentation/organisms/navbar/navbar";
+import { Mail,Lock   } from 'lucide-react';
 
 const testimonials = [
   {
@@ -16,7 +13,6 @@ const testimonials = [
       "Senavia transformed our online presence. Their team was professional, creative, and delivered beyond our expectations.",
     author: "Sarah Johnson",
     company: "Fashion Boutique Owner",
-    image: "/placeholder.svg?height=400&width=600&text=Project+1",
   },
   {
     quote:
@@ -45,131 +41,90 @@ export function LoginPage() {
   }, []);
 
   return (
+    <>
+    <Navbar/>
     <div className="flex min-h-screen bg-secondary">
       {/* Left side - Carousel */}
       <div className="hidden lg:block lg:w-1/2 relative bg-secondary-900">
-        {/* Overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary to-secondary/80 z-10"></div>
-
-        {/* Background image */}
-        <div className="absolute inset-0">
-          <Image
-            src={testimonials[activeIndex].image || "/placeholder.svg"}
-            alt="Background"
-            fill
-            className="object-cover transition-opacity duration-1000"
-          />
-        </div>
-
-        {/* Content */}
-        <div className="absolute inset-0 flex flex-col justify-between z-20 p-12">
-          <div>
-            <Logo />
-          </div>
-
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white">Success Stories</h2>
-              <div className="w-12 h-1 bg-primary"></div>
+          {/* Overlay with gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A1248] to-[#323A6E]"></div>
+          {/* Content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-20 p-12">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-semibold text-white">Success Stories</h2>
+                <div className="w-12 h-1 bg-primary"></div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-white italic text-2xl mb-5">
+                  "{testimonials[activeIndex].quote}"
+                </p>
+                <h4 className="font-semibold text-xl">
+                  {testimonials[activeIndex].author}
+                </h4>
+                <p className="text-xl">{testimonials[activeIndex].company}</p>
+              </div>
+              <div className="flex space-x-2">
+                {testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveIndex(index)}
+                    className={`w-3 h-3 rounded-full ${
+                      index === activeIndex ? "bg-primary" : "bg-gray-500"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
             </div>
-
-            <blockquote className="text-xl italic text-white">
-              "{testimonials[activeIndex].quote}"
-            </blockquote>
-
-            <div>
-              <div className="font-semibold text-white">{testimonials[activeIndex].author}</div>
-              <div className="text-gray-300">{testimonials[activeIndex].company}</div>
-            </div>
-
-            <div className="flex space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveIndex(index)}
-                  className={`w-3 h-3 rounded-full ${index === activeIndex ? "bg-primary" : "bg-gray-500"}`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="text-sm text-gray-300">
-            © {new Date().getFullYear()} Senavia Corp. All rights reserved.
           </div>
         </div>
-      </div>
-
       {/* Right side - Login form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="max-w-md w-full">
-          <div className="lg:hidden mb-8">
-            <Logo />
-          </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
-            <p className="text-muted-foreground">Sign in to your account to continue</p>
+            <h1 className="text-4xl font-bold mb-2">Welcome back</h1>
+            <p className="text-[#D3E8A9] text-lg">Sign in to your account to continue</p>
           </div>
 
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="name@example.com" />
-            </div>
+          <div className=" items-center justify-center">
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-primary hover:underline">
-                  Forgot password?
-                </Link>
+            <div className=" flex flex-col items-center justify-center mb-9">
+
+              <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-[10px] pointer-events-none">
+                  <Mail color="#A2ABE7"/>
+                </div>
+                <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-11 placeholder:text-[#A2ABE7] " />
               </div>
-              <Input id="password" type="password" placeholder="••••••••" />
-            </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox id="remember" />
-              <Label htmlFor="remember" className="text-sm">
-                Remember me
-              </Label>
-            </div>
-
-            <Button className="w-full bg-primary text-secondary hover:bg-primary/90">Log In</Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
+              <div className="relative w-80 h-10 xl:w-[330px]">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-[10px] pointer-events-none">
+                  <Lock color="#A2ABE7"/>
+                </div>
+                <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-11 placeholder:text-[#A2ABE7] " />
               </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-secondary text-muted-foreground">Or continue with</span>
-              </div>
+
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <Button variant="outline" className="w-full">
-                <Github className="h-4 w-4 mr-2" />
-                Github
-              </Button>
-              <Button variant="outline" className="w-full">
-                <Facebook className="h-4 w-4 mr-2" />
-                Facebook
-              </Button>
-              <Button variant="outline" className="w-full">
-                <Mail className="h-4 w-4 mr-2" />
-                Google
-              </Button>
-            </div>
+          </div>
+          
+          <div className="px-16">
+            <Button className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
+            Log In
+            </Button>
+          </div>
 
-            <div className="text-center text-sm">
-              Don't have an account?{" "}
+            <div className="text-center text-xs font-medium">
+              New to Senavia? Go to{" "}
               <Link href="/register" className="text-primary hover:underline">
                 Register
               </Link>
             </div>
-          </div>
         </div>
       </div>
     </div>
+    </>
   );
 }

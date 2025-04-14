@@ -9,23 +9,26 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id           Int              @id @default(autoincrement())
-  name         String
-  email        String           @unique
-  password     String
-  phone        String
-  imageUrl     String
-  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId       Int //Dato para hacer la relacion
-  leads        Lead[] // Relación Uno a Muchos con Lead
-  permissions  UserPermission[]
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id          Int              @id @default(autoincrement())
+  name        String
+  email       String           @unique
+  password    String
+  phone       String
+  imageUrl    String
+  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId      Int //Dato para hacer la relacion
+  leads       Lead[] // Relación Uno a Muchos con Lead
+  permissions UserPermission[]
+  Comment     Comment[]
+  createdAt   DateTime         @default(now())
+  udpatedAt   DateTime         @updatedAt
+
   UserActivity UserActivity[]
 }
 
@@ -66,6 +69,8 @@ model Estimate {
   lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
   totalValue    Decimal
   Project       Project[]
+  costs         Cost[]
+  comments      Comment[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
@@ -220,6 +225,7 @@ model Phase {
   project_id       Int?
   project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
   state            PhaseState
+  Comment          Comment[]
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
   Activity         Activity[]
@@ -269,4 +275,38 @@ model UserActivity {
   activity    Activity @relation(fields: [activity_id], references: [id])
 
   @@id([user_id, activity_id])
+}
+
+model Cost {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  type        CostType
+  value       Float
+  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  estimateId  Int
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum CostType {
+  MANPOWER
+  TECHNOLOGIES
+  LICENSE
+  OTHERS
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  sendData   String
+  sendTime   String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  estimateId Int
+  estimate   Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phaseId    Int
+  phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }

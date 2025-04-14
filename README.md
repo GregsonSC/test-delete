@@ -5,33 +5,39 @@ Este documento detalla las funcionalidades y características que se implementar
 ## Instalación y Configuración
 
 1. Clonar el repositorio:
+
 ```bash
 git clone https://github.com/Senavia-Corp/landing-senavia
 cd landing-senavia
 ```
 
 2. Instalar las dependencias:
+
 ```bash
 yarn install
 ```
 
 Si no tienes yarn instalo de la siguiente manera:
+
 ```bash
 npm install --global yarn
 ```
 
 3. Iniciar el servidor de desarrollo:
+
 ```bash
 yarn dev
 ```
 
 4. Para producción, construir y ejecutar el proyecto:
+
 ```bash
 yarn build
 yarn start
 ```
 
 ### Comandos Disponibles
+
 - yarn dev : Inicia el servidor de desarrollo en http://localhost:3000
 - yarn build : Construye la aplicación para producción
 - yarn start : Inicia el servidor de producción
@@ -39,10 +45,11 @@ yarn start
 - yarn format:check : Verifica el formato del código sin modificarlo
 - yarn lint : Ejecuta el linter para encontrar problemas en el código
 - yarn lint:fix : Ejecuta el linter y corrige automáticamente los problemas que puede resolver
+
 ### Requisitos del Sistema
+
 - Node.js 18.x o superior
 - Yarn 1.22.x o superior
-
 
 ## Índice
 
@@ -120,12 +127,28 @@ la escalabilidad y la experiencia del usuario.
 - **Axios**: Cliente HTTP para la comunicación con APIs.
 - **Nodemailer (en revisión)**: Envío de correos electrónicos desde el servidor.
 
-## Instalación y Configuración
-
-1. Clonar el repositorio:
+# Generar migración
 
 ```bash
-En proceso...
+npx prisma migrate dev --name <nombre_migracion>
+```
+
+# Actualizar cliente Prisma
+
+```bash
+npx prisma generate
+```
+
+# Visualizar BD en interfaz web
+
+```bash
+npx prisma studio
+```
+
+# Actualizar dependecias de forma interactiva
+
+```bash
+yarn upgrade-interactive --latest
 ```
 
 //--- back end
