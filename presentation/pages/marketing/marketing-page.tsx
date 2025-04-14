@@ -4,9 +4,11 @@ import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
 import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
-import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
+import { LatestNews, NewsItem } from "@/presentation/molecules/news/latest-news";
+import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
+import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 
 export function MarketingPage() {
   // Portfolio items data
@@ -77,13 +79,82 @@ export function MarketingPage() {
     },
   ];
 
+  // Blog news data
+  const blogItems: NewsItem[] = [
+    {
+      id: "1",
+      title: "Title",
+      content: "Content",
+      image: "/images/marketing/mk3.png",
+      date: "June 15, 2023",
+      tag: "Marketing"
+    },
+    {
+      id: "2",
+      title: "Title",
+      content: "Content",
+      image: "/images/marketing/mk3.png",
+      date: "July 22, 2023",
+      tag: "SEO"
+    },
+    {
+      id: "3",
+      title: "Title",
+      content: "Content",
+      image: "/images/marketing/mk3.png",
+      date: "August 10, 2023",
+      tag: "Social Media"
+    },
+    {
+      id: "4",
+      title: "Title",
+      content: "Content",
+      image: "/images/marketing/mk3.png",
+      date: "September 5, 2023",
+      tag: "Content"
+    },
+    {
+      id: "5",
+      title: "Title",
+      content: "Content",
+      image: "/images/marketing/mk3.png",
+      date: "October 18, 2023",
+      tag: "Advertising"
+    }
+  ];
+
+  // Case studies data
+  const caseItems: NewsItem[] = [
+    {
+      id: "case1",
+      title: "E-commerce Conversion Boost",
+      content: "How we increased online sales by 75% for a retail client",
+      image: "https://picsum.photos/597/336",
+      date: "May 10, 2023",
+      tag: "E-commerce"
+    },
+    {
+      id: "case2",
+      title: "Local SEO Success Story",
+      content: "Helping a small business dominate local search results",
+      image: "https://picsum.photos/597/336",
+      date: "July 3, 2023",
+      tag: "SEO"
+    }
+  ];
+
   return (
     <MainLayout>
+
+
+
+
       {/* First Section - Hero */}
-      <section
-        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
-        style={{ backgroundColor: "#020301" }}
-      >
+
+
+
+      <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden" style={{ backgroundColor: "#020301" }}>
+
         <div className="container px-4 md:px-6 text-center max-w-5xl mx-auto">
           <Heading level="h1" className="text-[36px] md:text-[48px] font-[700] mb-6">
             Boost Your Online Success
@@ -91,7 +162,11 @@ export function MarketingPage() {
           <p className="text-[24px] md:text-[30px] font-[600] text-muted-foreground mb-8 max-w-4xl mx-auto">
             Attract New Leads With a Personalized Marketing Strategy
           </p>
-          <Button asChild size="lg" className="rounded-full px-8 text-[20px] font-[600]">
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full px-8 text-[20px] font-[600]"
+          >
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
         </div>
@@ -149,22 +224,31 @@ export function MarketingPage() {
       </section>
 
       {/* Portfolio Section */}
-      <section className="container px-4 md:px-6 mx-auto">
-        <Heading
-          level="h2"
-          className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
-        >
-          Portfolio
-        </Heading>
-        <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
-          <PortfolioCarousel items={portfolioItems} />
+      <section className=" px-4 md:px-6 mx-auto relative">
+        <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
+          <img 
+            src="/images/marketing/portfolio-background.png" 
+            alt="Portfolio background" 
+            className="h-full object-contain"
+          />
+        </div>
+        <div className="relative z-10">
+          <Heading
+            level="h2"
+            className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
+          >
+            Portfolio
+          </Heading>
+          <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
+            <PortfolioCarousel items={portfolioItems} />
+          </div>
         </div>
       </section>
 
       {/* New Section with same container and background */}
       <section
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
+        style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
           <div className="max-w-5xl mx-auto w-full">
@@ -202,57 +286,23 @@ export function MarketingPage() {
         </div>
       </section>
 
-      {/* Fourth Section - Blog/Resources */}
-      <section
+    
+
+
+      {ContactInfo(1)}
+
+      <ScheduleFreeConsultation />
+
+        {/* Fourth Section - Blog/Resources */}
+        <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
-        <div className="container px-8 sm:px-4 md:px-6 mx-auto">
-          <div className="max-w-5xl mx-auto">
-            <Heading
-              level="h2"
-              className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0"
-            >
-              Latest News
-            </Heading>
-            <p className="text-[16px] font-[600] text-muted-foreground mb-24 text-left mx-2 sm:mx-10 md:mx-0">
-              Stay up-to-date with our latest industry news on marketing and web design trends.
-            </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
-              {/* First Card */}
-              <HoverCardImage
-                image="/images/marketing/mk1.png"
-                href={"#"} // Add the link to the article here
-                title="Title"
-                content="Contents"
-                date="Date"
-                tag="Tag"
-              />
+        <LatestNews blogItems={blogItems} caseItems={caseItems} />
 
-              {/* Second Card */}
-              <HoverCardImage
-                image="/images/marketing/mk2.png"
-                href={"#"} // Add the link to the article here
-                title="Title"
-                content="Contents"
-                date="Date"
-                tag="Tag"
-              />
-
-              {/* Third Card */}
-              <HoverCardImage
-                image="/images/marketing/mk3.png"
-                href={"#"} // Add the link to the article here
-                title="Title"
-                content="Contents"
-                date="Date"
-                tag="Tag"
-              />
-            </div>
-          </div>
-        </div>
       </section>
+
     </MainLayout>
   );
 }
