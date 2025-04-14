@@ -1,9 +1,30 @@
+"use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MainLayout } from "@/presentation/templates/main-layout";
+import { DefaultToast } from "@/presentation/atoms/toast/default/default-toast";
 
 export function PostSchedule() {
   return (
+    useEffect(() => {
+      const storedData = JSON.parse(sessionStorage.getItem("contactData") || "{}");
+      // Convertimos el string de fecha a un objeto Date
+      const meetingDate = new Date(storedData.date);
+      // Formateamos la fecha para obtener solo el año, mes y día
+      const formattedDate = meetingDate.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      });
+      
+      DefaultToast.title(
+        "Your request has been received!",
+        `Hello ${storedData.name}, your meeting is booked for ${formattedDate} between ${storedData.timeRange} in ${storedData.timezone} timezone. We will contact you soon to confirm the details. Thank you for choosing us!`
+      );
+      console.log("Información guardada en sessionStorage:", storedData);
+    }, []),
+
     <MainLayout>
       <div className="min-h-screen">
         {/* Main Content */}
