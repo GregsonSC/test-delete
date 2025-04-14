@@ -28,7 +28,6 @@ model User {
   Comment     Comment[]
   createdAt   DateTime         @default(now())
   udpatedAt   DateTime         @updatedAt
-
   UserActivity UserActivity[]
 }
 
