@@ -19,7 +19,7 @@ export function HoverCardImage({
 }: HoverCardImagesProps) {
     return (
         <Link href={href}>
-            <div className="w-full max-w-[319px] sm:h-[372px] p-[1px] bg-gradient-to-r from-[#99CC33] to-[#33CCCC] rounded-lg">
+            <div className="w-full max-w-[319px] sm:h-full p-[1px] bg-gradient-to-r from-[#99CC33] to-[#33CCCC] rounded-lg">
                 <Card className="w-full h-full bg-[#36394b] backdrop-blur-md hover:bg-[#282b38]">
                     <CardHeader className="items-start">
                         <CardTitle>
