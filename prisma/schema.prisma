@@ -15,19 +15,19 @@ datasource db {
 }
 
 model User {
-  id          Int              @id @default(autoincrement())
-  name        String
-  email       String           @unique
-  password    String
-  phone       String
-  imageUrl    String
-  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId      Int //Dato para hacer la relacion
-  leads       Lead[] // Relación Uno a Muchos con Lead
-  permissions UserPermission[]
-  Comment     Comment[]
-  createdAt   DateTime         @default(now())
-  udpatedAt   DateTime         @updatedAt
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String
+  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId       Int //Dato para hacer la relacion
+  leads        Lead[] // Relación Uno a Muchos con Lead
+  permissions  UserPermission[]
+  Comment      Comment[]
+  createdAt    DateTime         @default(now())
+  udpatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
 }
 
@@ -103,7 +103,12 @@ model ServiceArea {
 
 model Service {
   id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  active      Boolean
   ServiceArea ServiceArea[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 enum County {
