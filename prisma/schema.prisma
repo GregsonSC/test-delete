@@ -9,27 +9,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-
 model User {
-
-  id          Int              @id @default(autoincrement())
-  name        String
-  email       String           @unique
-  password    String
-  phone       String
-  imageUrl    String
-  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId      Int //Dato para hacer la relacion
-  leads       Lead[] // Relación Uno a Muchos con Lead
-  permissions UserPermission[]
-  Comment     Comment[]
-  createdAt   DateTime         @default(now())
-  udpatedAt   DateTime         @updatedAt
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String
+  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId       Int //Dato para hacer la relacion
+  leads        Lead[] // Relación Uno a Muchos con Lead
+  permissions  UserPermission[]
+  Comment      Comment[]
+  createdAt    DateTime         @default(now())
+  udpatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
 }
 
@@ -106,6 +104,7 @@ model ServiceArea {
 model Service {
   id          Int           @id @default(autoincrement())
   ServiceArea ServiceArea[]
+  plans       Plan[]
 }
 
 enum County {
@@ -246,7 +245,6 @@ enum PhaseState {
   FINISHED
 }
 
-
 model Activity {
   id               Int            @id @default(autoincrement())
   name             String
@@ -278,6 +276,7 @@ model UserActivity {
 
   @@id([user_id, activity_id])
 }
+
 model Cost {
   id          Int      @id @default(autoincrement())
   name        String
@@ -310,5 +309,30 @@ model Comment {
   phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   udpatedAt  DateTime @updatedAt
+}
 
+model Plan {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  type        PlanType
+  variants    Variant[] // Relación uno-a-muchos con Variant
+  serviceId   Int
+  service     Service   @relation(fields: [serviceId], references: [id])
+}
+
+model Variant {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  benefits    String
+  price       Float
+  planId      Int
+  plan        Plan   @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
+
+}
+
+enum PlanType {
+  MONTHLY
+  SINGLEPAYMENT
 }
