@@ -11,7 +11,7 @@ export function ReviewCardUser({
     review = "Good experience",
 }: ReviewCardUserProps) {
     return (
-        <Card className="bg-white/50 border-[#99CC33]  w-72 h-60">
+        <Card className="bg-white/50 border-[#99CC33]  w-full lg:w-72 h-60">
             <CardHeader className="flex flex-row space-y-2">
                 <img
                     src={profilePicture}
