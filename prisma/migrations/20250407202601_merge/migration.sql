@@ -37,7 +37,7 @@ CREATE TABLE "Permission" (
     "active" BOOLEAN NOT NULL,
     "serviceAssociated" "ServiceAssociated" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Permission_pkey" PRIMARY KEY ("id")
 );
@@ -53,7 +53,7 @@ CREATE TABLE "Project" (
     "estimate_id" INTEGER,
     "currentPhase" "CurrentPhase" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );
@@ -67,7 +67,7 @@ CREATE TABLE "Estimate" (
     "lead_id" INTEGER,
     "totalValue" DECIMAL(65,30) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Estimate_pkey" PRIMARY KEY ("id")
 );
@@ -82,7 +82,7 @@ CREATE TABLE "Blog" (
     "publicationDate" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Blog_pkey" PRIMARY KEY ("id")
 );
@@ -99,7 +99,7 @@ CREATE TABLE "ServiceArea" (
     "testimonialEmbed" TEXT NOT NULL,
     "service_id" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "ServiceArea_pkey" PRIMARY KEY ("id")
 );
@@ -117,7 +117,7 @@ CREATE TABLE "Role" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
 );
@@ -143,7 +143,7 @@ CREATE TABLE "Lead" (
     "endDate" TEXT NOT NULL,
     "userId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Lead_pkey" PRIMARY KEY ("id")
 );
