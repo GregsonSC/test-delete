@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/plans
+ * @route POST /api/variants
  * @desc Crear un nuevo rol
  */
 export async function POST(request: NextRequest) {
@@ -14,31 +14,31 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           data: [],
-          message: "Plan name is required",
+          message: "Variant name is required",
           errors: ["Missing 'name' field"],
         },
         { status: 400 }
       );
     }
 
-    const newPlan = await db.plan.create({ data });
+    const newVariant = await db.variant.create({ data, include: { plan: true } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [newPlan],
-        message: "Plan created successfully",
+        data: [newVariant],
+        message: "Variant created successfully",
         errors: [],
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating plan:", error);
+    console.error("Error creating variant:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating plan",
+        message: "Error creating variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/Plans
- * @desc Obtener todos los plans o uno específico por id (?id=)
+ * @route GET /api/variants
+ * @desc Obtener todos los variants o uno específico por id (?id=)
  */
 export async function GET(request: Request) {
   try {
@@ -56,18 +56,21 @@ export async function GET(request: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const plans = await db.plan.findMany({
+      const variants = await db.variant.findMany({
         select: {
           id: true,
           name: true,
           description: true,
+          benefits: true,
+          price: true,
+          plan: true,
         },
       });
 
       return NextResponse.json({
         success: true,
-        data: plans,
-        message: "Plans fetched successfully",
+        data: variants,
+        message: "Variants fetched successfully",
         errors: [],
       });
     }
@@ -85,15 +88,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const plan = await db.plan.findUnique({ where: { id } });
+    const variant = await db.variant.findUnique({ where: { id }, include: { plan: true } });
 
-    if (!plan) {
+    if (!variant) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Plan not found",
-          errors: ["Plan does not exist"],
+          message: "Variant not found",
+          errors: ["Variant does not exist"],
         },
         { status: 404 }
       );
@@ -102,8 +105,8 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        data: [plan],
-        message: "Plan fetched successfully",
+        data: [variant],
+        message: "Variant fetched successfully",
         errors: [],
       },
       { status: 200 }
@@ -113,7 +116,7 @@ export async function GET(request: Request) {
       {
         success: false,
         data: [],
-        message: "Error fetching plan",
+        message: "Error fetching variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -122,7 +125,7 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/plans?id={id}
+ * @route PATCH /api/variants?id={id}
  * @desc Actualizar un rol parcialmente
  */
 export async function PATCH(request: Request) {
@@ -156,38 +159,43 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const plan = await db.plan.findUnique({ where: { id } });
+    const variant = await db.variant.findUnique({
+      where: { id },
+      include: {
+        plan: true,
+      },
+    });
 
-    if (!plan) {
+    if (!variant) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Plan not found",
-          errors: ["Plan does not exist"],
+          message: "Variant not found",
+          errors: ["Variant does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const updatedPlan = await db.plan.update({
+    const updatedVariant = await db.variant.update({
       where: { id },
       data,
     });
 
     return NextResponse.json({
       success: true,
-      data: [updatedPlan],
-      message: " Plan updated successfully",
+      data: [updatedVariant],
+      message: "Variant updated successfully",
       errors: [],
     });
   } catch (error) {
-    console.error("Error updating plan:", error);
+    console.error("Error updating variant:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error updating plan",
+        message: "Error updating variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -196,7 +204,7 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/plans?id={id}
+ * @route DELETE /api/variants?id={id}
  * @desc Eliminar un rol por ID
  */
 export async function DELETE(request: Request) {
@@ -205,38 +213,38 @@ export async function DELETE(request: Request) {
     const requestId = searchParams.get("id");
 
     const id = Number(requestId);
-    const planExists = await db.plan.findUnique({ where: { id } });
+    const variantExists = await db.variant.findUnique({ where: { id } });
 
-    if (!planExists) {
+    if (!variantExists) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Plan not found",
-          errors: ["Plan does not exist"],
+          message: "Variant not found",
+          errors: ["Variant does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const plan = await db.plan.delete({ where: { id } });
+    const variant = await db.variant.delete({ where: { id } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [plan],
-        message: "Plan deleted successfully",
+        data: [variant],
+        message: "Variant deleted successfully",
         errors: [],
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting plan:", error);
+    console.error("Error deleting variant:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error deleting plan",
+        message: "Error deleting variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }

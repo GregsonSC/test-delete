@@ -63,7 +63,7 @@ export async function GET(request: Request) {
         select: {
           id: true,
           content: true,
-          sendData: true,
+          sendDate: true,
           sendTime: true,
           user: true,
           estimate: true,
@@ -185,7 +185,7 @@ export async function PATCH(request: Request) {
     const updatedComment = await db.comment.update({
       where: { id },
       data,
-      include: { user: true, estimate: true, phase: true }
+      include: { user: true, estimate: true, phase: true },
     });
 
     return NextResponse.json({

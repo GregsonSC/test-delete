@@ -108,6 +108,7 @@ model Service {
   active      Boolean
   ServiceArea ServiceArea[]
   plans       Plan[]
+  leads       Lead[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -187,10 +188,12 @@ model Lead {
   name        String
   description String
   state       LeadState
-  starDate    String
+  startDate   String
   endDate     String
   userId      Int? // Clave foránea
   user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId   Int?
+  service     Service?   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   Estimate    Estimate[]
@@ -304,7 +307,7 @@ enum CostType {
 model Comment {
   id         Int      @id @default(autoincrement())
   content    String
-  sendData   String
+  sendDate   String
   sendTime   String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
@@ -334,7 +337,6 @@ model Variant {
   price       Float
   planId      Int
   plan        Plan   @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
-
 }
 
 enum PlanType {
