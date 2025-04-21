@@ -32,9 +32,9 @@ export function PostSchedule() {
     <MainLayout>
       <div className="">
         {/* Main Content */}
-        <main className=" mx-auto px-4 text-center place-content-center mt-20">
+        <main className=" mx-auto px-4 text-center  mt-20">
           {/* Success Icon */}
-          <div className="mb-8 justify-items-center">
+          <div className="mb-8 flex justify-center items-center">
             <BadgeCheck size={194}/>
           </div>
 
@@ -85,7 +85,7 @@ export function PostSchedule() {
         </main>
 
         {/* Project Goals Section */}
-        <div className="lg:py-20">{ContactInfo(3)}</div>
+        <div className="xl:py-20">{ContactInfo(3)}</div>
       </div>
     </MainLayout>
   );
