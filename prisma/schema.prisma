@@ -88,7 +88,7 @@ model Blog {
 }
 
 model ServiceArea {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   name             String
   description      String
   active           Boolean
@@ -97,9 +97,10 @@ model ServiceArea {
   benefitsImageUrl String
   testimonialEmbed String
   service_id       Int?
-  service          Service? @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Benefit          Benefit[]
 }
 
 model Service {
@@ -267,6 +268,7 @@ model Activity {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   UserActivity     UserActivity[]
+  Attachment       Attachment[]
 }
 
 enum StateActivity {
@@ -352,14 +354,23 @@ model Ticket {
   description String
   status      TicketStatus
   users       UserTicket[]
+  Attachment  Attachment[]
 }
 
 enum TicketPlan {
-  Arrive
+  BUG
+  REQUEST
+  REVIEW
+  OTHER
 }
 
 enum TicketStatus {
-  LISTO
+  PENDING
+  ASSIGNED
+  INPROCESS
+  UNDERREVIEW
+  SOLVED
+  CLOSED
 }
 
 model UserTicket {
@@ -370,4 +381,32 @@ model UserTicket {
   ticket Ticket @relation(fields: [ticketId], references: [id])
 
   @@id([userId, ticketId])
+}
+
+model Attachment {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String
+  type        TypeAttachment
+  url         String
+  activityId  Int?
+  activity    Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  ticketId    Int?
+  ticket      Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+model Benefit {
+  id            Int          @id @default(autoincrement())
+  title         String
+  description   String
+  serviceAreaId Int?
+  serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
+}
+
+enum TypeAttachment {
+  IMAGE
+  DOCUMENT
+  URL
+  VIDEO
+  OTHERS
 }

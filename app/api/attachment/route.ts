@@ -1,14 +1,14 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
-// POST - Crear blog
+const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { title, resume, content, topic, publicationDate, imageUrl } = data;
+    const { name, description, type, url, activityId, ticketId } = data;
 
-    if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
+    if (!name || !description || !type || !url) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -16,35 +16,24 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-
-    if (!validTopics.includes(topic)) {
+    if (!validType.includes(type)) {
       return createResponse({
         success: false,
-        message: "Invalid topic.",
-        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+        message: "Invalid type.",
+        errors: [`Type must be one of: ${validType.join(", ")}`],
         status: 400,
       });
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for the publicationDate."],
-        status: 400,
-      });
-    }
-
-    const newBlog = await db.blog.create({ data });
-
+    const newAttachment = await db.attachment.create({ data });
     return createResponse({
       success: true,
-      data: newBlog,
-      message: "Blog created successfully.",
+      data: newAttachment,
+      message: "Attachment created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Blog");
+    return handleError(error, "POST Attachment");
   }
 }
 
@@ -54,11 +43,11 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const blogs = await db.blog.findMany();
+      const attachments = await db.attachment.findMany();
       return createResponse({
         success: true,
-        data: blogs,
-        message: "Blogs retrieved successfully.",
+        data: attachments,
+        message: "Attachments retrieved successfully.",
         status: 200,
       });
     }
@@ -72,30 +61,26 @@ export async function GET(req: Request) {
         status: 400,
       });
     }
-
-    const blog = await db.blog.findUnique({ where: { id } });
-
-    if (!blog) {
+    const attachment = await db.attachment.findUnique({ where: { id } });
+    if (!attachment) {
       return createResponse({
         success: false,
-        message: "Blog not found.",
-        errors: ["No blog exists with the given ID."],
+        message: "Attachment not found.",
+        errors: ["No attachment exists with the given ID."],
         status: 404,
       });
     }
 
     return createResponse({
       success: true,
-      data: blog,
-      message: "Blog retrieved successfully.",
+      data: attachment,
+      message: "Attachment retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Blog");
+    return handleError(error, "GET Attachment");
   }
 }
-
-// PATCH - Actualizar blog
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -111,64 +96,42 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    if (!data || Object.keys(data).length === 0) {
-      return createResponse({
-        success: false,
-        message: "No update data provided.",
-
-        errors: ["At least one field must be provided for update."],
-        status: 400,
-      });
-    }
-
-    if (data.publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.publicationDate)) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for the publicationDate."],
-        status: 400,
-      });
-    }
-
-    if (data.topic) {
-      if (!validTopics.includes(data.topic)) {
+    if (data.type) {
+      if (!validType.includes(data.type)) {
         return createResponse({
           success: false,
-          message: "Invalid topic.",
-          errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+          message: "Invalid type.",
+          errors: [`Type must be one of: ${validType.join(", ")}`],
           status: 400,
         });
       }
     }
-
-    const blog = await db.blog.findUnique({ where: { id } });
-
-    if (!blog) {
+    const attachment = await db.attachment.findUnique({ where: { id } });
+    if (!attachment) {
       return createResponse({
         success: false,
-        message: "Blog not found.",
-        errors: ["No blog exists with the given ID."],
+        message: "Attachment not found.",
+        errors: ["No attachment exists with the given ID."],
         status: 404,
       });
     }
 
-    const updateBlog = await db.blog.update({
+    const updateAttachment = await db.attachment.update({
       where: { id },
       data: { ...data },
     });
 
     return createResponse({
       success: true,
-      data: updateBlog,
-      message: "Blog updated successfully.",
+      data: updateAttachment,
+      message: "Attachment updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH Blog");
+    return handleError(error, "PATCH Attachment");
   }
 }
 
-// DELETE - Eliminar blog
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -184,14 +147,14 @@ export async function DELETE(req: Request) {
       });
     }
 
-    await db.blog.delete({ where: { id } });
+    await db.attachment.delete({ where: { id } });
 
     return createResponse({
       success: true,
-      message: "Blog deleted successfully.",
+      message: "Attachment deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE Blog");
+    return handleError(error, "DELETE Attachment");
   }
 }

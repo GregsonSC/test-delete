@@ -147,6 +147,10 @@ export async function PATCH(request: Request) {
         });
       }
     }
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 2c17d9b ([[ADD]Ticket and relation fot the table ticket and user)
     if (data.validServiceAssociated) {
       if (!data.validServiceAssociated.includes(data.serviceAssociated)) {
         return createResponse({
