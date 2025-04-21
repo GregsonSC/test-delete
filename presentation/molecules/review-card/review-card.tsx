@@ -10,7 +10,7 @@ export function GoogleReviewCard({
     totalReviews = 25,
 }: GoogleReviewCardProps) {
     return (
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 border border-[#99CC33] rounded-md xl:w-[992px] xl:h-[112px] bg-white/50">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 border border-[#99CC33] rounded-md xl:w-[992px] xl:h-[112px] bg-white/95 hover:bg-white/80">
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row justify-start items-center">
                     <img src="/iconos_2/google.png" alt="Google" className="w-9 h-9" />

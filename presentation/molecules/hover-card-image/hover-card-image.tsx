@@ -37,13 +37,13 @@ export function HoverCardImage({
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col">
-                        <hr className="w-11/12 mx-auto border-t border-[#E4E4E7] mb-2" />
+                        <hr className="w-60 hover:w-60 transition-all duration-300 mx-auto border-t border-[#E4E4E7] mb-2" />
                         <div className="flex flex-row items-center justify-between w-full px-4">
                             <div className="flex-1">
                                 <p className="mt-5 text-left">{date}</p>
                             </div>
                             <div className="flex-1">
-                                <p className="mt-5 text-right">{tag}</p>
+                                <p className="mt-5 text-right">{tag}</p> 
                             </div>
                         </div>
                     </CardFooter>
