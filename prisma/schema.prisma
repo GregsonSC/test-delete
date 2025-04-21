@@ -223,6 +223,8 @@ model Product {
   name        String
   description String
   url         String
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 model Phase {
@@ -330,6 +332,8 @@ model Plan {
   variants    Variant[] // Relación uno-a-muchos con Variant
   serviceId   Int
   service     Service   @relation(fields: [serviceId], references: [id])
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 model Variant {
@@ -340,6 +344,8 @@ model Variant {
   price       Float
   planId      Int
   plan        Plan   @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 enum PlanType {
@@ -355,6 +361,8 @@ model Ticket {
   status      TicketStatus
   users       UserTicket[]
   Attachment  Attachment[]
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 enum TicketPlan {
@@ -381,6 +389,8 @@ model UserTicket {
   ticket Ticket @relation(fields: [ticketId], references: [id])
 
   @@id([userId, ticketId])
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 model Attachment {
@@ -393,6 +403,8 @@ model Attachment {
   activity    Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
   ticketId    Int?
   ticket      Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 model Benefit {
@@ -401,6 +413,8 @@ model Benefit {
   description   String
   serviceAreaId Int?
   serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
 }
 
 enum TypeAttachment {
