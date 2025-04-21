@@ -26,6 +26,7 @@ model User {
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   Comment      Comment[]
+  tickets      UserTicket[]
   createdAt    DateTime         @default(now())
   udpatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
@@ -342,4 +343,31 @@ model Variant {
 enum PlanType {
   MONTHLY
   SINGLEPAYMENT
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  title       String
+  type        TicketPlan
+  description String
+  status      TicketStatus
+  users       UserTicket[]
+}
+
+enum TicketPlan {
+  Arrive
+}
+
+enum TicketStatus {
+  LISTO
+}
+
+model UserTicket {
+  userId   Int
+  ticketId Int
+
+  user   User   @relation(fields: [userId], references: [id])
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+
+  @@id([userId, ticketId])
 }
