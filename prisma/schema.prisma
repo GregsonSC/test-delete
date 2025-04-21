@@ -30,7 +30,7 @@ model User {
   Comment     Comment[]
   createdAt   DateTime         @default(now())
   udpatedAt   DateTime         @updatedAt
-
+  UserActivity UserActivity[]
 }
 
 model Permission {
@@ -277,7 +277,7 @@ model UserActivity {
   activity    Activity @relation(fields: [activity_id], references: [id])
 
   @@id([user_id, activity_id])
-
+}
 model Cost {
   id          Int      @id @default(autoincrement())
   name        String

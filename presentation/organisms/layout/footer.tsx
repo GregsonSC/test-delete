@@ -8,9 +8,11 @@ import { inter600 } from "@/styles/font";
 export function Footer() {
   return (
     <footer className={`w-full flex flex-col ${inter600.className}`}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 px-4 xl:px-16 py-8 bg-[#14171F] place-items-center xl:place-items-start text-center xl:text-left">
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 px-4 xl:px-16 py-8 bg-[#14171F] place-items-center xl:place-items-start text-center xl:text-left items-start"
+      >
         {/* logos */}
-        <div className="space-y-4 flex flex-col">
+        <div className="space-y-4 flex flex-col items-center md:items-start">
           <Logo className="mb-3" />
           <div className="flex space-x-2">
             <a href="https://www.facebook.com">
@@ -39,7 +41,7 @@ export function Footer() {
           <h3 className="text-2xl mb-4 text-white">Services</h3>
           <ul className="space-y-2">
             <li>
-            <span className="text-white mr-1">&bull;</span>
+              <span className="text-white mr-1">&bull;</span>
               <Link
                 href="/services/web-development"
                 className="text-white hover:text-[#99CC33] underline "
@@ -48,7 +50,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-            <span className="text-white mr-1">&bull;</span>
+              <span className="text-white mr-1">&bull;</span>
               <Link
                 href="/services/digital-marketing"
                 className="text-white hover:text-[#99CC33] underline"
@@ -57,7 +59,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-            <span className="text-white mr-1">&bull;</span>
+              <span className="text-white mr-1">&bull;</span>
               <Link
                 href="/services/graphic-design"
                 className="text-white hover:text-[#99CC33] underline"
@@ -79,7 +81,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-            <span className="text-white mr-1">&bull;</span>
+              <span className="text-white mr-1">&bull;</span>
               <Link href="/consultation" className="text-white hover:text-[#99CC33] underline">
                 Book My Free Consultation Call!
               </Link>

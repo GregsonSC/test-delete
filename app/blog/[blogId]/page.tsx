@@ -1,19 +1,11 @@
-import { MainLayout } from "@/presentation/templates/main-layout";
-import { Heading } from "@/presentation/atoms/heading/heading";
 import { notFound } from "next/navigation";
+import { BlogPost } from "@/components/interface/modules/Blog";
 import { Button } from "@/presentation/atoms/button/button";
+import { Heading } from "@/presentation/atoms/heading/heading";
+import { MainLayout } from "@/presentation/templates/main-layout";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
-
-interface BlogPost {
-  id: string;
-  title: string;
-  content: string;
-  image: string;
-  date: string;
-  tag: string;
-}
 
 async function getBlogPost(id: string): Promise<BlogPost | null> {
   try {
