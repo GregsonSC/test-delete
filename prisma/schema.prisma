@@ -353,6 +353,16 @@ enum PlanType {
   SINGLEPAYMENT
 }
 
+model UserTicket {
+  userId   Int
+  ticketId Int
+
+  user   User   @relation(fields: [userId], references: [id])
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+
+  @@id([userId, ticketId])
+}
+
 model Ticket {
   id          Int          @id @default(autoincrement())
   title       String
@@ -381,17 +391,6 @@ enum TicketStatus {
   CLOSED
 }
 
-model UserTicket {
-  userId   Int
-  ticketId Int
-
-  user   User   @relation(fields: [userId], references: [id])
-  ticket Ticket @relation(fields: [ticketId], references: [id])
-
-  @@id([userId, ticketId])
-  createdAt  DateTime @default(now())
-  udpatedAt  DateTime @updatedAt
-}
 
 model Attachment {
   id          Int            @id @default(autoincrement())
