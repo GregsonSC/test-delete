@@ -126,6 +126,7 @@ la escalabilidad y la experiencia del usuario.
 - **app/api-doc/react-swagger.tsx**: Componente que utiliza la librería swagger-ui-react para renderizar una interfaz de Swagger de acuerdo a las especificaciones anteriormente definidas.
 - **app/api-doc/page.tsx**: Página que renderiza el componente gráfico.
 - Para añadir un endpoint a la documentación se debe agregar un comentario a la ruta correspondiente con metadatos que describan el funcionamiento y características del endpoint, como se muestra en los ejemplos de la ruta app/api/lead.
+- Para visualizar la documentación se debe acceder a la url: localhost:3000/api-doc
 
 ## Tecnologías Utilizadas
 
