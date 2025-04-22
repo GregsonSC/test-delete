@@ -407,16 +407,6 @@ model Attachment {
 
 }
 
-model Ticket {
-  id Int @id @default(autoincrement())
-
-  Attachment Attachment[]
-
-  createdAt   DateTime       @default(now())
-  udpatedAt   DateTime       @updatedAt
-
-}
-
 model Benefit {
   id            Int          @id @default(autoincrement())
   title         String
