@@ -1,14 +1,12 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
-// POST - Crear blog
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { title, resume, content, topic, publicationDate, imageUrl } = data;
+    const { title, description, serviceAreaId } = data;
 
-    if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
+    if (!title || !description) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -17,34 +15,15 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!validTopics.includes(topic)) {
-      return createResponse({
-        success: false,
-        message: "Invalid topic.",
-        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
-        status: 400,
-      });
-    }
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for the publicationDate."],
-        status: 400,
-      });
-    }
-
-    const newBlog = await db.blog.create({ data });
-
+    const newBenefit = await db.benefit.create({ data });
     return createResponse({
       success: true,
-      data: newBlog,
-      message: "Blog created successfully.",
+      data: newBenefit,
+      message: "Benefit created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Blog");
+    return handleError(error, "POST Benefit");
   }
 }
 
@@ -54,11 +33,11 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const blogs = await db.blog.findMany();
+      const benefits = await db.benefit.findMany();
       return createResponse({
         success: true,
-        data: blogs,
-        message: "Blogs retrieved successfully.",
+        data: benefits,
+        message: "Benefits retrieved successfully.",
         status: 200,
       });
     }
@@ -73,29 +52,25 @@ export async function GET(req: Request) {
       });
     }
 
-    const blog = await db.blog.findUnique({ where: { id } });
-
-    if (!blog) {
+    const benefit = await db.benefit.findUnique({ where: { id } });
+    if (!benefit) {
       return createResponse({
         success: false,
-        message: "Blog not found.",
-        errors: ["No blog exists with the given ID."],
+        message: "Benefit not found.",
+        errors: ["No benefit exists with the given ID."],
         status: 404,
       });
     }
-
     return createResponse({
       success: true,
-      data: blog,
-      message: "Blog retrieved successfully.",
+      data: benefit,
+      message: "Benefit retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Blog");
+    return handleError(error, "GET Benefit");
   }
 }
-
-// PATCH - Actualizar blog
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -120,55 +95,32 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
+    const benefit = await db.benefit.findUnique({ where: { id } });
 
-    if (data.publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.publicationDate)) {
+    if (!benefit) {
       return createResponse({
         success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for the publicationDate."],
-        status: 400,
-      });
-    }
-
-    if (data.topic) {
-      if (!validTopics.includes(data.topic)) {
-        return createResponse({
-          success: false,
-          message: "Invalid topic.",
-          errors: [`Topic must be one of: ${validTopics.join(", ")}`],
-          status: 400,
-        });
-      }
-    }
-
-    const blog = await db.blog.findUnique({ where: { id } });
-
-    if (!blog) {
-      return createResponse({
-        success: false,
-        message: "Blog not found.",
-        errors: ["No blog exists with the given ID."],
+        message: "Benefit not found.",
+        errors: ["No benefit exists with the given ID."],
         status: 404,
       });
     }
 
-    const updateBlog = await db.blog.update({
+    const updateBenefit = await db.benefit.update({
       where: { id },
       data: { ...data },
     });
 
     return createResponse({
       success: true,
-      data: updateBlog,
-      message: "Blog updated successfully.",
+      data: updateBenefit,
+      message: "Benefit updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH Blog");
+    return handleError(error, "PATCH benefit");
   }
 }
-
-// DELETE - Eliminar blog
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -184,14 +136,16 @@ export async function DELETE(req: Request) {
       });
     }
 
-    await db.blog.delete({ where: { id } });
+    await db.benefit.delete({ where: { id } });
 
     return createResponse({
       success: true,
-      message: "Blog deleted successfully.",
+      message: "Benefit deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE Blog");
+    return handleError(error, "DELETE Benefit");
   }
 }
+
+

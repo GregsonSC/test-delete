@@ -118,6 +118,16 @@ la escalabilidad y la experiencia del usuario.
 - Diseño adaptativo que garantiza una experiencia óptima en dispositivos móviles, tabletas y desktops.
 - Cumplimiento con las pautas de accesibilidad web (WCAG) para asegurar que el sitio sea usable por todas las personas.
 
+### Documentación de la API
+
+- Se utilizó la librería next-swagger-doc de Swagger para generar automáticamente una interfaz con la documentación de todos los endpoints de la API.
+- Los archivos que contienen la configuración de la librería son los siguientes:
+- **lib/swagger.ts**: Aquí se especifica la configuración de Swagger de acuerdo a las rutas de la API.
+- **app/api-doc/react-swagger.tsx**: Componente que utiliza la librería swagger-ui-react para renderizar una interfaz de Swagger de acuerdo a las especificaciones anteriormente definidas.
+- **app/api-doc/page.tsx**: Página que renderiza el componente gráfico.
+- Para añadir un endpoint a la documentación se debe agregar un comentario a la ruta correspondiente con metadatos que describan el funcionamiento y características del endpoint, como se muestra en los ejemplos de la ruta app/api/lead.
+- Para visualizar la documentación se debe acceder a la url: localhost:3000/api-doc
+
 ## Tecnologías Utilizadas
 
 - **Next.js**: Framework principal para el desarrollo del sitio.
@@ -126,8 +136,10 @@ la escalabilidad y la experiencia del usuario.
 - **Zod**: Manejo y validación de formularios.
 - **Axios**: Cliente HTTP para la comunicación con APIs.
 - **Nodemailer (en revisión)**: Envío de correos electrónicos desde el servidor.
+- **Prisma**: ORM para la creación de entidades en la DB.
+- **Swagger**: Documentación de la API
 
-# Generar migración
+# Generar migración de Prisma
 
 ```bash
 npx prisma migrate dev --name <nombre_migracion>

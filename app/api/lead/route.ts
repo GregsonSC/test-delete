@@ -4,6 +4,121 @@ import db from "@/lib/prisma";
 /**
  * @route POST /api/leads
  * @desc Crear un nuevo lead
+ * @swagger
+ * /api/leads:
+ *   post:
+ *     summary: Create a new lead
+ *     description: Create a new lead with the provided data.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               clientName:
+ *                 type: string
+ *                 description: Name of the client.
+ *                 example: John Doe
+ *               clientEmail:
+ *                 type: string
+ *                 description: Email of the client.
+ *                 example: johndoe@example.com
+ *               clientPhone:
+ *                 type: string
+ *                 description: Phone number of the client.
+ *                 example: "+123456789"
+ *               name:
+ *                 type: string
+ *                 description: Name of the lead.
+ *                 example: Lead Name
+ *               state:
+ *                 type: string
+ *                 description: State of the lead (required), SEND, PROCESSING, ESTIMATING OR FINISHED.
+ *                 example: SEND
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Start date of the lead.
+ *                 example: "2023-01-01"
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 description: End date of the lead.
+ *                 example: "2023-12-31"
+ *               userId:
+ *                 type: integer
+ *                 description: ID of the associated user.
+ *                 example: 1
+ *               serviceId:
+ *                 type: integer
+ *                 description: ID of the associated service.
+ *                 example: 2
+ *     responses:
+ *       201:
+ *         description: Lead created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: The created lead object.
+ *                 message:
+ *                   type: string
+ *                   example: Lead created successfully
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Bad request, missing or invalid fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Lead state is required in capital
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Error creating lead
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +136,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newLead = await db.lead.create({ data, include: { user: true } });
+    const newLead = await db.lead.create({ data, include: { user: true,service:true } });
 
     return NextResponse.json(
       {
@@ -49,6 +164,104 @@ export async function POST(request: NextRequest) {
 /**
  * @route GET /api/leads
  * @desc Obtener todos los leads o uno específico por ID (?id=)
+ * @swagger
+ * /api/leads:
+ *   get:
+ *     summary: Get all leads or a specific lead by ID
+ *     description: Retrieve all leads or a specific lead by providing its ID as a query parameter.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: ID of the lead to retrieve.
+ *     responses:
+ *       200:
+ *         description: Leads fetched successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: The lead object(s).
+ *                 message:
+ *                   type: string
+ *                   example: Leads fetched successfully
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Invalid ID provided.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: The id must be a valid number
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       404:
+ *         description: Lead not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Lead not found
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Error fetching lead
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
 export async function GET(request: Request) {
   try {
@@ -64,9 +277,10 @@ export async function GET(request: Request) {
           clientPhone: true,
           name: true,
           state: true,
-          starDate: true,
+          startDate: true,
           endDate: true,
           user: true,
+          service:true
         },
       });
 
@@ -91,7 +305,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id }, include: { user: true } });
+    const lead = await db.lead.findUnique({ where: { id }, include: { user: true,service:true } });
 
     if (!lead) {
       return NextResponse.json(

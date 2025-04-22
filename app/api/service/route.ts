@@ -1,56 +1,39 @@
-import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const {
-      name,
-      description,
-      active,
-      county,
-      heroImageUrl,
-      benefitsImageUrl,
-      testimonialEmbed,
-      service_id,
-    } = data;
+    const { name, description, active } = data;
 
-    if (
-      !name ||
-      !description ||
-      active === undefined ||
-      !county ||
-      !heroImageUrl ||
-      !benefitsImageUrl ||
-      !testimonialEmbed
-      // || !service_id
-    ) {
+    if (!name || !description || !active) {
       return createResponse({
         success: false,
-        message: "Missing required fields.",
-        errors: ["All fields are required."],
+        message: "All fields are required.",
+        errors: ["Missing one or more required fields."],
         status: 400,
       });
     }
-    if (!validCounty.includes(county)) {
+
+    if (typeof active !== "boolean") {
       return createResponse({
         success: false,
-        message: "Invalid county.",
-        errors: [`County must be one of: ${county.join(", ")}`],
+        message: "Invalid field type.",
+        errors: ["'active' must be a boolean."],
         status: 400,
       });
     }
-    const newServiceArea = await db.serviceArea.create({ data });
+
+    const newService = await db.service.create({ data });
 
     return createResponse({
       success: true,
-      data: newServiceArea,
-      message: "ServiceArea created successfully.",
+      data: newService,
+      message: "Service created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST ServiceArea");
+    return handleError(error, "POST Service");
   }
 }
 
@@ -60,15 +43,14 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const serviceAreas = await db.serviceArea.findMany();
+      const services = await db.service.findMany();
       return createResponse({
         success: true,
-        data: serviceAreas,
-        message: "ServiceAreas retrieved successfully.",
+        data: services,
+        message: "Services retrieved successfully.",
         status: 200,
       });
     }
-
     const id = Number(requestId);
     if (isNaN(id)) {
       return createResponse({
@@ -78,26 +60,24 @@ export async function GET(req: Request) {
         status: 400,
       });
     }
+    const service = await db.service.findUnique({ where: { id } });
 
-    const serviceArea = await db.serviceArea.findUnique({ where: { id } });
-
-    if (!serviceArea) {
+    if (!service) {
       return createResponse({
         success: false,
-        message: "ServiceArea not found.",
-        errors: ["No serviceArea exists with the given ID."],
+        message: "Service not found.",
+        errors: ["No service exists with the given ID."],
         status: 404,
       });
     }
-
     return createResponse({
       success: true,
-      data: serviceArea,
-      message: "ServiceArea retrieved successfully.",
+      data: service,
+      message: "Service retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET ServiceArea");
+    return handleError(error, "GET Service");
   }
 }
 
@@ -116,41 +96,46 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-
-    const existingServiceArea = await db.serviceArea.findUnique({ where: { id } });
-
-    if (!existingServiceArea) {
+    if (!data || Object.keys(data).length === 0) {
       return createResponse({
         success: false,
-        message: "ServiceArea not found.",
-        errors: ["No serviceArea exists with the given ID."],
-        status: 404,
+        message: "No update data provided.",
+
+        errors: ["At least one field must be provided for update."],
+        status: 400,
       });
     }
-    if (data.county) {
-      if (!validCounty.includes(data.county)) {
+    if (data.active) {
+      if (typeof data.active !== "boolean") {
         return createResponse({
           success: false,
-          message: "Invalid county.",
-          errors: [`County must be one of: ${validCounty.join(", ")}`],
+          message: "Invalid field type.",
+          errors: ["'active' must be a boolean."],
           status: 400,
         });
       }
     }
-
-    const updatedServiceArea = await db.serviceArea.update({
+    const service = await db.service.findUnique({ where: { id } });
+    if (!service) {
+      return createResponse({
+        success: false,
+        message: "Service not found.",
+        errors: ["No service exists with the given ID."],
+        status: 404,
+      });
+    }
+    const updateService = await db.service.update({
       where: { id },
-      data,
+      data: { ...data },
     });
-
     return createResponse({
       success: true,
-      data: updatedServiceArea,
-      message: "ServiceArea updated successfully.",
+      data: updateService,
+      message: "Service updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH ServiceArea");
+    return handleError(error, "PATCH Service");
   }
 }
 
@@ -168,15 +153,14 @@ export async function DELETE(req: Request) {
         status: 400,
       });
     }
-
-    await db.serviceArea.delete({ where: { id } });
+    await db.service.delete({ where: { id } });
 
     return createResponse({
       success: true,
-      message: "ServiceArea deleted successfully.",
+      message: "Service deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE ServiceArea");
+    return handleError(error, "DELETE service");
   }
 }
