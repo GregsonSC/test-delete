@@ -1,33 +1,16 @@
-import { NextResponse } from "next/server";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
-
-function createResponse({
-  success,
-  data = null,
-  message = "",
-  errors = [],
-  status = 200
-}: {
-  success: boolean;
-  data?: any;
-  message: string;
-  errors?: string[];
-  status?: number;
-}) {
-  return NextResponse.json({ success, data, message, errors },{status});
-}
-
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:`, error);
-  return createResponse({
-    success: false,
-    message: `An error occurred in ${context}.`,
-    errors: [error instanceof Error ? error.message : "Unknown error"],
-    status: 500,
-  });
-}
-
-// POST - Crear permiso
+const validServiceAssociated = [
+  " NORMALUSERS",
+  "ADMINUSERS",
+  "LEADS",
+  "ESTIMATES",
+  "PROJECTS",
+  "BLOGS",
+  "PRODUCTS",
+  "SERVICEAREAS",
+];
+const validAction = [" GET", "CREATE", "UPDATE", "DELETE"];
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -47,6 +30,22 @@ export async function POST(request: Request) {
         success: false,
         message: "Invalid field type.",
         errors: ["'active' must be a boolean."],
+        status: 400,
+      });
+    }
+    if (!validServiceAssociated.includes(serviceAssociated)) {
+      return createResponse({
+        success: false,
+        message: "Invalid service associated.",
+        errors: [`Service Associated must be one of: ${validServiceAssociated.join(", ")}`],
+        status: 400,
+      });
+    }
+    if (!validAction.includes(action)) {
+      return createResponse({
+        success: false,
+        message: "Invalid action.",
+        errors: [`Action must be one of: ${validAction.join(", ")}`],
         status: 400,
       });
     }
@@ -133,13 +132,46 @@ export async function PATCH(request: Request) {
       return createResponse({
         success: false,
         message: "No update data provided.",
-        
+
         errors: ["At least one field must be provided for update."],
         status: 400,
       });
-
+    }
+    if (data.active) {
+      if (typeof data.active !== "boolean") {
+        return createResponse({
+          success: false,
+          message: "Invalid field type.",
+          errors: ["'active' must be a boolean."],
+          status: 400,
+        });
+      }
+    }
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 2c17d9b ([[ADD]Ticket and relation fot the table ticket and user)
+    if (data.validServiceAssociated) {
+      if (!data.validServiceAssociated.includes(data.serviceAssociated)) {
+        return createResponse({
+          success: false,
+          message: "Invalid service associated.",
+          errors: [`Service Associated must be one of: ${validServiceAssociated.join(", ")}`],
+          status: 400,
+        });
+      }
     }
 
+    if (data.action) {
+      if (!validAction.includes(data.action)) {
+        return createResponse({
+          success: false,
+          message: "Invalid action.",
+          errors: [`Action must be one of: ${validAction.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
     const permission = await db.permission.findUnique({ where: { id } });
 
     if (!permission) {

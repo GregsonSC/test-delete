@@ -1,31 +1,8 @@
-import { NextResponse } from "next/server";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
 
-function createResponse({
-  success,
-  data = null,
-  message = "",
-  errors = [],
-  status = 200,
-}: {
-  success: boolean;
-  data?: any;
-  message: string;
-  errors?: string[];
-  status?: number;
-}) {
-  return NextResponse.json({ success, data, message, errors }, { status });
-}
-
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:`, error);
-  return createResponse({
-    success: false,
-    message: `An error occurred in ${context}.`,
-    errors: [error instanceof Error ? error.message : "Unknown error"],
-    status: 500,
-  });
-}
+const validName = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
+const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
 
 export async function POST(request: Request) {
   try {
@@ -40,7 +17,22 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-
+    if (!validName.includes(name)) {
+      return createResponse({
+        success: false,
+        message: "Invalid name.",
+        errors: [`Name must be one of: ${validName.join(", ")}`],
+        status: 400,
+      });
+    }
+    if (!validState.includes(state)) {
+      return createResponse({
+        success: false,
+        message: "Invalid state.",
+        errors: [`State must be one of: ${validState.join(", ")}`],
+        status: 400,
+      });
+    }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
       return createResponse({
         success: false,
@@ -135,6 +127,26 @@ export async function PATCH(request: Request) {
         errors: ["Invalid startDate format. Use YYYY-MM-DD."],
         status: 400,
       });
+    }
+    if (data.name) {
+      if (!validName.includes(data.name)) {
+        return createResponse({
+          success: false,
+          message: "Invalid name.",
+          errors: [`Name must be one of: ${validName.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
+    if (data.state) {
+      if (!validState.includes(data.state)) {
+        return createResponse({
+          success: false,
+          message: "Invalid state.",
+          errors: [`State must be one of: ${validState.join(", ")}`],
+          status: 400,
+        });
+      }
     }
 
     const phase = await db.phase.findUnique({ where: { id } });
