@@ -21,7 +21,7 @@ export function ProfileProjectDetail({
   date = new Date(),
 }: ProfileProjectDetailProps) {
   return (
-    <div className="flex flex-col md:flex-row h-full border-4 border-[#8ECF0A] rounded-lg overflow-hidden" 
+    <div className="flex flex-col md:flex-row h-[210px] border-4 border-[#8ECF0A] rounded-lg overflow-hidden mb-2 mr-2" 
          style={{ 
            background: 'white',
            boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
