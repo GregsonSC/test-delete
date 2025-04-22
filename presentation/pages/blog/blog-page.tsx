@@ -7,8 +7,10 @@ import { Button } from "@/presentation/atoms/button/button";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
-
+import BlogViewModel from "./BlogViewModel";
 export function BlogPage() {
+  const { posts } = BlogViewModel();
+
   // Estado para controlar la cantidad de posts visibles
   const [postsCount, setPostsCount] = useState(6);
 
@@ -26,6 +28,8 @@ export function BlogPage() {
       setPostsCount(6);
     }
   }, []);
+
+  console.log(posts);
 
   // Función para cargar 3 posts adicionales cada vez que se presiona el botón
   const handleLoadMore = () => {
@@ -48,15 +52,17 @@ export function BlogPage() {
       {/* Recent Posts */}
       <section className="mt-14">
         <div className="container mx-auto">
-          <div className="flex flex-wrap justify-center gap-8">
-            {[...Array(postsCount)].map((_, index) => (
-              <div key={index} className="w-full sm:w-1/2 lg:w-1/3 flex justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {posts.map((post, index) => (
+              <div key={index} className="w-full flex justify-center">
                 <HoverCardImage
-                  title={`Blog Post ${index + 1}`}
-                  content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eu aliquam nisl nisl eu nisl."
+                  title={post.title}
+                  content={post.content}
+                  // tag={post.tag}
                   tag={index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"}
-                  date="June 10, 2023"
-                  image="fotos-prueba/webdevelpment.png"
+                  date={post.publicationDate}
+                  // image={post.imageUrl || "fotos-prueba/webdevelpment.png"}
+                  image={"fotos-prueba/webdevelpment.png"}
                   href="/"
                 />
               </div>

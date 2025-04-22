@@ -25,8 +25,10 @@ export function ProfileProjectCard({
   return (
     <div 
       className={cn(
-        "relative rounded-lg overflow-hidden cursor-pointer transition-all duration-200",
-        isSelected ? "ring-2 ring-[#8ECF0A]" : "hover:shadow-md",
+        "relative rounded-lg overflow-hidden cursor-pointer mb-4 border-[4px]",
+        isSelected 
+          ? "border-[#8ECF0A] shadow-lg" 
+          : "border-transparent hover:border-[#8ECF0A]/70 hover:shadow-lg transition-all duration-200",
         className
       )}
       onClick={onClick}

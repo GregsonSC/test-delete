@@ -39,7 +39,7 @@ export function EmailForm() {
           <FormControl>
             <div className="relative w-full">
               <Input
-                placeholder="email"
+                placeholder="Email"
                 {...field}
                 className="bg-white text-black w-full pr-12" 
               />

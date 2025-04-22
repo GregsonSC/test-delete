@@ -1,45 +1,57 @@
-import { NextResponse } from "next/server";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
 
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:` + error);
-  return NextResponse.json(
-    {
-      error: `An error occurred in ${context}.`,
-    },
-    { status: 500 }
-  );
-}
-
+const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
 export async function POST(request: Request) {
-  const data = await request.json();
-  const {
-    name,
-    description,
-    active,
-    county,
-    heroImageUrl,
-    benefitsImageUrl,
-    testimonialEmbed,
-    service_id,
-  } = data;
-  if (
-    !name ||
-    !description ||
-    !active ||
-    !county ||
-    !heroImageUrl ||
-    !benefitsImageUrl ||
-    !testimonialEmbed ||
-    !service_id
-  ) {
-    return NextResponse.json({ error: "All fields are required." }, { status: 400 });
-  }
+  try {
+    const data = await request.json();
+    const {
+      name,
+      description,
+      active,
+      county,
+      heroImageUrl,
+      benefitsImageUrl,
+      testimonialEmbed,
+      service_id,
+    } = data;
 
-  const newServiceArea = await db.serviceArea.create({
-    data,
-  });
-  return NextResponse.json(newServiceArea);
+    if (
+      !name ||
+      !description ||
+      active === undefined ||
+      !county ||
+      !heroImageUrl ||
+      !benefitsImageUrl ||
+      !testimonialEmbed
+      // || !service_id
+    ) {
+      return createResponse({
+        success: false,
+        message: "Missing required fields.",
+        errors: ["All fields are required."],
+        status: 400,
+      });
+    }
+    if (!validCounty.includes(county)) {
+      return createResponse({
+        success: false,
+        message: "Invalid county.",
+        errors: [`County must be one of: ${county.join(", ")}`],
+        status: 400,
+      });
+    }
+    const newServiceArea = await db.serviceArea.create({ data });
+
+    return createResponse({
+      success: true,
+      data: newServiceArea,
+      message: "ServiceArea created successfully.",
+      status: 201,
+    });
+  } catch (error) {
+    return handleError(error, "POST ServiceArea");
+  }
 }
 
 export async function GET(req: Request) {
@@ -47,25 +59,43 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
 
-    //If no id is provided, we retrieve all projects from the database.
     if (!requestId) {
-      const projects = await db.project.findMany();
-      return NextResponse.json(projects);
+      const serviceAreas = await db.serviceArea.findMany();
+      return createResponse({
+        success: true,
+        data: serviceAreas,
+        message: "ServiceAreas retrieved successfully.",
+        status: 200,
+      });
     }
-    //check that id is valid.
+
     const id = Number(requestId);
     if (isNaN(id)) {
-      return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "Invalid ID.",
+        errors: ["The id must be a valid number."],
+        status: 400,
+      });
     }
-    //We search for the serviceArea in the database by its id.
-    const serviceArea = await db.serviceArea.findUnique({
-      where: { id },
-    });
-    //If the project does not exist, we return an error with status 404.
+
+    const serviceArea = await db.serviceArea.findUnique({ where: { id } });
+
     if (!serviceArea) {
-      return NextResponse.json({ error: "ServiceArea not found" }, { status: 404 });
+      return createResponse({
+        success: false,
+        message: "ServiceArea not found.",
+        errors: ["No serviceArea exists with the given ID."],
+        status: 404,
+      });
     }
-    return NextResponse.json(serviceArea);
+
+    return createResponse({
+      success: true,
+      data: serviceArea,
+      message: "ServiceArea retrieved successfully.",
+      status: 200,
+    });
   } catch (error) {
     return handleError(error, "GET ServiceArea");
   }
@@ -75,50 +105,77 @@ export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
+    const id = Number(requestId);
     const data = await request.json();
 
-    //check that id is valid.
-    const id = Number(requestId);
     if (isNaN(id) || !requestId) {
-      return NextResponse.json({ error: "The ID must be a valid number" }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "Invalid ID.",
+        errors: ["The ID must be a valid number."],
+        status: 400,
+      });
     }
-    //We search for the serviceArea in the database by its id.
-    const serviceArea = await db.serviceArea.findUnique({
-      where: { id },
-    });
-    //If the serviceArea does not exist, we return an error with status 404.
-    if (!serviceArea) {
-      return NextResponse.json({ error: "serviceArea not found" }, { status: 404 });
+
+    const existingServiceArea = await db.serviceArea.findUnique({ where: { id } });
+
+    if (!existingServiceArea) {
+      return createResponse({
+        success: false,
+        message: "ServiceArea not found.",
+        errors: ["No serviceArea exists with the given ID."],
+        status: 404,
+      });
     }
-    //We update the serviceArea with the new data.
-    const UpdateserviceArea = await db.serviceArea.update({
+    if (data.county) {
+      if (!validCounty.includes(data.county)) {
+        return createResponse({
+          success: false,
+          message: "Invalid county.",
+          errors: [`County must be one of: ${validCounty.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
+
+    const updatedServiceArea = await db.serviceArea.update({
       where: { id },
-      data: { ...data },
+      data,
     });
-    return NextResponse.json(UpdateserviceArea);
+
+    return createResponse({
+      success: true,
+      data: updatedServiceArea,
+      message: "ServiceArea updated successfully.",
+      status: 200,
+    });
   } catch (error) {
-    return handleError(error, "PUT ServiceArea");
+    return handleError(error, "PATCH ServiceArea");
   }
 }
+
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
-    //check that id is valid.
     const id = Number(requestId);
 
-    //If no id is provided.
     if (isNaN(id) || !requestId) {
-      return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "Invalid ID.",
+        errors: ["The id must be a valid number."],
+        status: 400,
+      });
     }
 
-    //We search for the project in the database by its id.
-    const ServiceArea = await db.ServiceArea.delete({
-      where: { id },
-    });
+    await db.serviceArea.delete({ where: { id } });
 
-    //We return a successful response.
-    return NextResponse.json({ message: "ServiceArea deleted successfully." });
+    return createResponse({
+      success: true,
+      message: "ServiceArea deleted successfully.",
+      status: 200,
+    });
   } catch (error) {
     return handleError(error, "DELETE ServiceArea");
   }

@@ -1,29 +1,48 @@
-import { NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:` + error);
-  return NextResponse.json(
-    {
-      error: `An error occurred in ${context}.`,
-    },
-    { status: 500 }
-  );
-}
-
+const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
+// POST - Crear blog
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     const { title, resume, content, topic, publicationDate, imageUrl } = data;
 
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "All fields are required.",
+        errors: ["Missing one or more required fields."],
+        status: 400,
+      });
     }
 
-    const newBlog = await db.blog.create({
-      data,
+    if (!validTopics.includes(topic)) {
+      return createResponse({
+        success: false,
+        message: "Invalid topic.",
+        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+        status: 400,
+      });
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
+      return createResponse({
+        success: false,
+        message: "Invalid date format.",
+        errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
+      });
+    }
+
+    const newBlog = await db.blog.create({ data });
+
+    return createResponse({
+      success: true,
+      data: newBlog,
+      message: "Blog created successfully.",
+      status: 201,
     });
-    return NextResponse.json(newBlog);
   } catch (error) {
     return handleError(error, "POST Blog");
   }
@@ -34,74 +53,143 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
 
-    //If no id is provided, we retrieve all blogs from the database.
     if (!requestId) {
       const blogs = await db.blog.findMany();
-      return NextResponse.json(blogs);
+      return createResponse({
+        success: true,
+        data: blogs,
+        message: "Blogs retrieved successfully.",
+        status: 200,
+      });
     }
-    //check that id is valid.
+
     const id = Number(requestId);
     if (isNaN(id)) {
-      return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "Invalid ID.",
+        errors: ["The ID must be a valid number."],
+        status: 400,
+      });
     }
-    //We search for the blog in the database by its id.
-    const blog = await db.blog.findUnique({
-      where: { id },
-    });
-    //If the blog does not exist, we return an error with status 404.
+
+    const blog = await db.blog.findUnique({ where: { id } });
+
     if (!blog) {
-      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      return createResponse({
+        success: false,
+        message: "Blog not found.",
+        errors: ["No blog exists with the given ID."],
+        status: 404,
+      });
     }
-    return NextResponse.json(blog);
+
+    return createResponse({
+      success: true,
+      data: blog,
+      message: "Blog retrieved successfully.",
+      status: 200,
+    });
   } catch (error) {
     return handleError(error, "GET Blog");
   }
 }
 
+// PATCH - Actualizar blog
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
+    const id = Number(requestId);
     const data = await request.json();
 
-    //check that id is valid.
-    const id = Number(requestId);
     if (isNaN(id) || !requestId) {
-      return NextResponse.json({ error: "The ID must be a valid number" }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "Invalid ID.",
+        errors: ["The ID must be a valid number."],
+        status: 400,
+      });
     }
-    //We search for the blog in the database by its id.
-    const blog = await db.blog.findUnique({
-      where: { id },
-    });
-    //If the blog does not exist, we return an error with status 404.
+    if (!data || Object.keys(data).length === 0) {
+      return createResponse({
+        success: false,
+        message: "No update data provided.",
+
+        errors: ["At least one field must be provided for update."],
+        status: 400,
+      });
+    }
+
+    if (data.publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.publicationDate)) {
+      return createResponse({
+        success: false,
+        message: "Invalid date format.",
+        errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
+      });
+    }
+
+    if (data.topic) {
+      if (!validTopics.includes(data.topic)) {
+        return createResponse({
+          success: false,
+          message: "Invalid topic.",
+          errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
+
+    const blog = await db.blog.findUnique({ where: { id } });
+
     if (!blog) {
-      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      return createResponse({
+        success: false,
+        message: "Blog not found.",
+        errors: ["No blog exists with the given ID."],
+        status: 404,
+      });
     }
-    //We update the blog with the new data.
+
     const updateBlog = await db.blog.update({
       where: { id },
       data: { ...data },
     });
-    return NextResponse.json(updateBlog);
+
+    return createResponse({
+      success: true,
+      data: updateBlog,
+      message: "Blog updated successfully.",
+      status: 200,
+    });
   } catch (error) {
-    return handleError(error, "PUT Blog");
+    return handleError(error, "PATCH Blog");
   }
 }
 
+// DELETE - Eliminar blog
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
-    //check that id is valid.
     const id = Number(requestId);
 
-    //If no id is provided.
     if (isNaN(id) || !requestId) {
-      return NextResponse.json({ error: "The id must be a valid number" }, { status: 400 });
+      return createResponse({
+        success: false,
+        message: "Invalid ID.",
+        errors: ["The ID must be a valid number."],
+        status: 400,
+      });
     }
-    //We search for the blog in the database by its id.
-    const blog = await db.blog.delete({
-      where: { id },
+
+    await db.blog.delete({ where: { id } });
+
+    return createResponse({
+      success: true,
+      message: "Blog deleted successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "DELETE Blog");

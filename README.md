@@ -5,33 +5,39 @@ Este documento detalla las funcionalidades y características que se implementar
 ## Instalación y Configuración
 
 1. Clonar el repositorio:
+
 ```bash
 git clone https://github.com/Senavia-Corp/landing-senavia
 cd landing-senavia
 ```
 
 2. Instalar las dependencias:
+
 ```bash
 yarn install
 ```
 
 Si no tienes yarn instalo de la siguiente manera:
+
 ```bash
 npm install --global yarn
 ```
 
 3. Iniciar el servidor de desarrollo:
+
 ```bash
 yarn dev
 ```
 
 4. Para producción, construir y ejecutar el proyecto:
+
 ```bash
 yarn build
 yarn start
 ```
 
 ### Comandos Disponibles
+
 - yarn dev : Inicia el servidor de desarrollo en http://localhost:3000
 - yarn build : Construye la aplicación para producción
 - yarn start : Inicia el servidor de producción
@@ -39,10 +45,11 @@ yarn start
 - yarn format:check : Verifica el formato del código sin modificarlo
 - yarn lint : Ejecuta el linter para encontrar problemas en el código
 - yarn lint:fix : Ejecuta el linter y corrige automáticamente los problemas que puede resolver
+
 ### Requisitos del Sistema
+
 - Node.js 18.x o superior
 - Yarn 1.22.x o superior
-
 
 ## Índice
 
@@ -120,10 +127,69 @@ la escalabilidad y la experiencia del usuario.
 - **Axios**: Cliente HTTP para la comunicación con APIs.
 - **Nodemailer (en revisión)**: Envío de correos electrónicos desde el servidor.
 
-## Instalación y Configuración
-
-1. Clonar el repositorio:
+# Generar migración
 
 ```bash
-En proceso...
+npx prisma migrate dev --name <nombre_migracion>
 ```
+
+# Actualizar cliente Prisma
+
+Tener el archivo .env configurado con la db que deseas apuntar
+
+```bash
+npx prisma generate
+```
+
+# Visualizar BD en interfaz web
+
+```bash
+npx prisma studio
+```
+
+# Actualizar dependecias de forma interactiva
+
+```bash
+yarn upgrade-interactive --latest
+```
+
+//--- back end
+para iniciar utilizamos este comando para crear las tablas :npx migrate generate
+para iniciar el back corremos: yarn dev --turbo
+ya para los endpoints estamos utilizando este formato
+http://localhost:3000/api/blog
+el cual si queremos cambiar de entidad solo cambiamos la ultima palabra por ejemplo
+http://localhost:3000/api/permission
+si se requiere una busqueda se cambiaria el numero y se pone el requirido
+http://localhost:3000/api/blog?id=1
+y pues tendriamos el get de obtener todos, obtener por id, y sus casos de error
+el post que seria para crear la entidad con sus atributos.
+tendriamos el patch para actualizar uno o mas atributos de la entidad, por medio del id.
+y el delete para eliminar las entidades por medio del id.
+
+
+
+Para iniciar usamos el siguiente comando para crear las tablas en la base de datos npx prisma migrate dev
+Luego para ejecutar el backend corremos yarn dev --turbo
+
+Los endpoints siguen este formato http://localhost:3000/api/blog
+Si queremos cambiar de entidad simplemente reemplazamos la última palabra por ejemplo http://localhost:3000/api/permission
+
+Si se requiere una búsqueda por ID agregamos el parámetro id con el valor deseado http://localhost:3000/api/blog?id=1
+
+Contamos con los siguientes métodos disponibles en cada endpoint
+
+GET sin parámetros obtiene todos los registros, con id obtiene un registro específico.
+POST crea una nueva entidad con los atributos requeridos
+PATCH actualiza uno o varios atributos de una entidad identificándola por su id
+DELETE elimina una entidad específica mediante su id
+
+también maneja casos de error como ID inválido o entidad no encontrada, o falta de atributos.
+
+
+
+Código	Cuándo usarlo						          De quién es la culpa
+200		  Todo salió bien						        —
+400		  El cliente envió algo incorrecto	Cliente
+404		  El recurso no fue encontrado		  Cliente
+500		  Algo falló dentro del servidor		Servidor
