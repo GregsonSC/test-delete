@@ -4,6 +4,11 @@ import db from "@/lib/prisma";
 /**
  * @route POST /api/leads
  * @desc Crear un nuevo lead
+ * @swagger
+ * /api/leads:
+ *  post:
+ *    summary: Create a new lead
+ *    description: Create a new lead with the provided data.
  */
 export async function POST(request: NextRequest) {
   try {
