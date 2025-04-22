@@ -135,6 +135,8 @@ npx prisma migrate dev --name <nombre_migracion>
 
 # Actualizar cliente Prisma
 
+Tener el archivo .env configurado con la db que deseas apuntar
+
 ```bash
 npx prisma generate
 ```

@@ -2,46 +2,43 @@ import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/comments
- * @desc Crear un nuevo comentario
+ * @route POST /api/variants
+ * @desc Crear un nuevo rol
  */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.content) {
+    if (!data.name) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment content is required",
-          errors: ["Missing 'content' field"],
+          message: "Variant name is required",
+          errors: ["Missing 'name' field"],
         },
         { status: 400 }
       );
     }
 
-    const newComment = await db.comment.create({
-      data,
-      include: { user: true, estimate: true, phase: true },
-    });
+    const newVariant = await db.variant.create({ data, include: { plan: true } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [newComment],
-        message: "Comment created successfully",
+        data: [newVariant],
+        message: "Variant created successfully",
         errors: [],
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating comment:", error);
+    console.error("Error creating variant:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating comment",
+        message: "Error creating variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -50,8 +47,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/comments
- * @desc Obtener todos los comentarios o uno específico por ID (?id=)
+ * @route GET /api/variants
+ * @desc Obtener todos los variants o uno específico por id (?id=)
  */
 export async function GET(request: Request) {
   try {
@@ -59,22 +56,21 @@ export async function GET(request: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const comments = await db.comment.findMany({
+      const variants = await db.variant.findMany({
         select: {
           id: true,
-          content: true,
-          sendDate: true,
-          sendTime: true,
-          user: true,
-          estimate: true,
-          phase: true,
+          name: true,
+          description: true,
+          benefits: true,
+          price: true,
+          plan: true,
         },
       });
 
       return NextResponse.json({
         success: true,
-        data: comments,
-        message: "Comments fetched successfully",
+        data: variants,
+        message: "Variants fetched successfully",
         errors: [],
       });
     }
@@ -92,18 +88,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const comment = await db.comment.findUnique({
-      where: { id },
-      include: { user: true, estimate: true, phase: true },
-    });
+    const variant = await db.variant.findUnique({ where: { id }, include: { plan: true } });
 
-    if (!comment) {
+    if (!variant) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment not found",
-          errors: ["Comment with given ID does not exist"],
+          message: "Variant not found",
+          errors: ["Variant does not exist"],
         },
         { status: 404 }
       );
@@ -112,8 +105,8 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        data: [comment],
-        message: "Comment fetched successfully",
+        data: [variant],
+        message: "Variant fetched successfully",
         errors: [],
       },
       { status: 200 }
@@ -123,7 +116,7 @@ export async function GET(request: Request) {
       {
         success: false,
         data: [],
-        message: "Error fetching comment",
+        message: "Error fetching variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -132,8 +125,8 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/comments?id={id}
- * @desc Actualizar un comentario parcialmente
+ * @route PATCH /api/variants?id={id}
+ * @desc Actualizar un rol parcialmente
  */
 export async function PATCH(request: Request) {
   try {
@@ -147,7 +140,7 @@ export async function PATCH(request: Request) {
           success: false,
           data: [],
           message: "No data provided",
-          errors: ["Empty body"],
+          errors: ["Missing request body"],
         },
         { status: 400 }
       );
@@ -160,47 +153,49 @@ export async function PATCH(request: Request) {
           success: false,
           data: [],
           message: "The ID must be a valid number",
-          errors: ["Invalid or missing ID"],
+          errors: ["Invalid ID"],
         },
         { status: 400 }
       );
     }
 
-    const comment = await db.comment.findUnique({
+    const variant = await db.variant.findUnique({
       where: { id },
+      include: {
+        plan: true,
+      },
     });
 
-    if (!comment) {
+    if (!variant) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment not found",
-          errors: ["Comment does not exist"],
+          message: "Variant not found",
+          errors: ["Variant does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const updatedComment = await db.comment.update({
+    const updatedVariant = await db.variant.update({
       where: { id },
       data,
-      include: { user: true, estimate: true, phase: true },
     });
 
     return NextResponse.json({
       success: true,
-      data: [updatedComment],
-      message: "Comment updated successfully",
+      data: [updatedVariant],
+      message: "Variant updated successfully",
       errors: [],
     });
   } catch (error) {
-    console.error("Error updating comment:", error);
+    console.error("Error updating variant:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error updating comment",
+        message: "Error updating variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -209,8 +204,8 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/comments?id={id}
- * @desc Eliminar un comentario por ID
+ * @route DELETE /api/variants?id={id}
+ * @desc Eliminar un rol por ID
  */
 export async function DELETE(request: Request) {
   try {
@@ -218,38 +213,38 @@ export async function DELETE(request: Request) {
     const requestId = searchParams.get("id");
 
     const id = Number(requestId);
-    const commentExists = await db.comment.findUnique({ where: { id } });
+    const variantExists = await db.variant.findUnique({ where: { id } });
 
-    if (!commentExists) {
+    if (!variantExists) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment not found",
-          errors: ["Comment with given ID does not exist"],
+          message: "Variant not found",
+          errors: ["Variant does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const deletedComment = await db.comment.delete({ where: { id } });
+    const variant = await db.variant.delete({ where: { id } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [deletedComment],
-        message: "Comment deleted successfully",
+        data: [variant],
+        message: "Variant deleted successfully",
         errors: [],
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting comment:", error);
+    console.error("Error deleting variant:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error deleting comment",
+        message: "Error deleting variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newLead = await db.lead.create({ data, include: { user: true } });
+    const newLead = await db.lead.create({ data, include: { user: true,service:true } });
 
     return NextResponse.json(
       {
@@ -64,9 +64,10 @@ export async function GET(request: Request) {
           clientPhone: true,
           name: true,
           state: true,
-          starDate: true,
+          startDate: true,
           endDate: true,
           user: true,
+          service:true
         },
       });
 
@@ -91,7 +92,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id }, include: { user: true } });
+    const lead = await db.lead.findUnique({ where: { id }, include: { user: true,service:true } });
 
     if (!lead) {
       return NextResponse.json(

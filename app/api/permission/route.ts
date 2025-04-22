@@ -147,7 +147,6 @@ export async function PATCH(request: Request) {
         });
       }
     }
-    
     if (data.validServiceAssociated) {
       if (!data.validServiceAssociated.includes(data.serviceAssociated)) {
         return createResponse({
