@@ -1,6 +1,7 @@
 //https://www.youtube.com/watch?v=_Xkdn1QpPG0&t=1768s
 import { NextResponse } from "next/server";
 import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+import { uploadImageToCloudinary } from "../../utils/cloudinary";
 
 // Configuration
 cloudinary.config({
@@ -27,26 +28,11 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Uploads the image to Cloudinary using upload_stream and a Promise to await the result.
-    const response = await new Promise<UploadApiResponse>((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream({}, (err, resul) => {
-          // Error handling: if there's an error or the response is undefined, the promise is rejected.
-          if (err || !resul) {
-            reject(err);
-          }
-          // If there is a valid response, the promise is resolved with the response.
-          if (resul) {
-            resolve(resul);
-          }
-        })
-        // Ends the stream by sending the buffer.
-        .end(buffer);
-    });
+   const result =await uploadImageToCloudinary(buffer);
     // Returns a JSON response with the message and the secure URL of the uploaded image.
     return NextResponse.json({
       message: "Image uploaded.",
-      url: response.secure_url,
+      url: result.secure_url,
     });
   } catch (error) {
     // Global error handling: logs the error to the console and responds with a 500 error.

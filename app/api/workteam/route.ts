@@ -1,14 +1,15 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
-// POST - Crear blog
+const validState = ["datos"];
+const validArea = ["datos"];
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { title, resume, content, topic, publicationDate, imageUrl } = data;
+    const { name, description, state, area } = data;
 
-    if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
+    if (!name || !description) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -17,37 +18,35 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!validTopics.includes(topic)) {
+    if (!validState.includes(state)) {
       return createResponse({
         success: false,
-        message: "Invalid topic.",
-        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+        message: "Invalid state.",
+        errors: [`State must be one of: ${validState.join(", ")}`],
+        status: 400,
+      });
+    }
+    if (!validArea.includes(area)) {
+      return createResponse({
+        success: false,
+        message: "Invalid area.",
+        errors: [`Area must be one of: ${validArea.join(", ")}`],
         status: 400,
       });
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for the publicationDate."],
-        status: 400,
-      });
-    }
-
-    const newBlog = await db.blog.create({ data });
+    const newWorkTeam = await db.workTeam.create({ data });
 
     return createResponse({
       success: true,
-      data: newBlog,
-      message: "Blog created successfully.",
+      data: newWorkTeam,
+      message: "WorkTeam created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Blog");
+    return handleError(error, "POST WorkTeam");
   }
 }
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -72,30 +71,26 @@ export async function GET(req: Request) {
         status: 400,
       });
     }
+    const workteam = await db.workTeam.findUnique({ where: { id } });
 
-    const blog = await db.blog.findUnique({ where: { id } });
-
-    if (!blog) {
+    if (!workteam) {
       return createResponse({
         success: false,
-        message: "Blog not found.",
-        errors: ["No blog exists with the given ID."],
+        message: "WorkTeam not found.",
+        errors: ["No WorkTeam exists with the given ID."],
         status: 404,
       });
     }
-
     return createResponse({
       success: true,
-      data: blog,
-      message: "Blog retrieved successfully.",
+      data: workteam,
+      message: "Workteam retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Blog");
+    return handleError(error, "GET WorkTeam");
   }
 }
-
-// PATCH - Actualizar blog
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -120,55 +115,53 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-
-    if (data.publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.publicationDate)) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for the publicationDate."],
-        status: 400,
-      });
-    }
-
-    if (data.topic) {
-      if (!validTopics.includes(data.topic)) {
+    if (data.state) {
+      if (!validState.includes(data.state)) {
         return createResponse({
           success: false,
-          message: "Invalid topic.",
-          errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+          message: "Invalid state.",
+          errors: [`State must be one of: ${validState.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
+    if (data.area) {
+      if (!validArea.includes(data.area)) {
+        return createResponse({
+          success: false,
+          message: "Invalid area.",
+          errors: [`Area must be one of: ${validArea.join(", ")}`],
           status: 400,
         });
       }
     }
 
-    const blog = await db.blog.findUnique({ where: { id } });
-
-    if (!blog) {
+    const workteam = await db.workTeam.findUnique({ where: { id } });
+    if (!workteam) {
       return createResponse({
         success: false,
-        message: "Blog not found.",
-        errors: ["No blog exists with the given ID."],
+        message: "WorkTeam not found.",
+        errors: ["No workTeam exists with the given ID."],
         status: 404,
       });
     }
 
-    const updateBlog = await db.blog.update({
+    const updateWorkTeam = await db.workTeam.update({
       where: { id },
       data: { ...data },
     });
 
     return createResponse({
       success: true,
-      data: updateBlog,
-      message: "Blog updated successfully.",
+      data: updateWorkTeam,
+      message: "WorkTeam updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH Blog");
+    return handleError(error, "PATCH WorkTeam");
   }
 }
 
-// DELETE - Eliminar blog
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -183,8 +176,7 @@ export async function DELETE(req: Request) {
         status: 400,
       });
     }
-
-    await db.blog.delete({ where: { id } });
+    await db.workTeam.delete({ where: { id } });
 
     return createResponse({
       success: true,
