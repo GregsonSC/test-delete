@@ -401,6 +401,7 @@ model Attachment {
   activity    Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
   ticketId    Int?
   ticket      Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
 }
 
 model Benefit {
