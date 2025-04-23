@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/leads
+ * @route POST /api/lead
  * @desc Crear un nuevo lead
  * @swagger
- * /api/leads:
+ * /api/lead:
  *   post:
  *     summary: Create a new lead
  *     description: Create a new lead with the provided data.
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newLead = await db.lead.create({ data, include: { user: true,service:true } });
+    const newLead = await db.lead.create({ data, include: { user: true, service: true } });
 
     return NextResponse.json(
       {
@@ -162,10 +162,10 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/leads
+ * @route GET /api/lead
  * @desc Obtener todos los leads o uno específico por ID (?id=)
  * @swagger
- * /api/leads:
+ * /api/lead:
  *   get:
  *     summary: Get all leads or a specific lead by ID
  *     description: Retrieve all leads or a specific lead by providing its ID as a query parameter.
@@ -280,7 +280,7 @@ export async function GET(request: Request) {
           startDate: true,
           endDate: true,
           user: true,
-          service:true
+          service: true,
         },
       });
 
@@ -305,7 +305,10 @@ export async function GET(request: Request) {
       );
     }
 
-    const lead = await db.lead.findUnique({ where: { id }, include: { user: true,service:true } });
+    const lead = await db.lead.findUnique({
+      where: { id },
+      include: { user: true, service: true },
+    });
 
     if (!lead) {
       return NextResponse.json(
@@ -342,9 +345,152 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/leads?id={id}
+ * @route PATCH /api/lead?id={id}
  * @desc Actualizar un lead parcialmente
+ * @swagger
+ * /api/lead:
+ *   patch:
+ *     summary: Update a lead partially
+ *     description: Update the fields of a lead by providing its ID as a query parameter and the updated data in the body.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the lead to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               clientName:
+ *                 type: string
+ *                 description: Updated name of the client.
+ *                 example: Jane Doe
+ *               clientEmail:
+ *                 type: string
+ *                 description: Updated email of the client.
+ *                 example: janedoe@example.com
+ *               clientPhone:
+ *                 type: string
+ *                 description: Updated phone number of the client.
+ *                 example: "+987654321"
+ *               name:
+ *                 type: string
+ *                 description: Updated name of the lead.
+ *                 example: Updated Lead Name
+ *               state:
+ *                 type: string
+ *                 description: Updated state of the lead.
+ *                 example: PROCESSING
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Updated start date.
+ *                 example: "2024-05-01"
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Updated end date.
+ *                 example: "2024-12-31"
+ *               userId:
+ *                 type: integer
+ *                 description: Updated user ID.
+ *                 example: 2
+ *               serviceId:
+ *                 type: integer
+ *                 description: Updated service ID.
+ *                 example: 3
+ *     responses:
+ *       200:
+ *         description: Lead updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Lead updated successfully
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Invalid ID or bad request body.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: The id must be a valid number
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       404:
+ *         description: Lead not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Lead not found
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Error updating lead
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -417,9 +563,107 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/leads?id={id}
+ * @route DELETE /api/lead?id={id}
  * @desc Eliminar un lead por ID
+ * @swagger
+ * /api/lead:
+ *   delete:
+ *     summary: Delete a lead
+ *     description: Delete a specific lead by providing its ID as a query parameter.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the lead to delete.
+ *     responses:
+ *       200:
+ *         description: Lead deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Lead deleted successfully
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Invalid ID provided.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: The id must be a valid number
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       404:
+ *         description: Lead not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Lead not found
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Error deleting lead
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
+
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

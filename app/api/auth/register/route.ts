@@ -70,7 +70,7 @@ export async function GET(request: Request) {
         select: {
           id: true,
           name: true,
-          password: true,
+          password: true, //Eliminar estos despues ya que no se tiene que devolver la contraseña
           email: true,
           phone: true,
           imageUrl: true,
