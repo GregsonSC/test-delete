@@ -1,6 +1,7 @@
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { ServicesGrid } from "@/presentation/organisms/services-grid/services-grid";
+import { ServicesSection } from "@/presentation/organisms/services-section/services-section";
 
 export function ServicesPage() {
   return (
@@ -16,6 +17,7 @@ export function ServicesPage() {
           </div>
 
           <ServicesGrid />
+          <ServicesSection />
 
           <div className="mt-24">
             <div className="text-center mb-12">
