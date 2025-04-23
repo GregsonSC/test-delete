@@ -104,7 +104,7 @@ export function AboutPage() {
                         style={{borderRadius: "5px", 
                           border: "3px solid transparent", 
                           borderImage: "linear-gradient(to right, #99CC33, #33CCCC, #99CC33) 2", 
-                          mask: "linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0)",
+                          
                           WebkitMaskComposite: "exclude" }}
                       />
         
@@ -117,7 +117,7 @@ export function AboutPage() {
                         style={{  borderRadius: "5px", 
                           border: "3px solid transparent", 
                           borderImage: "linear-gradient(to right, #99CC33, #33CCCC, #99CC33) 2", 
-                          mask: "linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0)",
+                          
                           WebkitMaskComposite: "exclude" }}
                       />
         
@@ -132,7 +132,6 @@ export function AboutPage() {
                             borderRadius: "5px", 
                             border: "3px solid transparent", 
                             borderImage: "linear-gradient(to right, #CC33B8, #5933CC, #CC33B8) 2", 
-                            mask: "linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0)",
                             WebkitMaskComposite: "exclude"
                           }}
                         />

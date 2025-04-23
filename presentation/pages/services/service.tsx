@@ -5,6 +5,12 @@ import { useParams } from "next/navigation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
+import {Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 const reviewItems = [
   {
@@ -37,8 +43,42 @@ export function ServicePage() {
         {/* first section */}
         <section>
           <div className="mt-20 text-center px-5">
-            <h1 className="font-bold text-3xl">Web Design Services in Miami Beach</h1>
+            <h1 className="font-bold text-4xl">Web Design Services in Miami Beach</h1>
             <p className="text-justify">Welcome to the premier choice for professional web design services in Miami Beach! Whether you’re a local business, a trendy boutique, a luxury hotel, or a thriving restaurant, we specialize in creating custom web designs that not only look stunning but also drive real results.</p>
+          </div>
+        </section>
+
+        {/* second section (Cards section) */}
+        <section>
+          <div className="mt-20 text-center px-5">
+            <h1 className="font-bold text-4xl">Why Choose Our Miami Beach Web Design Services?</h1>
+            <div >
+              <Card className="border border-white text-start">
+                <CardTitle>Custom Web Design for Miami Beach Businesses</CardTitle>
+                <CardContent>We create unique, eye-catching websites tailored to your brand and the Miami Beach audience.</CardContent>
+              </Card>
+              
+              <Card className="border border-white text-start">
+                <CardTitle>Mobile-Friendly & Responsive Web Design</CardTitle>
+                <CardContent>With so many users browsing on their phones, we ensure your website is fully responsive and looks amazing on any device.</CardContent>
+              </Card>
+
+              <Card className="border border-white text-start">
+                <CardTitle>SEO-Optimized Websites for Local Visibility</CardTitle>
+                <CardContent>Our websites are built with local SEO strategies to help you rank higher on Google and attract more customers in Miami Beach.</CardContent>
+              </Card>
+
+              <Card className="border border-white text-start">
+                <CardTitle>Conversion-Focused Web Development</CardTitle>
+                <CardContent>From clear calls-to-action to intuitive navigation, we design websites that turn visitors into paying customers.</CardContent>
+              </Card>
+
+              <Card className="border border-white text-start">
+                <CardTitle>Ongoing Website Maintenance & Support</CardTitle>
+                <CardContent>Your website is your digital storefront. We offer reliable website maintenance to keep it running smoothly and securely.</CardContent>
+              </Card>
+              
+            </div>
           </div>
         </section>
 

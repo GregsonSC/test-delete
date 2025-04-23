@@ -3,5 +3,4 @@ export interface HoverCardWGCProps {
   title: string;
   content: string;
   link: string;
-  href: string;
 } 
