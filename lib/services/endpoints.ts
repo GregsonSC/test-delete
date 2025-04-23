@@ -24,6 +24,10 @@ export const endpoints = {
     updatePost: (id: string) => `${API}/blog?id=${id}`,
     deletePost: (id: string) => `${API}/blog?id=${id}`,
   },
+  // Add authentication endpoints
+  auth: {
+    registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
+  },
 
   // Test endpoint for checking API connectivity
   test: `${API}/health-check`,
@@ -104,7 +108,7 @@ export const useFetch = () => {
       } else {
         console.error("Error in request:", error);
         try {
-          toast.error(error.message);
+          //toast.error(error.message); Esta linea mostraba un toast de error pero no deberia verse porque la api ya nos regresa mensajes de error
         } catch (error) {
           console.error("Error in toast:", error);
         }

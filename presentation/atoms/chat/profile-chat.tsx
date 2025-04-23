@@ -89,24 +89,34 @@ export function ProfileChat({ messages: initialMessages }: ProfileChatProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      
+    <div className="flex flex-col h-full min-h-0">
       <div 
-            ref={chatContainerRef} 
-            className="flex-1 overflow-y-auto mb-2 space-y-4" 
-            style={{ 
-              msOverflowStyle: 'none',  /* IE and Edge */
-              scrollbarWidth: 'none',   /* Firefox */
-              WebkitOverflowScrolling: 'touch'
-            }}
-          >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                display: none;  /* Chrome, Safari and Opera */
-              }
-            `}</style>
-            {messages.map(message => (
-          <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+        ref={chatContainerRef} 
+        className="flex-1 overflow-y-auto min-h-0 space-y-4"
+        style={{ 
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#d1d5db transparent',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
+        <style jsx>{`
+          div::-webkit-scrollbar {
+            width: 6px;
+          }
+          div::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          div::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 10px;
+          }
+          div::-webkit-scrollbar-thumb:hover {
+            background-color: #9ca3af;
+          }
+        `}</style>
+
+        {messages.map(message => (
+          <div key={message.id} className={`flex mr-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
             {message.role === "assistant" && (
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-300 to-blue-300 mr-4 flex-shrink-0 flex items-center justify-center text-xs">
                 AI
@@ -143,7 +153,7 @@ export function ProfileChat({ messages: initialMessages }: ProfileChatProps) {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-auto">
+      <form onSubmit={handleSubmit} className="flex-shrink-0 w-full mt-2">
         <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
           <input
             type="text"

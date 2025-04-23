@@ -1,58 +1,112 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { ProfileChat } from "@/presentation/atoms/chat/profile-chat";
-import { ProfileProjectCard } from "@/presentation/atoms/profile-project/profile-project-card";
-import { ProfileProjectDetail } from "@/presentation/atoms/profile-project/profile-project-detail";
-import { projects } from "@/lib/constants";
+// Re-import project components and data
+import { projects, requests } from "@/lib/constants";
+import { ProfileProjectCard } from "@/presentation/atoms/profile-project/profile-project-card"; // Re-added
+import { ProfileProjectDetail } from "@/presentation/atoms/profile-project/profile-project-detail"; // Re-added
+import { RequestCard } from "@/presentation/atoms/profile-project/request/request-card";
+import { RequestDetail } from "@/presentation/atoms/profile-project/request/request-detail";
+
+// Define types
+type Request = typeof requests[0];
+type Project = typeof projects[0]; // Re-added Project type
+// Assuming both have a compatible chatHistory structure
+type ChatMessage = (Request["chatHistory"] | Project["chatHistory"])[0];
 
 export function ProfileProjects() {
-  const [activeTab, setActiveTab] = useState<"leads" | "projects">("projects");
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<"chat" | "documents">("chat");
+  // State for active tab ('leads' or 'projects') and selected IDs
+  const [activeTab, setActiveTab] = useState<"leads" | "projects">("leads");
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null); // Re-added Project ID state
 
-  // Find the selected project
-  const selectedProject =
-    projects.find((project) => project.id === selectedProjectId) || projects[0];
+  // --- Derived State (Memoized for performance) ---
+  // Get the full selected item (request or project) based on ID and active tab
+  const selectedItem: Request | Project | null = useMemo(() => {
+    if (activeTab === "leads" && selectedRequestId) {
+      return requests.find((r) => r.id === selectedRequestId) || null;
+    } else if (activeTab === "projects" && selectedProjectId) {
+      return projects.find((p) => p.id === selectedProjectId) || null;
+    }
+    return null;
+    // Update dependencies
+  }, [activeTab, selectedRequestId, selectedProjectId]);
 
-  // Handle project selection
+  // Get the chat history for the selected item
+  const currentChatHistory: ChatMessage[] = useMemo(() => {
+    // Selected item can be Request or Project, both should have chatHistory
+    return selectedItem?.chatHistory || [];
+  }, [selectedItem]);
+
+  // --- Event Handlers ---
+  // Re-add handleProjectSelect
   const handleProjectSelect = (projectId: string) => {
     setSelectedProjectId(projectId);
-
-    // Add history entry for back button functionality
-    window.history.pushState({ projectId }, "", window.location.pathname);
+    setSelectedRequestId(null); // Clear request selection
+    if (activeTab !== "projects") setActiveTab("projects"); // Switch tab if needed
   };
 
-  // Listen for popstate event (browser back button)
+  // Update handleRequestSelect to clear project selection
+  const handleRequestSelect = (requestId: string) => {
+    setSelectedRequestId(requestId);
+    setSelectedProjectId(null); // Clear project selection
+    // Switch to 'leads' tab if not already active when a request is selected
+    if (activeTab !== "leads") setActiveTab("leads");
+  };
+
+  // Update handleTabChange to clear both selections
+  const handleTabChange = (tab: "leads" | "projects") => {
+    setActiveTab(tab);
+    // Clear selections when changing tabs
+    setSelectedRequestId(null);
+    setSelectedProjectId(null);
+  };
+
+  // --- Effects ---
+  // Update effect to reset both selections
   useEffect(() => {
     const handlePopState = () => {
-      setSelectedProjectId(null);
+      setSelectedRequestId(null);
+      setSelectedProjectId(null); // Reset project ID too
     };
-
     window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  // --- Render Logic Helper ---
+  // Determine if the list view (left column) should be shown on mobile
+  // Logic depends on whether *any* item is selected, regardless of type
+  const showList = !selectedItem;
 
   return (
     <MainLayout>
-      <section className="bg-gray-50">
-        <div className="w-full md:px-5 md:py-4 overflow-x-hidden lg:mt-0 mt-20 ">
-          <div className="grid grid-cols-1 md:grid-cols-[35%_1fr] md:gap-6">
-            {/* Left column - Projects list */}
+      {/* Section */}
+      <section className="bg-gray-50 pt-20 md:pt-20 lg:pt-0">
+        {/* Inner Container */}
+        <div className="w-full md:px-5 md:py-4 h-full overflow-hidden lg:mt-0 mt-0">
+          {/* Grid */}
+          <div className={cn(
+            "grid grid-cols-1 md:grid-cols-[35%_1fr] md:gap-4",
+            !showList ? "h-[calc(100vh-5rem)]" : "h-auto", // Mobile height
+            "md:h-[calc(100vh-6.5rem)]" // Desktop height constraint
+          )}>
+            {/* Columna Izquierda - Lista */}
             <div
               className={cn(
-                "bg-white md:rounded-lg md:p-4 p-0 pt-2 sm:pt-0",
-                selectedProjectId ? "md:block hidden" : "block"
+                "bg-white md:rounded-lg md:p-4",
+                "p-0 pt-2 sm:pt-0",
+                showList ? "block" : "hidden", // Mobile visibility
+                "md:block", // Desktop visibility
+                "md:h-full md:flex md:flex-col md:overflow-hidden" // Desktop layout/height/overflow
               )}
               style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
             >
               {/* Tabs */}
-              <div className="flex mb-4 px-4 md:p-0 pt-3 md:pt-0">
+              <div className="flex mb-4 px-4 md:p-0 pt-3 md:pt-0 flex-shrink-0">
+                {/* Request Tab Button */}
                 <button
                   className={cn(
                     "px-6 py-0 rounded-full mr-2 text-base font-bold md:text-lg",
@@ -60,10 +114,11 @@ export function ProfileProjects() {
                       ? "bg-[#99CC33] text-white"
                       : "bg-transparent text-[#739926] border border-[#99CC33]"
                   )}
-                  onClick={() => setActiveTab("leads")}
+                  onClick={() => handleTabChange("leads")}
                 >
-                  Leads
+                  Requests
                 </button>
+                {/* Project Tab Button */}
                 <button
                   className={cn(
                     "px-6 py-0 rounded-full text-base font-bold md:text-lg",
@@ -71,193 +126,178 @@ export function ProfileProjects() {
                       ? "bg-[#99CC33] text-white"
                       : "bg-transparent text-[#739926] border border-[#99CC33]"
                   )}
-                  onClick={() => setActiveTab("projects")}
+                  onClick={() => handleTabChange("projects")}
                 >
                   Projects
                 </button>
               </div>
 
-              {/* Project cards container */}
+              {/* Contenedor de Cards (Scrollable area) */}
               <div
-                className="overflow-y-auto space-y-4 px-4 md:pr-2 md:pl-0 flex-1 max-h-[900px]"
-                style={{
-                  msOverflowStyle: "none",
-                  scrollbarWidth: "none",
-                }}
+                className={cn(
+                  "overflow-y-auto space-y-4 px-4 md:pr-2 md:pl-0", // Scrolling
+                  "md:flex-1 md:min-h-0", // Desktop flex sizing
+                  showList ? "h-[calc(100vh-8rem)]" : "", // Mobile height
+                )}
+                style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
               >
-                <style jsx>{`
-                  div::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}</style>
-                {activeTab === "projects" &&
-                  projects.map((project) => (
-                    <div
-                      key={project.id}
-                      onClick={() => handleProjectSelect(project.id)}
-                      className="cursor-pointer"
-                    >
-                      <ProfileProjectCard
-                        projectName={project.name}
-                        progress={project.progress}
-                        phase={project.phase}
-                        isSelected={selectedProjectId === project.id}
-                      />
+                <style jsx>{` div::-webkit-scrollbar { display: none; } `}</style>
+
+                {/* Render Request Cards */}
+                {activeTab === "leads" &&
+                  (requests.length > 0 ? (
+                    requests.map((request) => (
+                      <div
+                        key={request.id}
+                        onClick={() => handleRequestSelect(request.id)}
+                        className="cursor-pointer"
+                      >
+                        <RequestCard
+                          requestName={request.requestName}
+                          leadStatus={request.leadStatus}
+                          isSelected={selectedRequestId === request.id}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500 mt-10">
+                      No requests available
                     </div>
                   ))}
-                {activeTab === "leads" && (
-                  <div className="text-center text-gray-500 mt-10">No leads available</div>
-                )}
-              </div>
-            </div>
 
-            {/* Right column - Project details and chat */}
+                 {/* Render Project Cards */}
+                 {activeTab === "projects" &&
+                   (projects.length > 0 ? (
+                     projects.map((project) => (
+                       <ProfileProjectCard
+                         key={project.id}
+                         projectName={project.name}
+                         progress={project.progress}
+                         phase={project.phase}
+                         // Assuming ProfileProjectCard has an onClick prop
+                         onClick={() => handleProjectSelect(project.id)}
+                         isSelected={selectedProjectId === project.id}
+                       />
+                     ))
+                   ) : (
+                     <div className="text-center text-gray-500 mt-10">
+                       No projects available
+                     </div>
+                   ))}
+              </div> {/* End Contenedor de Cards */}
+            </div> {/* End Columna Izquierda */}
+
+            {/* Columna Derecha - Detalles y Chat */}
             <div
               className={cn(
-                "flex flex-col md:space-y-4 pt-2 sm:pt-0 px-2",
-                !selectedProjectId ? "md:block hidden" : "block"
+                "flex flex-col space-y-4",
+                !showList ? "flex" : "hidden", // Mobile visibility
+                "md:flex", // Desktop visibility
+                "h-full min-h-0 w-full overflow-hidden" // Layout/height/overflow
               )}
             >
-              {/* Project header with name - Mobile only */}
-              <h2 className="text-[20px] font-bold text-[#060B20] px-4 py-1 md:hidden">
-                {selectedProject.name}
-              </h2>
-
-              {/* Chat/Documents toggle buttons - Mobile only */}
-              <div className="flex mb-2 px-4 pt-2 md:rounded-lg md:shadow-sm md:hidden">
-                <button
-                  className={cn(
-                    "px-6 py-0 rounded-full mr-2 text-base font-bold",
-                    activeView === "chat"
-                      ? "bg-[#99CC33] text-white"
-                      : "bg-transparent text-[#739926] border border-[#99CC33]"
-                  )}
-                  onClick={() => setActiveView("chat")}
-                >
-                  Chat
-                </button>
-                <button
-                  className={cn(
-                    "px-6 py-0 rounded-full mr-2 text-base font-bold",
-                    activeView === "documents"
-                      ? "bg-[#99CC33] text-white"
-                      : "bg-transparent text-[#739926] border border-[#99CC33]"
-                  )}
-                  onClick={() => setActiveView("documents")}
-                >
-                  Documents
-                </button>
-              </div>
-
-              {/* Desktop view - Project details */}
+              {/* --- Sección Superior Derecha (Detalles) --- */}
               <div
-                className="bg-white rounded-lg p-4 max-w-full flex-1 overflow-auto md:block hidden md:mt-0 md:h-[380px]"
-                style={{
-                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-                  msOverflowStyle: "none",
-                  scrollbarWidth: "none",
-                }}
+                className={cn(
+                  "bg-white rounded-lg p-4",
+                  "lg:max10-[250px]", // Outer container max height
+                  "overflow-hidden", // Outer container hides overflow
+                  "flex-shrink-0"
+                )}
+                style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
               >
-                <style jsx>{`
-                  div::-webkit-scrollbar {
-                    display: none;
-                  }
-                `}</style>
-                <div className="grid grid-cols-1 gap-4 h-full overflow-y-auto">
-                  {selectedProject.details.map((detail, index) => (
-                    <div key={index} className="h-[164px]">
-                      <ProfileProjectDetail
-                        description={detail.description}
-                        documents={detail.documents}
-                        date={detail.date}
-                      />
-                    </div>
-                  ))}
+                {/* Contenedor interno para scroll */}
+                <div 
+                  className="overflow-y-auto h-full"
+                  style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#99CC33 #f0f0f0'
+                  }}
+                >
+                  <style jsx>{`
+                    div::-webkit-scrollbar {
+                      width: 8px;
+                    }
+                    div::-webkit-scrollbar-track {
+                      background: #f0f0f0;
+                      border-radius: 10px;
+                    }
+                    div::-webkit-scrollbar-thumb {
+                      background-color: #99CC33;
+                      border-radius: 10px;
+                      border: 2px solid #f0f0f0;
+                    }
+                    div::-webkit-scrollbar-thumb:hover {
+                      background-color: #739926;
+                    }
+                  `}</style>
+                   
+                   {/* Placeholder when no item is selected */}
+                   {!selectedItem && (
+                     <div className="flex items-center justify-center h-full text-gray-400">
+                       {activeTab === 'leads' ? 'Select a request to see details.' : 'Select a project to see details.'}
+                     </div>
+                   )}
+
+                   {/* Render Request Details */}
+                   {selectedItem && activeTab === 'leads' && 'requestName' in selectedItem && (
+                     <RequestDetail
+                       requestName={selectedItem.requestName}
+                       associatedService={selectedItem.associatedService}
+                       companyPlan={selectedItem.companyPlan}
+                       description={selectedItem.description}
+                       leadStatus={selectedItem.leadStatus}
+                     />
+                   )}
+
+                   {/* Render ALL Project Details */}
+                   {selectedItem && activeTab === 'projects' && 'progress' in selectedItem && (
+                     selectedItem.details.map((detail, index) => (
+                       <ProfileProjectDetail
+                         key={index}
+                         description={detail.description}
+                         documents={detail.documents}
+                         date={detail.date}
+                       
+                       />
+                     ))
+                   )}
                 </div>
               </div>
 
-              {/* Desktop view - Chat section */}
+              {/* --- Sección Inferior Derecha (Chat) --- */}
               <div
-                className="bg-white rounded-lg p-4 md:block hidden h-[600px]"
+                className={cn(
+                  "bg-white rounded-lg p-4",
+                  "flex-1 min-h-0 flex flex-col overflow-hidden" // Sizing/Layout/Overflow
+                )}
                 style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
               >
-                <div className="mb-4">
-                  <div className="px-6 py-0 rounded-full bg-[#99CC33] text-white text-center font-bold text-lg w-24">
+                {/* Título del Chat */}
+                <div className="mb-4 flex-shrink-0">
+                  <div className="px-6 py-0 rounded-full bg-[#99CC33] text-white text-center font-bold text-lg w-24 inline-block">
                     Chat
                   </div>
                 </div>
-                <div className="h-[calc(100%-3rem)] flex flex-col">
-                  <div
-                    className="flex-1 overflow-y-auto"
-                    style={{
-                      msOverflowStyle: "none",
-                      scrollbarWidth: "none",
-                    }}
-                  >
-                    <style jsx>{`
-                      div::-webkit-scrollbar {
-                        display: none;
-                      }
-                    `}</style>
-                    <ProfileChat messages={selectedProject.chatHistory} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Mobile view - Content area (shows either chat or documents) */}
-              <div className="bg-white  p-4 flex-1 h-[calc(100vh-165px)] md:hidden md:rounded-lg md:shadow-sm">
-                {activeView === "chat" && (
-                  <div className="h-full flex flex-col">
-                    <div
-                      className="flex-1 overflow-y-auto"
-                      style={{
-                        msOverflowStyle: "none",
-                        scrollbarWidth: "none",
-                      }}
-                    >
-                      <style jsx>{`
-                        div::-webkit-scrollbar {
-                          display: none;
-                        }
-                      `}</style>
-                      <ProfileChat messages={selectedProject.chatHistory} />
+                {/* Área de Mensajes del Chat (Scrollable) */}
+             
+                
+                  {/* Placeholder or Chat Messages */}
+                  {!selectedItem ? (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      {/* Update placeholder based on active tab */}
+                      {activeTab === 'leads' ? 'Select a request to see the chat.' : 'Select a project to see the chat.'}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <ProfileChat messages={currentChatHistory} />
+                  )}
+              
 
-                {activeView === "documents" && (
-                  <div className="h-full flex flex-col">
-                    <div
-                      className="flex-1 overflow-y-auto"
-                      style={{
-                        msOverflowStyle: "none",
-                        scrollbarWidth: "none",
-                      }}
-                    >
-                      <style jsx>{`
-                        div::-webkit-scrollbar {
-                          display: none;
-                        }
-                      `}</style>
-                      <div className="grid grid-cols-1 gap-4">
-                        {selectedProject.details.map((detail, index) => (
-                          <div key={index}>
-                            <ProfileProjectDetail
-                              description={detail.description}
-                              documents={detail.documents}
-                              date={detail.date}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            </div> {/* Fin Columna Derecha */}
+          </div> {/* Fin Grid */}
+        </div> {/* Fin Inner Container */}
+      </section> {/* Fin Section */}
     </MainLayout>
   );
 }

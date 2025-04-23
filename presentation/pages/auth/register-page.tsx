@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 import { Navbar } from "@/presentation/organisms/navbar/navbar";
-import { CircleUser, Phone, Mail, Lock } from "lucide-react";
+import { CircleUser, Phone, Mail, Lock, Loader2 } from "lucide-react";
+import AuthViewModel from "./AuthViewModel";
+import { AuthUser } from "@/components/interface/modules/Auth";
+import { toast } from "sonner";
 
 const testimonials = [
   {
@@ -32,6 +34,13 @@ const testimonials = [
 
 export function RegisterPage() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { register, loading } = AuthViewModel(); // Remove error from destructuring
+
+  // State for form inputs
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,6 +48,119 @@ export function RegisterPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle form submission
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const userData: AuthUser = {
+      name,
+      email,
+      password,
+      phone,
+      imageUrl: "",
+      roleId: 1,
+    };
+
+    // Create a promise for the registration process
+    const registerPromise = register(userData).then(result => {
+      if (result && result.success) {
+        // Clear form on success
+        setName("");
+        setPhone("");
+        setEmail("");
+        setPassword("");
+        // Reset validation states to return borders to normal
+        setValidations({
+          name: "",
+          phone: "",
+          email: "",
+          password: ""
+        });
+        return result; // Return successful result
+      } else {
+        // If the API returns success: false, throw an error to trigger the error toast
+        throw new Error(result?.message || "Registration failed");
+      }
+    });
+    
+    // Use toast.promise to handle all states
+    toast.promise(registerPromise, {
+      loading: "Creating your account...",
+      success: (result) => {
+        return result.message || "Registration successful!";
+      },
+      error: (error) => {
+        return error?.message || "Registration failed. Please try again.";
+      },
+    });
+  };
+
+  // Add validation state for each field
+  const [validations, setValidations] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: ""
+  });
+  
+  // Add focus state tracking
+  const [focusedField, setFocusedField] = useState("");
+
+  // Handle input validation on change
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+    
+    // Update the field value
+    if (field === 'name') setName(value);
+    if (field === 'phone') setPhone(value);
+    if (field === 'email') setEmail(value);
+    if (field === 'password') setPassword(value);
+    
+    // Validate the field
+    if (value === '') {
+      // Empty field - neutral state
+      setValidations(prev => ({ ...prev, [field]: "" }));
+    } else if (e.target.checkValidity()) {
+      // Valid input
+      setValidations(prev => ({ ...prev, [field]: "valid" }));
+    } else {
+      // Invalid input
+      setValidations(prev => ({ ...prev, [field]: "invalid" }));
+    }
+  };
+
+  // Get border style based on validation and focus state
+  const getBorderStyle = (field: string) => {
+    // When field is focused and empty, show green border
+    if (focusedField === field && 
+        (field === 'name' ? name === '' : 
+         field === 'phone' ? phone === '' : 
+         field === 'email' ? email === '' : 
+         field === 'password' ? password === '' : false)) {
+      return "border-[#99cc33] border-2";
+    }
+    
+    // When field is focused and has invalid content, show red border
+    if (focusedField === field && validations[field as keyof typeof validations] === "invalid") {
+      return "border-red-500 border-2";
+    }
+    
+    // When field is focused and has valid content, show green border
+    if (focusedField === field) {
+      return "border-[#99cc33] border-2";
+    }
+    
+    // When field is not focused but has content
+    if (validations[field as keyof typeof validations] === "valid") {
+      return "border-[#99cc33] border-2";
+    } else if (validations[field as keyof typeof validations] === "invalid") {
+      return "border-red-500 border-2";
+    }
+    
+    // Default state
+    return "border-input";
+  };
 
   return (
     <>
@@ -92,31 +214,42 @@ export function RegisterPage() {
               </p>
             </div>
 
-            <div className="items-center justify-center">
-
+            <form onSubmit={handleSubmit} >
               <div className="flex flex-col items-center justify-center mb-9">
 
                 <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                     <CircleUser color="#A2ABE7" />
                   </div>
-                  <Input
+                  <input
                     id="full-name"
-                    type="full-name"
+                    type="text"
                     placeholder="Full Name"
-                    className="w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] "
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('name')} outline-none`}
+                    value={name}
+                    onChange={(e) => handleInputChange(e, 'name')}
+                    onFocus={() => setFocusedField('name')}
+                    onBlur={() => setFocusedField('')}
+                    required
+                    minLength={3}
                   />
                 </div>
 
                 <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-[13px]  pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                     <Phone color="#A2ABE7" />
                   </div>
-                  <Input
+                  <input
                     id="phone"
-                    type="phone"
+                    type="tel"
                     placeholder="Phone Number"
-                    className="w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] "
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('phone')} outline-none`}
+                    value={phone}
+                    onChange={(e) => handleInputChange(e, 'phone')}
+                    onFocus={() => setFocusedField('phone')}
+                    onBlur={() => setFocusedField('')}
+                    required
+                    pattern="[0-9]{10,15}"
                   />
                 </div>
 
@@ -124,11 +257,16 @@ export function RegisterPage() {
                   <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                     <Mail color="#A2ABE7" />
                   </div>
-                  <Input
+                  <input
                     id="email"
                     type="email"
                     placeholder="Email"
-                    className="w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] "
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('email')} outline-none`}
+                    value={email}
+                    onChange={(e) => handleInputChange(e, 'email')}
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField('')}
+                    required
                   />
                 </div>
 
@@ -136,11 +274,17 @@ export function RegisterPage() {
                   <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                     <Lock color="#A2ABE7" />
                   </div>
-                  <Input
+                  <input
                     id="password"
                     type="password"
                     placeholder="Password"
-                    className="w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] "
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('password')} outline-none`}
+                    value={password}
+                    onChange={(e) => handleInputChange(e, 'password')}
+                    onFocus={() => setFocusedField('password')}
+                    onBlur={() => setFocusedField('')}
+                    required
+                    minLength={8}
                   />
                 </div>
               </div>
@@ -148,7 +292,6 @@ export function RegisterPage() {
               <div className="flex justify-center mb-9">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="Newsletter" className="bg-white border-[#E5E7EB]" />
-                  {/* Asocia el label al checkbox para accesibilidad */}
                   <Label htmlFor="Newsletter" className="text-sm">
                     Subscribe to our Newsletter
                   </Label>
@@ -156,8 +299,16 @@ export function RegisterPage() {
               </div>
 
               <div className="px-16">
-                <Button className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200 hover:bg-primary/90 hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
-                  Log In
+                <Button 
+                  type="submit"
+                  className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200 hover:bg-primary/90 hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    "Register"
+                  )}
                 </Button>
               </div>
 
@@ -167,7 +318,7 @@ export function RegisterPage() {
                   Log In
                 </Link>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
