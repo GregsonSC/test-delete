@@ -2,8 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/products
- * @desc Crear un nuevo producto
+ * @swagger
+ * /api/product:
+ *   post:
+ *     tags:
+ *       - Product
+ *     summary: Crear un nuevo producto
+ *     description: Crea un producto con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Producto creado exitosamente
+ *       400:
+ *         description: Nombre del producto es requerido
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -38,8 +65,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/products
- * @desc Obtener todos los productos o uno específico por ID (?id=)
+ * @swagger
+ * /api/product:
+ *   get:
+ *     tags:
+ *       - Product
+ *     summary: Obtener productos
+ *     description: Obtiene todos los productos o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del producto (opcional)
+ *     responses:
+ *       200:
+ *         description: Productos obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Producto no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -102,8 +149,42 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/products?id={id}
- * @desc Actualizar un producto parcialmente
+ * @swagger
+ * /api/product:
+ *   patch:
+ *     tags:
+ *       - Product
+ *     summary: Actualizar un producto
+ *     description: Actualiza parcialmente un producto por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del producto a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               url:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Producto actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Producto no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function PATCH(request: Request) {
   try {
@@ -163,8 +244,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/products?id={id}
- * @desc Eliminar un producto por ID
+ * @swagger
+ * /api/product:
+ *   delete:
+ *     tags:
+ *       - Product
+ *     summary: Eliminar un producto
+ *     description: Elimina un producto existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del producto a eliminar
+ *     responses:
+ *       200:
+ *         description: Producto eliminado exitosamente
+ *       404:
+ *         description: Producto no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {

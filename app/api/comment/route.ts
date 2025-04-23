@@ -2,8 +2,37 @@ import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/comments
- * @desc Crear un nuevo comentario
+ * @swagger
+ * /api/comment:
+ *   post:
+ *     tags:
+ *       - Comment
+ *     summary: Crear un nuevo comentario
+ *     description: Crea un comentario con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *               userId:
+ *                 type: integer
+ *               estimateId:
+ *                 type: integer
+ *               phaseId:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Comentario creado exitosamente
+ *       400:
+ *         description: Contenido del comentario es requerido
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -50,8 +79,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/comments
- * @desc Obtener todos los comentarios o uno específico por ID (?id=)
+ * @swagger
+ * /api/comment:
+ *   get:
+ *     tags:
+ *       - Comment
+ *     summary: Obtener comentarios
+ *     description: Obtiene todos los comentarios o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del comentario (opcional)
+ *     responses:
+ *       200:
+ *         description: Comentarios obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Comentario no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -132,8 +181,38 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/comments?id={id}
- * @desc Actualizar un comentario parcialmente
+ * @swagger
+ * /api/comment:
+ *   patch:
+ *     tags:
+ *       - Comment
+ *     summary: Actualizar un comentario
+ *     description: Actualiza parcialmente un comentario por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del comentario a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Comentario actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Comentario no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function PATCH(request: Request) {
   try {
@@ -209,8 +288,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/comments?id={id}
- * @desc Eliminar un comentario por ID
+ * @swagger
+ * /api/comment:
+ *   delete:
+ *     tags:
+ *       - Comment
+ *     summary: Eliminar un comentario
+ *     description: Elimina un comentario existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del comentario a eliminar
+ *     responses:
+ *       200:
+ *         description: Comentario eliminado exitosamente
+ *       404:
+ *         description: Comentario no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {

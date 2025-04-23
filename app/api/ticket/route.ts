@@ -2,8 +2,37 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/tickets
- * @desc Crear un nuevo ticket
+ * @swagger
+ * /api/ticket:
+ *   post:
+ *     tags:
+ *       - Ticket
+ *     summary: Crear un nuevo ticket
+ *     description: Crea un ticket con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Ticket creado exitosamente
+ *       400:
+ *         description: Título del ticket es requerido
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -47,8 +76,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/tickets
- * @desc Obtener todos los ticket o uno específico por ID (?id=)
+ * @swagger
+ * /api/ticket:
+ *   get:
+ *     tags:
+ *       - Ticket
+ *     summary: Obtener tickets
+ *     description: Obtiene todos los tickets o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del ticket (opcional)
+ *     responses:
+ *       200:
+ *         description: Tickets obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Ticket no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -124,8 +173,44 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/tickets?id={id}
- * @desc Actualizar un ticket parcialmente
+ * @swagger
+ * /api/ticket:
+ *   patch:
+ *     tags:
+ *       - Ticket
+ *     summary: Actualizar un ticket
+ *     description: Actualiza parcialmente un ticket por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del ticket a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Ticket actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Ticket no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function PATCH(request: Request) {
   try {
@@ -197,8 +282,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/tickets?id={id}
- * @desc Eliminar un ticket por ID
+ * @swagger
+ * /api/ticket:
+ *   delete:
+ *     tags:
+ *       - Ticket
+ *     summary: Eliminar un ticket
+ *     description: Elimina un ticket existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del ticket a eliminar
+ *     responses:
+ *       200:
+ *         description: Ticket eliminado exitosamente
+ *       404:
+ *         description: Ticket no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {

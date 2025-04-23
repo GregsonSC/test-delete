@@ -1,10 +1,43 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
-import { verifyToken, hashPassword } from "@/middleware/Secure-middleware";
-// import {formatResponse,validateId } from "@/middleware/response-middleware"
+import { verifyToken, hashPassword, authMiddleware } from "@/middleware/Secure-middleware";
 /**
- * @route POST /api/users
- * @desc Crear un nuevo usuario
+ * @swagger
+ * /api/user:
+ *   post:
+ *     tags:
+ *       - Auth/Registrer
+ *     summary: Crear un nuevo usuario
+ *     description: Crea un usuario con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               imageUrl:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario creado exitosamente
+ *       400:
+ *         description: El correo electrónico ya está registrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -60,7 +93,11 @@ export async function POST(request: NextRequest) {
  * @route GET /api/users
  * @desc Obtener usuarios o uno por id (query param ?id=)
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // 🔒 Validar el token antes de continuar
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
@@ -70,7 +107,7 @@ export async function GET(request: Request) {
         select: {
           id: true,
           name: true,
-          password: true, //Eliminar estos despues ya que no se tiene que devolver la contraseña
+          password: true, // <-- Puedes eliminarlo ahora
           email: true,
           phone: true,
           imageUrl: true,
@@ -135,12 +172,15 @@ export async function GET(request: Request) {
     );
   }
 }
-
 /**
  * @route PATCH /api/users?id={id}
  * @desc Actualizar un usuario por ID
  */
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
+  // 🔒 Validar el token primero
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
@@ -187,6 +227,7 @@ export async function PATCH(request: Request) {
         { status: 404 }
       );
     }
+
     if (data.email && data.email !== user.email) {
       return NextResponse.json(
         {
@@ -203,8 +244,7 @@ export async function PATCH(request: Request) {
       data.password = await hashPassword(data.password);
     }
 
-    // Eliminar el campo email antes de actualizar por seguridad extra
-    delete data.email;
+    delete data.email; // Por seguridad
 
     const updatedUser = await db.user.update({
       where: { id },
@@ -231,12 +271,15 @@ export async function PATCH(request: Request) {
     );
   }
 }
-
 /**
  * @route DELETE /api/users?id={id}
  * @desc Eliminar un usuario por ID
  */
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
+  // 🛡️ Verificar token
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");

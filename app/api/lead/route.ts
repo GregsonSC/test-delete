@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/lead
- * @desc Crear un nuevo lead
  * @swagger
+ * tags:
+ *   - name: Leads
+ *     description: Operations related to leads
+ * 
  * /api/lead:
  *   post:
+ *     tags:
+ *       - Lead
  *     summary: Create a new lead
  *     description: Create a new lead with the provided data.
  *     requestBody:
@@ -162,11 +166,15 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/lead
- * @desc Obtener todos los leads o uno específico por ID (?id=)
  * @swagger
+ * tags:
+ *   - name: Leads
+ *     description: Operations related to leads
+ * 
  * /api/lead:
  *   get:
+ *     tags:
+ *       - Lead
  *     summary: Get all leads or a specific lead by ID
  *     description: Retrieve all leads or a specific lead by providing its ID as a query parameter.
  *     parameters:
@@ -345,11 +353,15 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/lead?id={id}
- * @desc Actualizar un lead parcialmente
  * @swagger
+ * tags:
+ *   - name: Leads
+ *     description: Operations related to leads
+ * 
  * /api/lead:
  *   patch:
+ *     tags:
+ *       - Lead
  *     summary: Update a lead partially
  *     description: Update the fields of a lead by providing its ID as a query parameter and the updated data in the body.
  *     parameters:
@@ -563,11 +575,15 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/lead?id={id}
- * @desc Eliminar un lead por ID
  * @swagger
+ * tags:
+ *   - name: Leads
+ *     description: Operations related to leads
+ * 
  * /api/lead:
  *   delete:
+ *     tags:
+ *       - Lead
  *     summary: Delete a lead
  *     description: Delete a specific lead by providing its ID as a query parameter.
  *     parameters:
