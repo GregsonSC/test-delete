@@ -1,10 +1,70 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
+import { createImage } from "../Cloudinary/upload/route";
+import { Topic } from "@prisma/client";
 
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
 // POST - Crear blog
 export async function POST(request: Request) {
   try {
+    //--------------------------------
+    const formData = await request.formData();
+    const title = formData.get("title")?.toString();
+    const resume = formData.get("resume")?.toString();
+    const content = formData.get("content")?.toString();
+    const topic = formData.get("topic")?.toString();
+    const publicationDate = formData.get("publicationDate")?.toString();
+    //------------------------------------
+    const imageUrl = await createImage(formData);
+    console.log("url");
+    console.log(imageUrl);
+    //------------------------------------
+
+    if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
+      return createResponse({
+        success: false,
+        message: "All fields are required.",
+        errors: ["Missing one or more required fields."],
+        status: 400,
+      });
+    }
+
+    if (!validTopics.includes(topic)) {
+      return createResponse({
+        success: false,
+        message: "Invalid topic.",
+        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+        status: 400,
+      });
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
+      return createResponse({
+        success: false,
+        message: "Invalid date format.",
+        errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
+      });
+    }
+
+    const newBlog = await db.blog.create({
+      data: { title, resume, content, topic: topic as Topic, publicationDate, imageUrl },
+    });
+
+    return createResponse({
+      success: true,
+      data: newBlog,
+      message: "Blog created successfully.",
+      status: 201,
+    });
+    /*
+
+
+
+
+
+
+    
     const data = await request.json();
     const { title, resume, content, topic, publicationDate, imageUrl } = data;
 
@@ -42,7 +102,7 @@ export async function POST(request: Request) {
       data: newBlog,
       message: "Blog created successfully.",
       status: 201,
-    });
+    });*/
   } catch (error) {
     return handleError(error, "POST Blog");
   }
