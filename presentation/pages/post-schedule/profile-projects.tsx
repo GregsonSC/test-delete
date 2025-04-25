@@ -30,9 +30,9 @@ export function PostSchedule() {
     }, []),
 
     <MainLayout>
-      <div className="">
+      <div className="lg:bg-[url('/fondos/RequestConfirmation.png')] lg:bg-cover lg:bg-no-repeat">
         {/* Main Content */}
-        <main className=" mx-auto px-4 text-center  mt-20">
+        <main className=" mx-auto px-4 text-center  pt-20">
           {/* Success Icon */}
           <div className="mb-8 flex justify-center items-center">
             <BadgeCheck size={194}/>
@@ -52,7 +52,7 @@ export function PostSchedule() {
 
           <div className=" mx-auto flex flex-col place-items-center space-y-4 mb-8 ">
             {/* Check Email Card */}
-            <Card className="relative border border-white text-start items-center justify-center pl-28 pr-7 py-10 lg:w-[706px] lg:h-auto">
+            <Card className="relative border border-white text-start items-center justify-center pl-28 pr-7 py-10 lg:w-[706px] lg:h-auto bg-white/5">
               <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-7 top-1/2 transform -translate-y-8"/>
               <CardTitle className="text-xl">Check Your E-mail</CardTitle>
               <CardContent className="p-0 font-medium">
@@ -62,7 +62,7 @@ export function PostSchedule() {
 
             {/* Create Account Card */}
 
-            <Card className="relative border border-white text-start items-center justify-center pr-7 py-10 lg:w-[706px] lg:h-64">
+            <Card className="relative border border-white text-start items-center justify-center pr-7 py-10 lg:w-[706px] lg:h-64 bg-white/5">
               <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-7 top-24 transform -translate-y-8"/>
               <CardTitle className="text-xl pl-28">Create An Account</CardTitle>
               <CardContent className="p-0 pl-28 font-medium">
