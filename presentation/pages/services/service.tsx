@@ -12,6 +12,8 @@ import {Card,
   CardFooter,
 } from "@/components/ui/card";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const reviewItems = [
   {
@@ -43,16 +45,28 @@ export function ServicePage() {
       <section>
         {/* first section */}
         <section>
-          <div className="mt-20  text-center px-5">
-            <h1 className="font-bold text-4xl mb-5">Web Design Services in Miami Beach</h1>
-            <p className="text-justify">Welcome to the premier choice for professional web design services in Miami Beach! Whether you’re a local business, a trendy boutique, a luxury hotel, or a thriving restaurant, we specialize in creating custom web designs that not only look stunning but also drive real results.</p>
+          <div className="relative mt-20 text-center px-5 z-0 overflow-hidden lg:mt-60 lg:mb-80">
+          <div className="hidden rounded-sm absolute top-0 left-1/2 md:left-3/4 -translate-x-1/2 w-11/12 h-4/5 md:w-3/6 md:h-96 bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] opacity-50 z-0" />
+            <div className="relative z-10 space-y-5 lg:pl-28 lg:pr-[441px]">
+              <h1 className="font-bold text-4xl mb-5 lg:text-7xl lg:text-start">
+                Web Design Services in Miami Beach
+              </h1>
+              <p className="text-justify opacity-80 font-medium lg:text-start">
+                Welcome to the premier choice for professional web design services in Miami Beach! Whether you’re a local business, a trendy boutique, a luxury hotel, or a thriving restaurant, we specialize in creating custom web designs that not only look stunning but also drive real results.
+              </p>
+              <Link href="/contact">
+                <Button className="mt-5 rounded-full font-bold text-2xl px-10 py- lg:w-72 lg:h-14">
+                  Book A Call Now!
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* second section (Cards section) */}
-        <section>
-          <div className="mt-10 text-center px-5">
-            <h1 className="font-bold text-4xl mb-5">Why Choose Our Miami Beach Web Design Services?</h1>
+        <section >
+          <div className="mt-10 text-center px-5 lg:ml-[658px] lg:mr-[76px] lg:px-0">
+            <h1 className="font-bold text-4xl mb-5 lg:text-5xl lg:text-start">Why Choose Our Miami Beach Web Design Services?</h1>
             <div>
               <Card className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3">
                 <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-3 top-1/2 transform -translate-y-8"/>
@@ -87,12 +101,9 @@ export function ServicePage() {
             </div>
           </div>
         </section>
-
-
-
         {/* Testimonial section */}
         <section
-          className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
+          className=" flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/fondos/ReviewsGreenBurblesBackground.jpg')" }}
         >
           <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
