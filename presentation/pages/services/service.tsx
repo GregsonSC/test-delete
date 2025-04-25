@@ -11,6 +11,7 @@ import {Card,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 const reviewItems = [
   {
@@ -42,40 +43,45 @@ export function ServicePage() {
       <section>
         {/* first section */}
         <section>
-          <div className="mt-20 text-center px-5">
-            <h1 className="font-bold text-4xl">Web Design Services in Miami Beach</h1>
+          <div className="mt-20  text-center px-5">
+            <h1 className="font-bold text-4xl mb-5">Web Design Services in Miami Beach</h1>
             <p className="text-justify">Welcome to the premier choice for professional web design services in Miami Beach! Whether you’re a local business, a trendy boutique, a luxury hotel, or a thriving restaurant, we specialize in creating custom web designs that not only look stunning but also drive real results.</p>
           </div>
         </section>
 
         {/* second section (Cards section) */}
         <section>
-          <div className="mt-20 text-center px-5">
-            <h1 className="font-bold text-4xl">Why Choose Our Miami Beach Web Design Services?</h1>
-            <div >
-              <Card className="border border-white text-start">
-                <CardTitle>Custom Web Design for Miami Beach Businesses</CardTitle>
-                <CardContent>We create unique, eye-catching websites tailored to your brand and the Miami Beach audience.</CardContent>
+          <div className="mt-10 text-center px-5">
+            <h1 className="font-bold text-4xl mb-5">Why Choose Our Miami Beach Web Design Services?</h1>
+            <div>
+              <Card className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3">
+                <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-3 top-1/2 transform -translate-y-8"/>
+                <CardTitle className="text-lg pl-20">Custom Web Design for Miami Beach Businesses</CardTitle>
+                <CardContent className="text-base pl-20">We create unique, eye-catching websites tailored to your brand and the Miami Beach audience.</CardContent>
               </Card>
               
-              <Card className="border border-white text-start">
-                <CardTitle>Mobile-Friendly & Responsive Web Design</CardTitle>
-                <CardContent>With so many users browsing on their phones, we ensure your website is fully responsive and looks amazing on any device.</CardContent>
+              <Card className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3">
+                <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-3 top-1/2 transform -translate-y-8"/>
+                <CardTitle className="text-lg pl-20">Mobile-Friendly & Responsive Web Design</CardTitle>
+                <CardContent className="text-base pl-20">With so many users browsing on their phones, we ensure your website is fully responsive and looks amazing on any device.</CardContent>
               </Card>
 
-              <Card className="border border-white text-start">
-                <CardTitle>SEO-Optimized Websites for Local Visibility</CardTitle>
-                <CardContent>Our websites are built with local SEO strategies to help you rank higher on Google and attract more customers in Miami Beach.</CardContent>
+              <Card className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3">
+                <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-3 top-1/2 transform -translate-y-8"/>
+                <CardTitle className="text-lg pl-20">SEO-Optimized Websites for Local Visibility</CardTitle>
+                <CardContent className="text-base pl-20">Our websites are built with local SEO strategies to help you rank higher on Google and attract more customers in Miami Beach.</CardContent>
               </Card>
 
-              <Card className="border border-white text-start">
-                <CardTitle>Conversion-Focused Web Development</CardTitle>
-                <CardContent>From clear calls-to-action to intuitive navigation, we design websites that turn visitors into paying customers.</CardContent>
+              <Card className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3">
+                <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-3 top-1/2 transform -translate-y-8"/>
+                <CardTitle className="text-lg pl-20">Conversion-Focused Web Development</CardTitle>
+                <CardContent className="text-base pl-20">From clear calls-to-action to intuitive navigation, we design websites that turn visitors into paying customers.</CardContent>
               </Card>
 
-              <Card className="border border-white text-start">
-                <CardTitle>Ongoing Website Maintenance & Support</CardTitle>
-                <CardContent>Your website is your digital storefront. We offer reliable website maintenance to keep it running smoothly and securely.</CardContent>
+              <Card className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3">
+                <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-3 top-1/2 transform -translate-y-8"/>
+                <CardTitle className="text-lg pl-20">Ongoing Website Maintenance & Support</CardTitle>
+                <CardContent className="text-base pl-20">Your website is your digital storefront. We offer reliable website maintenance to keep it running smoothly and securely.</CardContent>
               </Card>
               
             </div>
