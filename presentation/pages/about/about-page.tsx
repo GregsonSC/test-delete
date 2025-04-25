@@ -10,7 +10,7 @@ export function AboutPage() {
   return (
     <MainLayout >
       {/*TITULO*/}
-      <section className="lg:bg-[url('/images/marketing/background-marketing.png')] lg:bg-cover lg:bg-center lg:bg-no-repeat">
+      <section className="lg:bg-[url('/fondos/AboutUs.png')] lg:bg-cover lg:bg-no-repeat">
         <section className="relative overflow-hidden text-center justify-center" >
             <div className="flex-row">
               <video
@@ -52,7 +52,7 @@ export function AboutPage() {
               <CardContent>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt. Phasellus vitae magna tincidunt, aliquam velit sit amet, convallis ante. Nunc non commodo nisi. Morbi libero leo, ultricies at iaculis ac, eleifend ut felis. Duis ipsum velit, vulputate id velit nec, condimentum eleifend lacus.
                 {/* Mobile-only gradient divs inside Card */}
-                <div className="block lg:hidden bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] h-72 w-full mt-4" />
+                <div className="block lg:hidden bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] h-72 w-full md:h-64 md:w-64 mt-4" />
               </CardContent>
             </Card>
 
@@ -68,7 +68,7 @@ export function AboutPage() {
               <CardContent>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt. Phasellus vitae magna tincidunt, aliquam velit sit amet, convallis ante. Nunc non commodo nisi. Morbi libero leo, ultricies at iaculis ac, eleifend ut felis. Duis ipsum velit, vulputate id velit nec, condimentum eleifend lacus.
                 {/* Mobile-only gradient divs inside Card */}
-                <div className="block lg:hidden bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] h-72 w-full mt-4" />
+                <div className="block lg:hidden bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] h-72 w-full md:h-64 md:w-64 mt-4" />
               </CardContent>
             </Card>
           </div>
@@ -76,15 +76,15 @@ export function AboutPage() {
 
 
         {/*Ubicacion*/}
-        <section className="text-center lg:mt-56 mt-14">
-          <h1 className="text-3xl lg:text-7xl font-bold mb-5">Locations</h1>
+        <section className="text-center lg:mt-56 mt-14 md:mt-32">
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-5">Locations</h1>
           <div className="mx-8">
             <img alt="world-map" src="images/about-us/world-map.png" className="mx-auto"/>
           </div>
         </section>
 
         {/*Servicios */}
-        <section className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-16 mb-[60px]">
+        <section className="flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mt-16 md:mt-16 lg:mt-52 mb-[60px] md:mb-20 lg:mb-24">
                 <div className="container px-8 sm:px-4 md:px-6 mx-auto">
                   <div className="max-w-5xl mx-auto">
                     <Heading
@@ -94,18 +94,17 @@ export function AboutPage() {
                       Digital Services That Will <br/> Lead You To Online Success
                     </Heading>
         
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8  justify-items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-3  gap-8  justify-items-center">
                       {/* First Card */}
                       <HoverCardWGC
                         icon="/images/marketing/icon1.png"
                         title="Web Design & Development"
                         content="Engaging and powerful web design that converts visitors into new clients and more sales."
                         link="/services/advertising"
-                        style={{borderRadius: "5px", 
-                          border: "3px solid transparent", 
-                          borderImage: "linear-gradient(to right, #99CC33, #33CCCC, #99CC33) 2", 
-                          
-                          WebkitMaskComposite: "exclude" }}
+                        style={{borderRadius: '3px',
+                          border: '3px solid transparent',
+                          borderImageSlice: 1,
+                          borderImageSource: 'linear-gradient(to right, #99CC33, #33CCCC, #99CC33)', }}
                       />
         
                       {/* Second Card */}
@@ -114,28 +113,26 @@ export function AboutPage() {
                         title="Generate Traffic, Leads & Sales"
                         content="Drive more leads with a tailored marketing strategy designed exclusively for your business."
                         link="/services/social-media"
-                        style={{  borderRadius: "5px", 
+                        style={{  borderRadius: "3px", 
                           border: "3px solid transparent", 
                           borderImage: "linear-gradient(to right, #99CC33, #33CCCC, #99CC33) 2", 
                           
                           WebkitMaskComposite: "exclude" }}
                       />
-        
+      
                       {/* Third Card - Wrapped in a div for positioning */}
-                      <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
-                        <HoverCardWGC
-                          icon="/images/marketing/icon3.png"
-                          title="Create your Professional Brand"
-                          content="We build a unique visual identity that leaves lasting impression on your brand."
-                          link="/services/seo"
-                          style={{ 
-                            borderRadius: "5px", 
-                            border: "3px solid transparent", 
-                            borderImage: "linear-gradient(to right, #CC33B8, #5933CC, #CC33B8) 2", 
-                            WebkitMaskComposite: "exclude"
+                      <HoverCardWGC
+                        icon="/images/marketing/icon3.png"
+                        title="Create your Professional Brand"
+                        content="We build a unique visual identity that leaves lasting impression on your brand."
+                        link="/services/seo"
+                        style={{ 
+                          borderRadius: "3px", 
+                          border: "3px solid transparent", 
+                          borderImage: "linear-gradient(to right, #CC33B8, #5933CC, #CC33B8) 2", 
+                          WebkitMaskComposite: "exclude"
                           }}
                         />
-                      </div>
                     </div>
                   </div>
                 </div>
