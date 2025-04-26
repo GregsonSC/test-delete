@@ -1,6 +1,6 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
-import { createImage } from "../Cloudinary/upload/route";
+import { createImage } from "../cloudinary/upload/route";
 import { Topic } from "@prisma/client";
 
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
