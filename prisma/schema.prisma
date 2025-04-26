@@ -435,11 +435,21 @@ model WorkTeam {
 }
 
 enum StateWorkTeam {
-  DATOS
+  AVAILABLE
+  INACTIVE
+  ASSIGNED
 }
 
 enum AreaWorkTeam {
-  DATOS
+  BACKEND
+  FRONTEND
+  DESIGN
+  MANAGEMENT
+  ADMINISTRATIVE
+  MARKETING
+  SALES
+  DEVOPS
+  SUPPORT
 }
 
 model UserWorkTeam {

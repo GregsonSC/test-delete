@@ -2,6 +2,58 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
 
 const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
+/**
+ * @route POST /api/service-area
+ * @desc Crear una nueva zona de servicio
+ * @swagger
+ * /api/service-area:
+ *   post:
+ *     tags:
+ *       - ServiceArea
+ *     summary: Create a new ServiceArea
+ *     description: Create a new ServiceArea with required fields and a valid county.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - active
+ *               - county
+ *               - heroImageUrl
+ *               - benefitsImageUrl
+ *               - testimonialEmbed
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               active:
+ *                 type: boolean
+ *               county:
+ *                 type: string
+ *                 enum: [MIAMI_DATE, BROWARD, WEST_PALM_BEACH]
+ *               heroImageUrl:
+ *                 type: string
+ *               benefitsImageUrl:
+ *                 type: string
+ *               testimonialEmbed:
+ *                 type: string
+ *               service_id:
+ *                 type: integer
+ *                 nullable: true
+ *     responses:
+ *       201:
+ *         description: ServiceArea created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -53,6 +105,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST ServiceArea");
   }
 }
+/**
+ * @route GET /api/service-area
+ * @desc Obtener una o todas las zonas de servicio
+ * @swagger
+ * /api/service-area:
+ *   get:
+ *     tags:
+ *       - ServiceArea
+ *     summary: Get one or all ServiceAreas
+ *     description: Retrieve all service areas or a single one by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: ID of the ServiceArea to retrieve.
+ *     responses:
+ *       200:
+ *         description: ServiceArea(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: ServiceArea not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -100,6 +179,57 @@ export async function GET(req: Request) {
     return handleError(error, "GET ServiceArea");
   }
 }
+/**
+ * @route PATCH /api/service-area
+ * @desc Actualizar una zona de servicio
+ * @swagger
+ * /api/service-area:
+ *   patch:
+ *     tags:
+ *       - ServiceArea
+ *     summary: Update a ServiceArea
+ *     description: Update one or more fields of a ServiceArea by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the ServiceArea to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               active:
+ *                 type: boolean
+ *               county:
+ *                 type: string
+ *                 enum: [MIAMI_DATE, BROWARD, WEST_PALM_BEACH]
+ *               heroImageUrl:
+ *                 type: string
+ *               benefitsImageUrl:
+ *                 type: string
+ *               testimonialEmbed:
+ *                 type: string
+ *               service_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: ServiceArea updated successfully.
+ *       400:
+ *         description: Invalid input or ID.
+ *       404:
+ *         description: ServiceArea not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -153,6 +283,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH ServiceArea");
   }
 }
+/**
+ * @route DELETE /api/service-area
+ * @desc Eliminar una zona de servicio
+ * @swagger
+ * /api/service-area:
+ *   delete:
+ *     tags:
+ *       - ServiceArea
+ *     summary: Delete a ServiceArea
+ *     description: Delete a ServiceArea by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the ServiceArea to delete.
+ *     responses:
+ *       200:
+ *         description: ServiceArea deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {

@@ -1,14 +1,24 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-const validState = ["datos"];
-const validArea = ["datos"];
+const validState = ["AVAILABLE", "INACTIVE", "ASSIGNED"];
+const validArea = [
+  "BACKEND",
+  "FRONTEND",
+  "DESIGN",
+  "MANAGEMENT",
+  "ADMINISTRATIVE",
+  "MARKETING",
+  "SALES",
+  "DEVOPS",
+  "SUPPORT",
+];
 /**
- * @route POST /api/workteam
- * @desc Crear un nuevo WorkTeam
  * @swagger
  * /api/workteam:
  *   post:
+ *     tags:
+ *       - WorkTeam
  *     summary: Create a new WorkTeam
  *     description: Create a new WorkTeam with the provided data.
  *     requestBody:
@@ -34,11 +44,11 @@ const validArea = ["datos"];
  *               state:
  *                 type: string
  *                 description: State of the work team. Must be one of the valid options.
- *                 example: datos
+ *                 example: AVAILABLE
  *               area:
  *                 type: string
  *                 description: Area assigned to the work team. Must be one of the valid options.
- *                 example: datos
+ *                 example: BACKEND
  *     responses:
  *       201:
  *         description: WorkTeam created successfully.
@@ -92,6 +102,7 @@ const validArea = ["datos"];
  *                     type: string
  */
 
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -139,6 +150,8 @@ export async function POST(request: Request) {
  * @swagger
  * /api/workteam:
  *   get:
+ *     tags:
+ *       - WorkTeam
  *     summary: Retrieve WorkTeams
  *     description: Get a single WorkTeam by ID or retrieve all if no ID is provided.
  *     parameters:
@@ -204,17 +217,18 @@ export async function POST(request: Request) {
  *                     type: string
  */
 
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const blogs = await db.blog.findMany();
+      const workteam = await db.workTeam.findMany();
       return createResponse({
         success: true,
-        data: blogs,
-        message: "Blogs retrieved successfully.",
+        data: workteam,
+        message: "workteam retrieved successfully.",
         status: 200,
       });
     }
@@ -252,6 +266,8 @@ export async function GET(req: Request) {
  * @swagger
  * /api/workteam:
  *   patch:
+ *     tags:
+ *       - WorkTeam
  *     summary: Update a WorkTeam
  *     description: Update a WorkTeam by ID with the provided data.
  *     parameters:
@@ -332,6 +348,7 @@ export async function GET(req: Request) {
  *                     type: string
  */
 
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -406,6 +423,8 @@ export async function PATCH(request: Request) {
  * @swagger
  * /api/workteam:
  *   delete:
+ *     tags:
+ *       - WorkTeam
  *     summary: Delete a WorkTeam
  *     description: Delete a WorkTeam by ID.
  *     parameters:
@@ -484,10 +503,10 @@ export async function DELETE(req: Request) {
 
     return createResponse({
       success: true,
-      message: "Blog deleted successfully.",
+      message: "workteam deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE Blog");
+    return handleError(error, "DELETE WorkTeam");
   }
 }
