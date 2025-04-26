@@ -1,7 +1,7 @@
 'use client';
 
 import { MainLayout } from "@/presentation/templates/main-layout";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
@@ -40,7 +40,6 @@ const reviewItems = [
 ];
 
 export function ServicePage() {
-  const router = useRouter()
   const params = useParams<{ service: string[] }>()
 
   const [county, city, serviceKey] = params.service ?? []
@@ -60,7 +59,7 @@ export function ServicePage() {
           <div className="overflow-hidden relative">
             <div className="hidden lg:block rounded-md absolute top-28 right-0  w-[840px] h-[679px] bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] opacity-50 z-0" />
             <div className="relative mt-20 text-center px-5 z-0 overflow-hidden lg:mt-60 lg:mb-80">
-              <div className="relative z-10 space-y-5 lg:pl-28 lg:pr-[448px] 2xl:lg:pr-[900px]">
+              <div className="lg:place-items-start relative z-10 space-y-5 lg:pl-28 lg:pr-[448px] 2xl:lg:pr-[900px]">
                 <h1 className="font-bold text-4xl mb-5 lg:text-7xl lg:text-start">
                   {content.title}
                 </h1>
