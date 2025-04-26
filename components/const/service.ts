@@ -88,7 +88,7 @@ export const serviceContent: Record<string, CountyConfig> = {
     },
   },
 
-  broward: {
+  "broward": {
     cities: ["fort-lauderdale", "hollywood", "pompano-beach"],
     services: {
       websites: {
