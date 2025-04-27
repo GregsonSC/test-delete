@@ -5,12 +5,18 @@ import { useParams } from "next/navigation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
-import {Card,
+import {
+  Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { serviceContent } from "@/components/const/service";
+import { notFound } from "next/navigation";
 
 const reviewItems = [
   {
@@ -34,59 +40,77 @@ const reviewItems = [
 ];
 
 export function ServicePage() {
-  const params = useParams<{ service: string }>();
-  console.log(params.service);
+  const params = useParams<{ service: string[] }>()
+
+  const [county, city, serviceKey] = params.service ?? []
+  const countyConfig = serviceContent[county]
+  const validCity = countyConfig?.cities.includes(city)
+  const content = validCity ? countyConfig.services[serviceKey] : undefined
+
+  if (!content) {
+    notFound()
+  }
 
   return (
     <MainLayout>
       <section>
         {/* first section */}
         <section>
-          <div className="mt-20 text-center px-5">
-            <h1 className="font-bold text-4xl">Web Design Services in Miami Beach</h1>
-            <p className="text-justify">Welcome to the premier choice for professional web design services in Miami Beach! Whether you’re a local business, a trendy boutique, a luxury hotel, or a thriving restaurant, we specialize in creating custom web designs that not only look stunning but also drive real results.</p>
-          </div>
-        </section>
-
-        {/* second section (Cards section) */}
-        <section>
-          <div className="mt-20 text-center px-5">
-            <h1 className="font-bold text-4xl">Why Choose Our Miami Beach Web Design Services?</h1>
-            <div >
-              <Card className="border border-white text-start">
-                <CardTitle>Custom Web Design for Miami Beach Businesses</CardTitle>
-                <CardContent>We create unique, eye-catching websites tailored to your brand and the Miami Beach audience.</CardContent>
-              </Card>
-              
-              <Card className="border border-white text-start">
-                <CardTitle>Mobile-Friendly & Responsive Web Design</CardTitle>
-                <CardContent>With so many users browsing on their phones, we ensure your website is fully responsive and looks amazing on any device.</CardContent>
-              </Card>
-
-              <Card className="border border-white text-start">
-                <CardTitle>SEO-Optimized Websites for Local Visibility</CardTitle>
-                <CardContent>Our websites are built with local SEO strategies to help you rank higher on Google and attract more customers in Miami Beach.</CardContent>
-              </Card>
-
-              <Card className="border border-white text-start">
-                <CardTitle>Conversion-Focused Web Development</CardTitle>
-                <CardContent>From clear calls-to-action to intuitive navigation, we design websites that turn visitors into paying customers.</CardContent>
-              </Card>
-
-              <Card className="border border-white text-start">
-                <CardTitle>Ongoing Website Maintenance & Support</CardTitle>
-                <CardContent>Your website is your digital storefront. We offer reliable website maintenance to keep it running smoothly and securely.</CardContent>
-              </Card>
-              
+          <div className="overflow-hidden relative">
+            <div className="hidden lg:block rounded-md absolute top-28 right-0  w-[840px] h-[679px] bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] opacity-50 z-0" />
+            <div className="relative mt-20 text-center px-5 z-0 overflow-hidden lg:mt-60 lg:mb-80">
+              <div className="lg:place-items-start relative z-10 space-y-5 lg:pl-28 lg:pr-[448px] 2xl:lg:pr-[900px]">
+                <h1 className="font-bold text-4xl mb-5 lg:text-7xl lg:text-start">
+                  {content.title}
+                </h1>
+                <p className="text-justify opacity-80 font-medium lg:text-start">
+                  {content.description}
+                </p>
+                <Link href="/contact">
+                  <Button className="mt-5 rounded-full font-bold text-2xl px-10 py- lg:w-72 lg:h-14">
+                    Book A Call Now!
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-
+        {/* second section (Cards section) */}
+        <section className="p-0">
+          <div className="overflow-hidden relative h-full">
+            <div className="hidden lg:block rounded-md absolute top-20  lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600] bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33]" />
+            <div className="items-center mt-10 lg:mt-20 lg:mb-28 text-center px-5  lg:pl-96 xl:pl-[658px] lg:pr-[76px] lg:px-0 relative z-0">
+              <h1 className="font-bold text-4xl mb-5 lg:text-5xl lg:text-start">{content.cardsSectionTitle}</h1>
+              <div>
+                {content.cardItems.map((card, i) => (
+                  <Card
+                    key={i}
+                    className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3"
+                  >
+                    <Image
+                      src="/images/post-schedule/Frame 22.png"
+                      alt="icon"
+                      width={58}
+                      height={58}
+                      className="absolute left-3 top-1/2 -translate-y-8"
+                    />
+                    <CardTitle className="text-lg pl-20">
+                      {card.title}
+                    </CardTitle>
+                    <CardContent className="text-base pl-20 pb-3">
+                      {card.description}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Testimonial section */}
         <section
-          className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
+          className="flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/fondos/ReviewsGreenBurblesBackground.jpg')" }}
         >
           <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
