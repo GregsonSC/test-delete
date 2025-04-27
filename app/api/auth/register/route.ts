@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
  *     summary: Obtener usuarios
  *     description: Recupera una lista de usuarios o un usuario específico por ID.
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: id
@@ -288,8 +288,138 @@ export async function GET(request: NextRequest) {
   }
 }
 /**
- * @route PATCH /api/users?id={id}
- * @desc Actualizar un usuario por ID
+ * @swagger
+ * /api/auth/register:
+ *   patch:
+ *     tags:
+ *       - Register
+ *     summary: Actualizar un usuario
+ *     description: Actualiza la información de un usuario específico por ID. No se permite modificar el correo electrónico.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID del usuario a actualizar.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: El correo electrónico del usuario (no se puede modificar).
+ *               password:
+ *                 type: string
+ *                 description: Nueva contraseña del usuario (opcional).
+ *               name:
+ *                 type: string
+ *                 description: Nombre del usuario (opcional).
+ *               phone:
+ *                 type: string
+ *                 description: Teléfono del usuario (opcional).
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       phone:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 message:
+ *                   type: string
+ *                   example: "User  updated successfully"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: []
+ *       400:
+ *         description: Solicitud incorrecta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "No data provided"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Missing request body"]
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User  not found"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["User  does not exist"]
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error updating user"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Unknown error"]
  */
 export async function PATCH(request: NextRequest) {
   //  Validar el token primero
@@ -387,8 +517,100 @@ export async function PATCH(request: NextRequest) {
   }
 }
 /**
- * @route DELETE /api/users?id={id}
- * @desc Eliminar un usuario por ID
+ * @swagger
+ * /api/auth/register:
+ *   delete:
+ *     tags:
+ *       - Register
+ *     summary: Eliminar un usuario
+ *     description: Elimina un usuario específico por ID.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID del usuario a eliminar.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       phone:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 message:
+ *                   type: string
+ *                   example: "User  deleted successfully"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: []
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User  not found"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["User  does not exist"]
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error deleting user"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Unknown error"]
  */
 export async function DELETE(request: NextRequest) {
   //  Verificar token

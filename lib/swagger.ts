@@ -18,7 +18,7 @@ export const getApiDocs = async () => {
           },
         },
       },
-      security: [],
+      security: [{ BearerAuth: [] }], //  aquí activamos el botón "Authorize"
     },
   });
   return spec;
