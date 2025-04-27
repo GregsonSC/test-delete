@@ -4,7 +4,7 @@ import db from "@/lib/prisma";
 /**
  * @swagger
  * tags:
- *   - name: Leads
+ *   - name: Lead
  *     description: Operations related to leads
  * 
  * /api/lead:
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
 /**
  * @swagger
  * tags:
- *   - name: Leads
+ *   - name: Lead
  *     description: Operations related to leads
  * 
  * /api/lead:
@@ -355,7 +355,7 @@ export async function GET(request: Request) {
 /**
  * @swagger
  * tags:
- *   - name: Leads
+ *   - name: Lead
  *     description: Operations related to leads
  * 
  * /api/lead:
@@ -577,7 +577,7 @@ export async function PATCH(request: Request) {
 /**
  * @swagger
  * tags:
- *   - name: Leads
+ *   - name: Lead
  *     description: Operations related to leads
  * 
  * /api/lead:

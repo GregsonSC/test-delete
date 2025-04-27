@@ -102,10 +102,15 @@ export async function GET(request: Request) {
           url: true,
         },
       });
+      const Attachment = await db.product.findMany({
+        include: {
+          Attachment: true
+        },
+      });
 
       return NextResponse.json({
         success: true,
-        data: products,
+        data: products,Attachment,
         message: "Products fetched successfully",
         errors: []
       });
@@ -121,7 +126,8 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
-    const product = await db.product.findUnique({ where: { id } });
+    const product = await db.product.findUnique({ where: { id },
+      include:{Attachment:true} });
 
     if (!product) {
       return NextResponse.json({

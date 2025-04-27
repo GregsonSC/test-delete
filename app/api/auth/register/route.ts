@@ -3,10 +3,10 @@ import db from "@/lib/prisma";
 import { verifyToken, hashPassword, authMiddleware } from "@/middleware/Secure-middleware";
 /**
  * @swagger
- * /api/user:
+ * /api/auth/register:
  *   post:
  *     tags:
- *       - Auth/Registrer
+ *       - Register
  *     summary: Crear un nuevo usuario
  *     description: Crea un usuario con los datos enviados en el body.
  *     requestBody:
@@ -19,6 +19,7 @@ import { verifyToken, hashPassword, authMiddleware } from "@/middleware/Secure-m
  *               - email
  *               - password
  *               - name
+ *               - roleId
  *             properties:
  *               email:
  *                 type: string
@@ -31,6 +32,9 @@ import { verifyToken, hashPassword, authMiddleware } from "@/middleware/Secure-m
  *                 type: string
  *               imageUrl:
  *                 type: string
+ *               roleId:
+ *                 type: integer
+ *                 description: ID del rol del usuario (por ejemplo, 1 para 'admin', 2 para 'user', etc.)
  *     responses:
  *       201:
  *         description: Usuario creado exitosamente
@@ -90,11 +94,122 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/users
- * @desc Obtener usuarios o uno por id (query param ?id=)
+ * @swagger
+ * /api/auth/register:
+ *   get:
+ *     tags:
+ *       - Register
+ *     summary: Obtener usuarios
+ *     description: Recupera una lista de usuarios o un usuario específico por ID.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         description: ID del usuario a recuperar. Si no se proporciona, se devolverán todos los usuarios.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuarios recuperados exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       phone:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 message:
+ *                   type: string
+ *                   example: "Users fetched successfully"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: []
+ *       400:
+ *         description: El ID debe ser un número válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "The id must be a valid number"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Invalid ID"]
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["User does not exist"]
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching users"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Unknown error"]
  */
+
 export async function GET(request: NextRequest) {
-  // 🔒 Validar el token antes de continuar
+  //  Validar el token antes de continuar
   const auth = authMiddleware(request);
   if (auth) return auth;
 
@@ -177,7 +292,7 @@ export async function GET(request: NextRequest) {
  * @desc Actualizar un usuario por ID
  */
 export async function PATCH(request: NextRequest) {
-  // 🔒 Validar el token primero
+  //  Validar el token primero
   const auth = authMiddleware(request);
   if (auth) return auth;
 
@@ -276,7 +391,7 @@ export async function PATCH(request: NextRequest) {
  * @desc Eliminar un usuario por ID
  */
 export async function DELETE(request: NextRequest) {
-  // 🛡️ Verificar token
+  //  Verificar token
   const auth = authMiddleware(request);
   if (auth) return auth;
 
