@@ -57,12 +57,12 @@ const navItems: NavItem[] = [
         description: "Strategies to grow your online presence and generate leads",
 
       },
-      {
-        label: "Graphic Design",
-        href: "/graphic-design",
-        description: "Visual branding that captures your company's essence",
+      // {
+      //   label: "Graphic Design",
+      //   href: "/graphic-design",
+      //   description: "Visual branding that captures your company's essence",
 
-      }
+      // }
     ]
   },
   {
@@ -282,11 +282,13 @@ export function Navbar() {
               <div className="hidden sm:flex gap-[20px]">
                 {!isLogged ? (
                   <>
-                    <Button
-                      className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
-                    >
-                      Register
-                    </Button>
+                    <Link href="/register" passHref>
+                      <Button
+                        className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
+                      >
+                        Register
+                      </Button>
+                    </Link>
 
                     <Button
                       onClick={handleLogin}
@@ -354,7 +356,7 @@ export function Navbar() {
                 <div
                   key={item.label}
                   className={cn(
-                    "grid grid-cols-3 gap-8",
+                    "grid grid-cols-2 gap-8",
                     activeDropdown === item.label ? "" : "hidden"
                   )}
                 >

@@ -51,7 +51,7 @@ export function ContactInfo(type: number) {
           {/* Contenido encima del video */}
           <div className="relative flex-row place-items-end xl:max-w-[1440px] z-10">
             {/* Texto */}
-            <div className="w-full xl:w-[804px] text-center xl:ml-[560px] xl:mr-20 xl:place-items-end">
+            <div className="w-full xl:w-[804px] xl:flex xl:flex-col xl:items-end xl:text-right text-center xl:ml-[560px] xl:mr-20 xl:place-items-end">
               <Heading
                 level="h1"
                 className="text-3xl md:text-5xl font-bold mb-4 text-[#0A1248]"
@@ -64,7 +64,7 @@ export function ContactInfo(type: number) {
               </p>
               <Button className="rounded-full bg-[#0A1248] text-white">
                 <Phone color="white" />
-                (954) 706-4084
+                <span className="font-bold">(954) 706-4084</span>
               </Button>
             </div>
             {/* Círculo blanco - solo visible en xl en adelante */}

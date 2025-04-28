@@ -14,6 +14,7 @@ export function Footer() {
         {/* logos */}
         <div className="space-y-4 flex flex-col items-center md:items-start">
           <Logo className="mb-3" />
+          {/* ! CH006 [ADD] Agregar las 3 urls de los las redes sociales */}
           <div className="flex space-x-2">
             <a href="https://www.facebook.com">
               <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
@@ -43,7 +44,7 @@ export function Footer() {
             <li>
               <span className="text-white mr-1">&bull;</span>
               <Link
-                href="/services/web-development"
+                href="/websites"
                 className="text-white hover:text-[#99CC33] underline "
               >
                 Web Design & Development
@@ -52,13 +53,13 @@ export function Footer() {
             <li>
               <span className="text-white mr-1">&bull;</span>
               <Link
-                href="/services/digital-marketing"
+                href="/marketing"
                 className="text-white hover:text-[#99CC33] underline"
               >
                 Lead Generation & Digital Marketing
               </Link>
             </li>
-            <li>
+            {/* <li>
               <span className="text-white mr-1">&bull;</span>
               <Link
                 href="/services/graphic-design"
@@ -66,7 +67,7 @@ export function Footer() {
               >
                 Graphic Design & Branding
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
 
@@ -82,7 +83,7 @@ export function Footer() {
             </li>
             <li>
               <span className="text-white mr-1">&bull;</span>
-              <Link href="/consultation" className="text-white hover:text-[#99CC33] underline">
+              <Link href="/contact" className="text-white hover:text-[#99CC33] underline">
                 Book My Free Consultation Call!
               </Link>
             </li>
@@ -104,22 +105,22 @@ export function Footer() {
               <div className=" bg-[#04081E] rounded-full p-[10px]">
                 <Phone className="text-white" size={26} />
               </div>
-              <span className="text-[#14171F] text-lg font-bold">(954) 706-4084</span>
+              <a href="tel:+19547064084" className="text-[#14171F] text-lg font-bold hover:underline">(954) 706-4084</a>
             </div>
             <div className="flex items-center justify-center md:justify-start gap-4">
               <div className=" bg-[#04081E] rounded-full p-[10px]">
                 <Mail className="text-white" size={26} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[#14171F] text-lg font-bold">info@senaviacorp.com</span>
-                <span className="text-[#14171F] text-lg font-bold">leads@senaviacorp.com</span>
+                <a href="mailto:info@senaviacorp.com" className="text-[#14171F] text-lg font-bold hover:underline">info@senaviacorp.com</a>
+                <a href="mailto:leads@senaviacorp.com" className="text-[#14171F] text-lg font-bold hover:underline">leads@senaviacorp.com</a>
               </div>
             </div>
             <div className="flex items-center justify-center md:justify-start gap-4">
               <div className=" bg-[#04081E] rounded-full p-[10px]">
                 <MapPin className="text-white" size={26} />
               </div>
-              <span className="text-[#14171F] text-lg font-bold">Location Info</span>
+              <a href="https://www.google.com/maps/place/Senavia+Corp/@26.1184942,-80.2649367,17z/data=!3m1!5s0x88e606f1913dee1d:0x6083a0b52ea8f4bf!4m15!1m8!3m7!1s0x88d90595811015ab:0xbee9b3cdd613e48a!2sSenavia+Corp!8m2!3d26.1184942!4d-80.2623618!10e4!16s%2Fg%2F11j_zjxxff!3m5!1s0x88d90595811015ab:0xbee9b3cdd613e48a!8m2!3d26.1184942!4d-80.2623618!16s%2Fg%2F11j_zjxxff?entry=ttu&g_ep=EgoyMDI1MDQyMy4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" className="text-[#14171F] text-lg font-bold hover:underline">Location Info</a>
             </div>
             <div className="flex items-center justify-center md:justify-start gap-4">
               <div className=" bg-[#04081E] rounded-full p-[10px]">
@@ -140,6 +141,7 @@ export function Footer() {
             Copyright {new Date().getFullYear()} Senavia Corp. All rights reserved.
           </p>
           <div className="flex space-x-2">
+            {/* ! CH007 [ADD] Agregar los reconocimientos de Senavia */}
             <div className="bg-[#99CC33] w-20 h-12"></div>
             <div className="bg-[#99CC33] w-20 h-12"></div>
             <div className="bg-[#99CC33] w-20 h-12"></div>

@@ -18,17 +18,17 @@ export function HoverCardWGC({
 }: HoverCardWGCProps & { style?: React.CSSProperties }) {
     return (
             <Card
-                className=" border-transparent md:w-60  lg:w-80 rounded-lg bg-[#36394B] backdrop-blur-md border-[#99CC33] hover:bg-[#282b38]"
+                className=" border-transparent md:w-60  lg:w-80 rounded-lg bg-[#36394b43] backdrop-blur-md border-[#99CC33] hover:bg-[#282b38]"
                 style={style}
             >
                 <CardHeader className="items-start md:items-center md:text-center lg:items-start lg:text-start">
                     <img src={icon} alt="icon" className="w-14 h-14 mb-5 rounded-lg" />
                     <CardTitle className="mb-5">
-                        <h4 className="text-xl font-semibold">{title}</h4>
+                        <h4 className="text-xl font-medium lg:h-[64px] flex items-center">{title}</h4>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="md:text-center lg:text-start">
-                    <p className="font-normal text-base">{content}</p>
+                    <p className="font-light text-base">{content}</p>
                 </CardContent>
                 <CardFooter className="flex flex-col h-auto">
                     <hr className="w-11/12 mx-auto border-t border-[#E4E4E7] pb-2" />

@@ -23,7 +23,7 @@ export function HoverCardImage({
                 <Card className="w-full h-full bg-[#36394b] backdrop-blur-md hover:bg-[#282b38]">
                     <CardHeader className="items-start">
                         <CardTitle>
-                            <h4 className="text-xl font-semibold">{title}</h4>
+                            <h4 className="text-xl font-semibold lg:h-[64px] flex items-center">{title}</h4>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -43,7 +43,7 @@ export function HoverCardImage({
                                 <p className="mt-5 text-left">{date}</p>
                             </div>
                             <div className="flex-1">
-                                <p className="mt-5 text-right">{tag}</p> 
+                                <p className="mt-5 text-right">{tag}</p>
                             </div>
                         </div>
                     </CardFooter>

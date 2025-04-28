@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/presentation/atoms/button/button";
 import { ArrowRight } from 'lucide-react';
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -24,7 +25,19 @@ export function EmailForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    alert("correo registrado");
+    const registerPromise = new Promise<{ message: string }>((resolve, reject) => {
+      setTimeout(() => {
+        resolve({ message: `¡Correo registrado: ${values.email}!` });
+        // Para simular error, usa: reject(new Error("Hubo un error"));
+      }, 2000);
+    });
+
+    await toast.promise(registerPromise, {
+      loading: "Registrando tu correo...",
+      success: (result) => result.message || "¡Registro exitoso!",
+      error: (error) => error?.message || "Registro fallido. Intenta de nuevo.",
+    });
+
     form.reset();
   }
 

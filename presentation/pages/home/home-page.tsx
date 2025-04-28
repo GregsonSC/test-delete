@@ -1,269 +1,134 @@
+import Link from "next/link";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
-import Link from "next/link";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
 import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
-import { LatestNews, NewsItem } from "@/presentation/molecules/news/latest-news";
+import { LatestNews } from "@/presentation/molecules/news/latest-news";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
+import { blogItems, caseItems, portfolioItems, reviewItems } from "@/lib/constants2";
 
 export function HomePage() {
-  // Portfolio items data
-  const portfolioItems = [
-    {
-      title: "E-commerce Redesign",
-      description:
-        "Increased conversion rates by 45% through strategic UX improvements and targeted marketing campaigns.",
-      imageUrl: "https://picsum.photos/645/577?random=1",
-      href: "/portfolio/ecommerce",
-      tags: ["Fashion Industry", "E-commerce", "UX Design"],
-    },
-    {
-      title: "Social Media Growth",
-      description:
-        "Developed a comprehensive social strategy that grew audience by 200% and engagement by 78% in 6 months.",
-      imageUrl: "https://picsum.photos/645/577?random=2",
-      href: "/portfolio/social",
-      tags: ["Food & Beverage", "Social Media", "Content Strategy"],
-    },
-    {
-      title: "SEO Transformation",
-      description:
-        "Achieved first page rankings for 15 competitive keywords, resulting in 87% increase in organic traffic.",
-      imageUrl: "https://picsum.photos/645/577?random=3",
-      href: "/portfolio/seo",
-      tags: ["Real Estate", "SEO", "Content Marketing"],
-    },
-  ];
-
-  // Review items data
-  const reviewItems = [
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Sarah Johnson",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Michael Chen",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Emily Rodriguez",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "David Wilson",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Jessica Lee",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Robert Taylor",
-      rating: 5.0,
-      review: "Review",
-    },
-  ];
-
-  // Blog news data
-  const blogItems: NewsItem[] = [
-    {
-      id: "1",
-      title: "Title",
-      content: "Content",
-      image: "/images/marketing/mk3.png",
-      date: "June 15, 2023",
-      tag: "Marketing"
-    },
-    {
-      id: "2",
-      title: "Title",
-      content: "Content",
-      image: "/images/marketing/mk3.png",
-      date: "July 22, 2023",
-      tag: "SEO"
-    },
-    {
-      id: "3",
-      title: "Title",
-      content: "Content",
-      image: "/images/marketing/mk3.png",
-      date: "August 10, 2023",
-      tag: "Social Media"
-    },
-    {
-      id: "4",
-      title: "Title",
-      content: "Content",
-      image: "/images/marketing/mk3.png",
-      date: "September 5, 2023",
-      tag: "Content"
-    },
-    {
-      id: "5",
-      title: "Title",
-      content: "Content",
-      image: "/images/marketing/mk3.png",
-      date: "October 18, 2023",
-      tag: "Advertising"
-    }
-  ];
-
-  // Case studies data
-  const caseItems: NewsItem[] = [
-    {
-      id: "case1",
-      title: "E-commerce Conversion Boost",
-      content: "How we increased online sales by 75% for a retail client",
-      image: "https://picsum.photos/597/336",
-      date: "May 10, 2023",
-      tag: "E-commerce"
-    },
-    {
-      id: "case2",
-      title: "Local SEO Success Story",
-      content: "Helping a small business dominate local search results",
-      image: "https://picsum.photos/597/336",
-      date: "July 3, 2023",
-      tag: "SEO"
-    }
-  ];
-
   return (
     <MainLayout>
+      {/* First Section - Hero */}
+      <section
+        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden mt-20"
+        style={{ backgroundColor: "#020301" }}
+      >
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: "url('/images/home/hero-background.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.7
+          }}
+        />
 
+        <div className="container mt-5 mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto relative z-10 text-white">
+          <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
+            Web Design and Digital Marketing<br />
+            Agency in Miami
+          </Heading>
 
+          <p className="text-[16px] md:text-[18px] font-normal mb-12 max-w-3xl mx-auto">
+            Did you know that your website is the first impression of your business? At Senavia, we are experts in
+            web design and digital marketing, turning your online presence into a client-generating machine.
+          </p>
 
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#a3e635] text-black hover:bg-[#87c232] transition-colors"
+          >
+            <Link href="/contact">Get a free consultation!</Link>
+          </Button>
+        </div>
 
- {/* First Section - Hero */}
-<section 
-  className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden mt-20"
-  style={{ backgroundColor: "#020301" }}
->
-  <div 
-    className="absolute inset-0 z-0" 
-    style={{
-      backgroundImage: "url('/images/home/hero-background.png')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      opacity: 0.7
-    }}
-  />
-  
-  <div className="container mt-5 mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto relative z-10 text-white">
-    <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
-      Web Design and Digital Marketing<br />
-      Agency in Miami
-    </Heading>
-    
-    <p className="text-[16px] md:text-[18px] font-normal mb-12 max-w-3xl mx-auto">
-      Did you know that your website is the first impression of your business? At Senavia, we are experts in
-      web design and digital marketing, turning your online presence into a client-generating machine.
-    </p>
-    
-    <Button
-      asChild
-      size="lg"
-      className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#a3e635] text-black hover:bg-[#87c232] transition-colors"
-    >
-      <Link href="/contact">Get a free consultation!</Link>
-    </Button>
-  </div>
-  
-  <div className="relative z-10 mt-16 w-full max-w-6xl mx-auto">
-    <img 
-      src="/images/home/hero-image.png" 
-      alt="Website Preview" 
-      className="w-full h-auto "
-     
-    />
-  </div>
-</section>
+        <div className="relative z-10 mt-16 w-full max-w-6xl mx-auto">
+          <img
+            src="/images/home/hero-image.png"
+            alt="Website Preview"
+            className="w-full h-auto "
+
+          />
+        </div>
+      </section>
 
 
 
       {/* --- PARTNERS LOGOS SECTION --- */}
-<section className="w-full bg-[#04071F00]-900 py-8" style={{ height: '150px'}}>
-  <div className="container mx-auto h-full flex items-center justify-center">
-    <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
-      <img 
-        src="/images/home/google.svg" 
-        alt="Google Analytics" 
-        className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
-      />
-      <img 
-        src="/images/home/webflow.svg" 
-        alt="Webflow" 
-        className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
-      />
-      <img 
-        src="/images/home/shopify.svg" 
-        alt="Shopify" 
-        className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
-      />
-      <img 
-        src="/images/home/paypal.svg" 
-        alt="PayPal" 
-        className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
-      />
-      <img 
-        src="/images/home/stripe.svg" 
-        alt="Stripe" 
-        className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
-      />
-    </div>
-  </div>
-</section>
-{/* --- END PARTNERS LOGOS SECTION --- */}
+      <section className="w-full bg-[#04071F00]-900 py-8 lg:h-[150px]">
+        <div className="container mx-auto h-full flex items-center justify-center">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+            <img
+              src="/images/home/google.svg"
+              alt="Google Analytics"
+              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+            />
+            <img
+              src="/images/home/webflow.svg"
+              alt="Webflow"
+              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+            />
+            <img
+              src="/images/home/shopify.svg"
+              alt="Shopify"
+              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+            />
+            <img
+              src="/images/home/paypal.svg"
+              alt="PayPal"
+              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+            />
+            <img
+              src="/images/home/stripe.svg"
+              alt="Stripe"
+              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+            />
+          </div>
+        </div>
+      </section>
+      {/* --- END PARTNERS LOGOS SECTION --- */}
 
 
       {/* --- HERO VIDEO SECTION --- */}
-<section className="min-h-screen relative flex flex-col justify-center items-center">
-  <video
-    className="absolute top-0 left-0 w-full h-full object-cover z-1"
-    src="/fondos/blog-video-background.mp4"
-    autoPlay
-    loop
-    muted
-  ></video>
-  
-  <div className="relative z-2 text-center w-full max-w-4xl mx-auto px-4 mt-5 mb-8">
-    <h1 className="text-3xl md:text-5xl font-bold text-[#181C3A] text-center mb-4 mt-4">
-      5-Star Digital Marketing Agency
-    </h1>
-    <p className="text-base md:text-lg text-[#181C3A] text-center max-w-xl mx-auto mb-8">
-      Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing standout design, web development, and marketing solutions tailored to meet your business needs.
-    </p>
-    <div className="flex justify-center">
-      <div className="w-full max-w-2xl aspect-video rounded-lg overflow-hidden shadow-lg border-2 border-[#181C3A]/10 bg-black">
-        <iframe
-          width="100%"
-          height="100%"
-          src="https://www.youtube.com/embed/pABHh3xkdWQ"
-          title="SENAVIA - Enjoy Online Success with Smart Digital Marketing"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    </div>
-  </div>
-</section>
-{/* --- END HERO VIDEO SECTION --- */}
+      <section className="min-h-screen relative flex flex-col justify-center items-center">
+        <video
+          className="absolute top-0 left-0 w-full h-full object-cover z-1"
+          src="/fondos/blog-video-background.mp4"
+          autoPlay
+          loop
+          muted
+        ></video>
+
+        <div className="relative z-2 text-center w-full max-w-4xl mx-auto px-4 mt-5 mb-8">
+          <h1 className="text-3xl md:text-5xl font-bold text-[#181C3A] text-center mb-4 mt-4">
+            5-Star Digital Marketing Agency
+          </h1>
+          <p className="text-base md:text-lg text-[#181C3A] text-center max-w-xl mx-auto mb-8">
+            Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing standout design, web development, and marketing solutions tailored to meet your business needs.
+          </p>
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl aspect-video rounded-lg overflow-hidden shadow-lg border-2 border-[#181C3A]/10 bg-black md:my-10">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/pABHh3xkdWQ"
+                title="SENAVIA - Enjoy Online Success with Smart Digital Marketing"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* --- END HERO VIDEO SECTION --- */}
 
       {/* Second Section */}
       <section
@@ -279,6 +144,7 @@ export function HomePage() {
               Digital Services That Will Lead You To Online Success
             </Heading>
 
+          {/* ! CH005 [URL] Agregar urls para navegar donde se requiere */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
@@ -333,9 +199,10 @@ export function HomePage() {
             Development Portfolio
           </Heading>
           <p className="text-[24px] md:text-[20px] font-[600] text-center  mb-8 max-w-4xl mx-auto">
-          Fuel your creativity with our latest web design & development masterpieces!
+            Fuel your creativity with our latest web design & development masterpieces!
           </p>
           <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
+            {/* ! CH002: obtener datos del backend para agregar la data del carousel, img, tags, title, description, href  */}
             <PortfolioCarousel items={portfolioItems} />
           </div>
         </div>

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-
+// ! CH002: Discover Our Process cambie el texto de Lorem y contenido en los 4 procesos
 const ExpandingColumns = () => {
   const [expandedIndex, setExpandedIndex] = useState(0);
 
@@ -19,11 +19,16 @@ const ExpandingColumns = () => {
           {[0, 1, 2, 3].map((index) => (
             <div
               key={index}
-              className={`transition-all duration-700 ease-in-out rounded cursor-pointer bg-gradient-to-r from-lime-400 to-cyan-400 ${
-                expandedIndex === index ? 'w-[40%]' : 'w-[15%]'
-              }`}
+              className={`flex flex-col justify-end items-start p-4 transition-all duration-700 ease-in-out rounded cursor-pointer bg-gradient-to-r from-lime-400 to-cyan-400 ${expandedIndex === index ? 'w-[40%]' : 'w-[15%]'
+                }`}
               onClick={() => setExpandedIndex(index)}
-            />
+            >
+              {index === 0 && (
+                <p className="text-md md:text-2xl font-bold text-[#0A1248]">
+                  Request
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </div>
