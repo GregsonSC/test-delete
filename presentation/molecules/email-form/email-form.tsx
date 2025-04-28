@@ -15,7 +15,7 @@ const formSchema = z.object({
     message: "Please enter a valid email address.",
   }),
 });
-
+// !CH009 [UPDATE] Agregar endpoint para el newsletter
 export function EmailForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
