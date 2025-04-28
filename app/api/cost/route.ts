@@ -2,8 +2,37 @@ import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/costs
- * @desc Crear un nuevo costo
+ * @swagger
+ * /api/cost:
+ *   post:
+ *     tags:
+ *       - Cost
+ *     summary: Crear un nuevo costo
+ *     description: Crea un costo con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               value:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Costo creado exitosamente
+ *       400:
+ *         description: Nombre del costo es requerido
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -47,8 +76,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/costs
- * @desc Obtener todos los costos o uno por ID (?id=)
+ * @swagger
+ * /api/cost:
+ *   get:
+ *     tags:
+ *       - Cost
+ *     summary: Obtener costos
+ *     description: Obtiene todos los costos o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del costo (opcional)
+ *     responses:
+ *       200:
+ *         description: Costos obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Costo no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -125,8 +174,44 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/costs?id={id}
- * @desc Actualizar un costo parcialmente
+ * @swagger
+ * /api/cost:
+ *   patch:
+ *     tags:
+ *       - Cost
+ *     summary: Actualizar un costo
+ *     description: Actualiza parcialmente un costo por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del costo a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               value:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Costo actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Costo no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function PATCH(request: Request) {
   try {
@@ -200,8 +285,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/costs?id={id}
- * @desc Eliminar un costo por ID
+ * @swagger
+ * /api/cost:
+ *   delete:
+ *     tags:
+ *       - Cost
+ *     summary: Eliminar un costo
+ *     description: Elimina un costo existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del costo a eliminar
+ *     responses:
+ *       200:
+ *         description: Costo eliminado exitosamente
+ *       404:
+ *         description: Costo no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {

@@ -1,10 +1,47 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
-import { verifyToken, hashPassword } from "@/middleware/Secure-middleware";
-// import {formatResponse,validateId } from "@/middleware/response-middleware"
+import { verifyToken, hashPassword, authMiddleware } from "@/middleware/Secure-middleware";
 /**
- * @route POST /api/users
- * @desc Crear un nuevo usuario
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     tags:
+ *       - Register
+ *     summary: Crear un nuevo usuario
+ *     description: Crea un usuario con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
+ *               - roleId
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               imageUrl:
+ *                 type: string
+ *               roleId:
+ *                 type: integer
+ *                 description: ID del rol del usuario (por ejemplo, 1 para 'admin', 2 para 'user', etc.)
+ *     responses:
+ *       201:
+ *         description: Usuario creado exitosamente
+ *       400:
+ *         description: El correo electrónico ya está registrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -57,10 +94,125 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/users
- * @desc Obtener usuarios o uno por id (query param ?id=)
+ * @swagger
+ * /api/auth/register:
+ *   get:
+ *     tags:
+ *       - Register
+ *     summary: Obtener usuarios
+ *     description: Recupera una lista de usuarios o un usuario específico por ID.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         description: ID del usuario a recuperar. Si no se proporciona, se devolverán todos los usuarios.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuarios recuperados exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       phone:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 message:
+ *                   type: string
+ *                   example: "Users fetched successfully"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: []
+ *       400:
+ *         description: El ID debe ser un número válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "The id must be a valid number"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Invalid ID"]
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["User does not exist"]
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching users"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Unknown error"]
  */
-export async function GET(request: Request) {
+
+export async function GET(request: NextRequest) {
+  //  Validar el token antes de continuar
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
@@ -70,7 +222,7 @@ export async function GET(request: Request) {
         select: {
           id: true,
           name: true,
-          password: true,
+          password: true, // <-- Puedes eliminarlo ahora
           email: true,
           phone: true,
           imageUrl: true,
@@ -135,12 +287,145 @@ export async function GET(request: Request) {
     );
   }
 }
-
 /**
- * @route PATCH /api/users?id={id}
- * @desc Actualizar un usuario por ID
+ * @swagger
+ * /api/auth/register:
+ *   patch:
+ *     tags:
+ *       - Register
+ *     summary: Actualizar un usuario
+ *     description: Actualiza la información de un usuario específico por ID. No se permite modificar el correo electrónico.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID del usuario a actualizar.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: El correo electrónico del usuario (no se puede modificar).
+ *               password:
+ *                 type: string
+ *                 description: Nueva contraseña del usuario (opcional).
+ *               name:
+ *                 type: string
+ *                 description: Nombre del usuario (opcional).
+ *               phone:
+ *                 type: string
+ *                 description: Teléfono del usuario (opcional).
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       phone:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 message:
+ *                   type: string
+ *                   example: "User  updated successfully"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: []
+ *       400:
+ *         description: Solicitud incorrecta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "No data provided"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Missing request body"]
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User  not found"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["User  does not exist"]
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error updating user"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Unknown error"]
  */
-export async function PATCH(request: Request) {
+export async function PATCH(request: NextRequest) {
+  //  Validar el token primero
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
@@ -187,6 +472,7 @@ export async function PATCH(request: Request) {
         { status: 404 }
       );
     }
+
     if (data.email && data.email !== user.email) {
       return NextResponse.json(
         {
@@ -203,8 +489,7 @@ export async function PATCH(request: Request) {
       data.password = await hashPassword(data.password);
     }
 
-    // Eliminar el campo email antes de actualizar por seguridad extra
-    delete data.email;
+    delete data.email; // Por seguridad
 
     const updatedUser = await db.user.update({
       where: { id },
@@ -231,12 +516,107 @@ export async function PATCH(request: Request) {
     );
   }
 }
-
 /**
- * @route DELETE /api/users?id={id}
- * @desc Eliminar un usuario por ID
+ * @swagger
+ * /api/auth/register:
+ *   delete:
+ *     tags:
+ *       - Register
+ *     summary: Eliminar un usuario
+ *     description: Elimina un usuario específico por ID.
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID del usuario a eliminar.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       phone:
+ *                         type: string
+ *                       imageUrl:
+ *                         type: string
+ *                       role:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                           name:
+ *                             type: string
+ *                 message:
+ *                   type: string
+ *                   example: "User  deleted successfully"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: []
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User  not found"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["User  does not exist"]
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error deleting user"
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     example: ["Unknown error"]
  */
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
+  //  Verificar token
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");

@@ -1,14 +1,14 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
  * @swagger
- * /api/comment:
+ * /api/ticket:
  *   post:
  *     tags:
- *       - Comment
- *     summary: Crear un nuevo comentario
- *     description: Crea un comentario con los datos enviados en el body.
+ *       - Ticket
+ *     summary: Crear un nuevo ticket
+ *     description: Crea un ticket con los datos enviados en el body.
  *     requestBody:
  *       required: true
  *       content:
@@ -16,21 +16,21 @@ import db from "@/lib/prisma";
  *           schema:
  *             type: object
  *             required:
- *               - content
+ *               - title
  *             properties:
- *               content:
+ *               title:
  *                 type: string
- *               userId:
- *                 type: integer
- *               estimateId:
- *                 type: integer
- *               phaseId:
- *                 type: integer
+ *               type:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
+ *                 type: string
  *     responses:
  *       201:
- *         description: Comentario creado exitosamente
+ *         description: Ticket creado exitosamente
  *       400:
- *         description: Contenido del comentario es requerido
+ *         description: Título del ticket es requerido
  *       500:
  *         description: Error del servidor
  */
@@ -38,39 +38,36 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.content) {
+    if (!data.title) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment content is required",
-          errors: ["Missing 'content' field"],
+          message: "Ticket title is required",
+          errors: ["Missing 'title' field"],
         },
         { status: 400 }
       );
     }
 
-    const newComment = await db.comment.create({
-      data,
-      include: { user: true, estimate: true, phase: true },
-    });
+    const newTicket = await db.ticket.create({ data });
 
     return NextResponse.json(
       {
         success: true,
-        data: [newComment],
-        message: "Comment created successfully",
+        data: [newTicket],
+        message: "Ticket created successfully",
         errors: [],
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating comment:", error);
+    console.error("Error creating ticket:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating comment",
+        message: "Error creating ticket",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -80,25 +77,25 @@ export async function POST(request: NextRequest) {
 
 /**
  * @swagger
- * /api/comment:
+ * /api/ticket:
  *   get:
  *     tags:
- *       - Comment
- *     summary: Obtener comentarios
- *     description: Obtiene todos los comentarios o uno específico si se proporciona el parámetro `id`.
+ *       - Ticket
+ *     summary: Obtener tickets
+ *     description: Obtiene todos los tickets o uno específico si se proporciona el parámetro `id`.
  *     parameters:
  *       - in: query
  *         name: id
  *         schema:
  *           type: integer
- *         description: ID del comentario (opcional)
+ *         description: ID del ticket (opcional)
  *     responses:
  *       200:
- *         description: Comentarios obtenidos exitosamente
+ *         description: Tickets obtenidos exitosamente
  *       400:
  *         description: ID inválido
  *       404:
- *         description: Comentario no encontrado
+ *         description: Ticket no encontrado
  *       500:
  *         description: Error del servidor
  */
@@ -108,22 +105,20 @@ export async function GET(request: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const comments = await db.comment.findMany({
+      const tickets = await db.ticket.findMany({
         select: {
           id: true,
-          content: true,
-          sendDate: true,
-          sendTime: true,
-          user: true,
-          estimate: true,
-          phase: true,
+          title: true,
+          type: true,
+          description: true,
+          status: true,
         },
       });
 
       return NextResponse.json({
         success: true,
-        data: comments,
-        message: "Comments fetched successfully",
+        data: tickets,
+        message: "Tickets fetched successfully",
         errors: [],
       });
     }
@@ -141,18 +136,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const comment = await db.comment.findUnique({
-      where: { id },
-      include: { user: true, estimate: true, phase: true },
-    });
+    const ticket = await db.ticket.findUnique({ where: { id } });
 
-    if (!comment) {
+    if (!ticket) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment not found",
-          errors: ["Comment with given ID does not exist"],
+          message: "Ticket not found",
+          errors: ["Ticket with given ID does not exist"],
         },
         { status: 404 }
       );
@@ -161,8 +153,8 @@ export async function GET(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        data: [comment],
-        message: "Comment fetched successfully",
+        data: [ticket],
+        message: "ticket fetched successfully",
         errors: [],
       },
       { status: 200 }
@@ -172,7 +164,7 @@ export async function GET(request: Request) {
       {
         success: false,
         data: [],
-        message: "Error fetching comment",
+        message: "Error fetching ticket",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -182,19 +174,19 @@ export async function GET(request: Request) {
 
 /**
  * @swagger
- * /api/comment:
+ * /api/ticket:
  *   patch:
  *     tags:
- *       - Comment
- *     summary: Actualizar un comentario
- *     description: Actualiza parcialmente un comentario por su ID.
+ *       - Ticket
+ *     summary: Actualizar un ticket
+ *     description: Actualiza parcialmente un ticket por su ID.
  *     parameters:
  *       - in: query
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del comentario a actualizar
+ *         description: ID del ticket a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -202,15 +194,21 @@ export async function GET(request: Request) {
  *           schema:
  *             type: object
  *             properties:
- *               content:
+ *               title:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               status:
  *                 type: string
  *     responses:
  *       200:
- *         description: Comentario actualizado exitosamente
+ *         description: Ticket actualizado exitosamente
  *       400:
  *         description: ID inválido o datos faltantes
  *       404:
- *         description: Comentario no encontrado
+ *         description: Ticket no encontrado
  *       500:
  *         description: Error del servidor
  */
@@ -245,41 +243,37 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const comment = await db.comment.findUnique({
-      where: { id },
-    });
-
-    if (!comment) {
+    const ticket = await db.ticket.findUnique({ where: { id } });
+    if (!ticket) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment not found",
-          errors: ["Comment does not exist"],
+          message: "Ticket not found",
+          errors: ["Ticket does not exist"],
         },
         { status: 404 }
       );
     }
 
-    const updatedComment = await db.comment.update({
+    const updatedTicket = await db.ticket.update({
       where: { id },
       data,
-      include: { user: true, estimate: true, phase: true },
     });
 
     return NextResponse.json({
       success: true,
-      data: [updatedComment],
-      message: "Comment updated successfully",
+      data: [updatedTicket],
+      message: "Ticket updated successfully",
       errors: [],
     });
   } catch (error) {
-    console.error("Error updating comment:", error);
+    console.error("Error updating ticket:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error updating comment",
+        message: "Error updating ticket",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -289,24 +283,24 @@ export async function PATCH(request: Request) {
 
 /**
  * @swagger
- * /api/comment:
+ * /api/ticket:
  *   delete:
  *     tags:
- *       - Comment
- *     summary: Eliminar un comentario
- *     description: Elimina un comentario existente por su ID.
+ *       - Ticket
+ *     summary: Eliminar un ticket
+ *     description: Elimina un ticket existente por su ID.
  *     parameters:
  *       - in: query
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del comentario a eliminar
+ *         description: ID del ticket a eliminar
  *     responses:
  *       200:
- *         description: Comentario eliminado exitosamente
+ *         description: Ticket eliminado exitosamente
  *       404:
- *         description: Comentario no encontrado
+ *         description: Ticket no encontrado
  *       500:
  *         description: Error del servidor
  */
@@ -316,38 +310,38 @@ export async function DELETE(request: Request) {
     const requestId = searchParams.get("id");
 
     const id = Number(requestId);
-    const commentExists = await db.comment.findUnique({ where: { id } });
+    const ticketExists = await db.ticket.findUnique({ where: { id } });
 
-    if (!commentExists) {
+    if (!ticketExists) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Comment not found",
-          errors: ["Comment with given ID does not exist"],
+          message: "ticket not found",
+          errors: ["No ticket found with that ID"],
         },
         { status: 404 }
       );
     }
 
-    const deletedComment = await db.comment.delete({ where: { id } });
+    const deletedTicket = await db.ticket.delete({ where: { id } });
 
     return NextResponse.json(
       {
         success: true,
-        data: [deletedComment],
-        message: "Comment deleted successfully",
+        data: [deletedTicket],
+        message: "Ticket deleted successfully",
         errors: [],
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting comment:", error);
+    console.error("Error deleting ticket:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error deleting comment",
+        message: "Error deleting ticket",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }

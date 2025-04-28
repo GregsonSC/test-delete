@@ -2,8 +2,39 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/plans
- * @desc Crear un nuevo plan
+ * @swagger
+ * /api/plan:
+ *   post:
+ *     tags:
+ *       - Plan
+ *     summary: Crear un nuevo plan
+ *     description: Crea un plan con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - serviceId
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               serviceId:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Plan creado exitosamente
+ *       400:
+ *         description: Campos requeridos faltantes
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -47,8 +78,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/plans
- * @desc Obtener todos los planes o uno específico por id (?id=)
+ * @swagger
+ * /api/plan:
+ *   get:
+ *     tags:
+ *       - Plan
+ *     summary: Obtener planes
+ *     description: Obtiene todos los planes o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del plan (opcional)
+ *     responses:
+ *       200:
+ *         description: Planes obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Plan no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -124,8 +175,44 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/plans?id={id}
- * @desc Actualizar un plan parcialmente
+ * @swagger
+ * /api/plan:
+ *   patch:
+ *     tags:
+ *       - Plan
+ *     summary: Actualizar un plan
+ *     description: Actualiza parcialmente un plan por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del plan a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               serviceId:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Plan actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Plan no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function PATCH(request: Request) {
   try {
@@ -199,8 +286,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/plans?id={id}
- * @desc Eliminar un plan por ID
+ * @swagger
+ * /api/plan:
+ *   delete:
+ *     tags:
+ *       - Plan
+ *     summary: Eliminar un plan
+ *     description: Elimina un plan existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del plan a eliminar
+ *     responses:
+ *       200:
+ *         description: Plan eliminado exitosamente
+ *       404:
+ *         description: Plan no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {
