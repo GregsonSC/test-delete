@@ -23,6 +23,7 @@ interface NavItem {
   label: string;
   href: string;
   hasDropdown?: boolean;
+  dropdownColumns?: number;
   dropdownContent?: Array<{
     label: string;
     href: string;
@@ -44,6 +45,7 @@ const navItems: NavItem[] = [
     label: "Services",
     href: "#",
     hasDropdown: true,
+    dropdownColumns: 2,
     dropdownContent: [
       {
         label: "Web Design & Development",
@@ -69,6 +71,7 @@ const navItems: NavItem[] = [
     label: "Service Areas",
     href: "/service-areas",
     hasDropdown: true,
+    dropdownColumns: 3,
     dropdownContent: [
       {
         label: "Miami-Dade County",
@@ -219,20 +222,7 @@ export function Navbar() {
   // Function to handle logout
   const handleLogout = () => {
     setIsLogged(false);
-
-    // Limpiar todas las cookies
-    if (typeof document !== "undefined") {
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
-      });
-    }
-
-    // Redirigir a login
-    window.location.href = "/login";
   };
-
 
   return (
     <>
@@ -320,14 +310,10 @@ export function Navbar() {
                         <span className="text-white font-semibold text-[14px]">{userName}</span>
                       </MenubarTrigger>
                       <MenubarContent className="rounded-md border-0 shadow-md">
-                        <Link href="/profile-projects" passHref>
-                          <MenubarItem asChild className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
-                            <a>
-                              <User className="h-4 w-4" />
-                              Profile
-                            </a>
-                          </MenubarItem>
-                        </Link>
+                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
+                          <User className="h-4 w-4" />
+                          Profile
+                        </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem
                           className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
@@ -373,7 +359,7 @@ export function Navbar() {
                 <div
                   key={item.label}
                   className={cn(
-                    "grid grid-cols-2 gap-8",
+                    `grid grid-cols-${item.dropdownColumns} gap-8`,
                     activeDropdown === item.label ? "" : "hidden"
                   )}
                 >
@@ -407,11 +393,13 @@ export function Navbar() {
             ))}
 
             <div className="flex justify-end mt-8 mb-2">
-              <Button
-                className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
-              >
-                Get a free consultation!
-              </Button>
+              <Link href="/contact" passHref>
+                <Button
+                  className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
+                >
+                  Get a free consultation!
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
