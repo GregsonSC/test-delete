@@ -8,11 +8,20 @@ import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info"
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import BlogViewModel from "./BlogViewModel";
+import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
+
 export function BlogPage() {
   const { posts } = BlogViewModel();
 
   // Estado para controlar la cantidad de posts visibles
   const [postsCount, setPostsCount] = useState(6);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      setLoading(false);
+    }
+  }, [posts]);
 
   // Al montar el componente, se determina el dispositivo según window.innerWidth:
   // - Mobile (<640px): 3 posts
@@ -50,30 +59,40 @@ export function BlogPage() {
       </section>
 
       {/* Recent Posts */}
-      <section className="mt-14">
+      <section className="mt-14 mb-12">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {posts.map((post, index) => (
-              <div key={index} className="w-full flex justify-center">
-                <HoverCardImage
-                  title={post.title}
-                  content={post.content}
-                  // tag={post.tag}
-                  tag={index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"}
-                  date={post.publicationDate}
-                  // image={post.imageUrl || "fotos-prueba/webdevelpment.png"}
-                  image={"fotos-prueba/webdevelpment.png"}
-                  href="/"
-                />
-              </div>
-            ))}
+            {loading
+              ? Array.from({ length: postsCount }).map((_, idx) => (
+                <div key={idx} className="w-full flex justify-center">
+                  <HoverCardImageSkeleton />
+                </div>
+              ))
+              : posts.slice(0, postsCount).map((post, index) => (
+                <div key={index} className="w-full flex justify-center">
+                  <HoverCardImage
+                    title={post.title}
+                    content={post.content}
+                    // tag={post.tag}
+                    tag={index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"}
+                    date={post.publicationDate}
+                    // image={post.imageUrl || "fotos-prueba/webdevelpment.png"}
+                    image={"/images/portfolio/portafolioTestImg.webp"}
+                    href="/"
+                  />
+                </div>
+              ))}
           </div>
         </div>
-        <div className="flex justify-center mt-12 mb-12">
-          <Button variant="outline" className="rounded-full" onClick={handleLoadMore}>
-            Load More Articles
-          </Button>
-        </div>
+        {
+          posts.length > 6 && (
+            <div className="flex justify-center mt-12 ">
+              <Button variant="outline" className="rounded-full" onClick={handleLoadMore}>
+                Load More Articles
+              </Button>
+            </div>
+          )
+        }
       </section>
 
       {ContactInfo(1)}

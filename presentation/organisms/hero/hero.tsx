@@ -45,6 +45,17 @@ export function Hero() {
       <div className="absolute -left-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl opacity-50"></div>
       <div className="absolute -right-20 bottom-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl opacity-50"></div>
 
+      {/* ! CH001: Mejorar ese div para que sea igual que el figma, fondo blanco e iconos como se muestran */}
+      <div className="container mx-auto h-full flex items-center justify-center" data-component-name="<div />">
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+          <img src="/images/home/google.svg" alt="Google Analytics" className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity" />
+          <img src="/images/home/webflow.svg" alt="Webflow" className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity" />
+          <img src="/images/home/shopify.svg" alt="Shopify" className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity" />
+          <img src="/images/home/paypal.svg" alt="PayPal" className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity" data-component-name="<img />" />
+          <img src="/images/home/stripe.svg" alt="Stripe" className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity" />
+        </div>
+      </div>
+
       <div className="container px-4 md:px-6 relative z-10">
         <div className="flex flex-col items-center space-y-8 text-center max-w-4xl mx-auto">
           <div

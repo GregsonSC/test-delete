@@ -2,8 +2,39 @@ import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/variants
- * @desc Crear un nuevo rol
+ * @swagger
+ * /api/variant:
+ *   post:
+ *     tags:
+ *       - Variant
+ *     summary: Crear una nueva variante
+ *     description: Crea una variante con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               benefits:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               planId:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Variante creada exitosamente
+ *       400:
+ *         description: Nombre de la variante es requerido
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -47,8 +78,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/variants
- * @desc Obtener todos los variants o uno específico por id (?id=)
+ * @swagger
+ * /api/variant:
+ *   get:
+ *     tags:
+ *       - Variant
+ *     summary: Obtener variantes
+ *     description: Obtiene todas las variantes o una específica si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID de la variante (opcional)
+ *     responses:
+ *       200:
+ *         description: Variantes obtenidas exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Variante no encontrada
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -125,7 +176,46 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/variants?id={id}
+ * @swagger
+ * /api/variant:
+ *   patch:
+ *     tags:
+ *       - Variant
+ *     summary: Actualizar una variante
+ *     description: Actualiza parcialmente una variante por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la variante a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               benefits:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Variante actualizada exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Variante no encontrada
+ *       500:
+ *         description: Error del servidor
+ *//**
+ * @route PATCH /api/variant?id={id}
  * @desc Actualizar un rol parcialmente
  */
 export async function PATCH(request: Request) {
@@ -204,8 +294,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/variants?id={id}
- * @desc Eliminar un rol por ID
+ * @swagger
+ * /api/variant:
+ *   delete:
+ *     tags:
+ *       - Variant
+ *     summary: Eliminar una variante
+ *     description: Elimina una variante existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la variante a eliminar
+ *     responses:
+ *       200:
+ *         description: Variante eliminada exitosamente
+ *       404:
+ *         description: Variante no encontrada
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {

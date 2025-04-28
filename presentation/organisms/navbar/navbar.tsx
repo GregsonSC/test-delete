@@ -23,6 +23,7 @@ interface NavItem {
   label: string;
   href: string;
   hasDropdown?: boolean;
+  dropdownColumns?: number;
   dropdownContent?: Array<{
     label: string;
     href: string;
@@ -44,6 +45,7 @@ const navItems: NavItem[] = [
     label: "Services",
     href: "#",
     hasDropdown: true,
+    dropdownColumns: 2,
     dropdownContent: [
       {
         label: "Web Design & Development",
@@ -57,18 +59,19 @@ const navItems: NavItem[] = [
         description: "Strategies to grow your online presence and generate leads",
 
       },
-      {
-        label: "Graphic Design",
-        href: "/graphic-design",
-        description: "Visual branding that captures your company's essence",
+      // {
+      //   label: "Graphic Design",
+      //   href: "/graphic-design",
+      //   description: "Visual branding that captures your company's essence",
 
-      }
+      // }
     ]
   },
   {
     label: "Service Areas",
     href: "/service-areas",
     hasDropdown: true,
+    dropdownColumns: 3,
     dropdownContent: [
       {
         label: "Miami-Dade County",
@@ -76,8 +79,8 @@ const navItems: NavItem[] = [
         description: "Service areas in Miami-Dade County",
         icon: "/images/navbar/location.svg",
         areaLinks: [
-          { 
-            name: "Sunny Isles Beach", 
+          {
+            name: "Sunny Isles Beach",
             href: "/service-areas/miami-dade/sunny-isles-beach",
             subLinks: [
               { name: "Websites", href: "/service-areas/miami-dade/sunny-isles-beach/websites" },
@@ -85,8 +88,8 @@ const navItems: NavItem[] = [
               { name: "Graphic Design", href: "/service-areas/miami-dade/sunny-isles-beach/graphic-design" }
             ]
           },
-          { 
-            name: "Coral Gables", 
+          {
+            name: "Coral Gables",
             href: "/service-areas/miami-dade/coral-gables",
             subLinks: [
               { name: "Websites", href: "/service-areas/miami-dade/coral-gables/websites" },
@@ -94,8 +97,8 @@ const navItems: NavItem[] = [
               { name: "Graphic Design", href: "/service-areas/miami-dade/coral-gables/graphic-design" }
             ]
           },
-          { 
-            name: "Key Biscayne", 
+          {
+            name: "Key Biscayne",
             href: "/service-areas/miami-dade/key-biscayne",
             subLinks: [
               { name: "Websites", href: "/service-areas/miami-dade/key-biscayne/websites" },
@@ -111,8 +114,8 @@ const navItems: NavItem[] = [
         description: "Service areas in Broward County",
         icon: "/images/navbar/location.svg",
         areaLinks: [
-          { 
-            name: "Fort Lauderdale", 
+          {
+            name: "Fort Lauderdale",
             href: "/service-areas/broward/fort-lauderdale",
             subLinks: [
               { name: "Websites", href: "/service-areas/broward/fort-lauderdale/websites" },
@@ -120,8 +123,8 @@ const navItems: NavItem[] = [
               { name: "Graphic Design", href: "/service-areas/broward/fort-lauderdale/graphic-design" }
             ]
           },
-          { 
-            name: "Hollywood", 
+          {
+            name: "Hollywood",
             href: "/service-areas/broward/hollywood",
             subLinks: [
               { name: "Websites", href: "/service-areas/broward/hollywood/websites" },
@@ -129,8 +132,8 @@ const navItems: NavItem[] = [
               { name: "Graphic Design", href: "/service-areas/broward/hollywood/graphic-design" }
             ]
           },
-          { 
-            name: "Pompano Beach", 
+          {
+            name: "Pompano Beach",
             href: "/service-areas/broward/pompano-beach",
             subLinks: [
               { name: "Websites", href: "/service-areas/broward/pompano-beach/websites" },
@@ -146,8 +149,8 @@ const navItems: NavItem[] = [
         description: "Service areas in Palm Beach County",
         icon: "/images/navbar/location.svg",
         areaLinks: [
-          { 
-            name: "West Palm Beach", 
+          {
+            name: "West Palm Beach",
             href: "/service-areas/palm-beach/west-palm-beach",
             subLinks: [
               { name: "Websites", href: "/service-areas/palm-beach/west-palm-beach/websites" },
@@ -155,8 +158,8 @@ const navItems: NavItem[] = [
               { name: "Graphic Design", href: "/service-areas/palm-beach/west-palm-beach/graphic-design" }
             ]
           },
-          { 
-            name: "Boca Raton", 
+          {
+            name: "Boca Raton",
             href: "/service-areas/palm-beach/boca-raton",
             subLinks: [
               { name: "Websites", href: "/service-areas/palm-beach/boca-raton/websites" },
@@ -164,8 +167,8 @@ const navItems: NavItem[] = [
               { name: "Graphic Design", href: "/service-areas/palm-beach/boca-raton/graphic-design" }
             ]
           },
-          { 
-            name: "Delray Beach", 
+          {
+            name: "Delray Beach",
             href: "/service-areas/palm-beach/delray-beach",
             subLinks: [
               { name: "Websites", href: "/service-areas/palm-beach/delray-beach/websites" },
@@ -219,7 +222,20 @@ export function Navbar() {
   // Function to handle logout
   const handleLogout = () => {
     setIsLogged(false);
+
+    // Limpiar todas las cookies
+    if (typeof document !== "undefined") {
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+      });
+    }
+
+    // Redirigir a login
+    window.location.href = "/login";
   };
+
 
   return (
     <>
@@ -282,11 +298,13 @@ export function Navbar() {
               <div className="hidden sm:flex gap-[20px]">
                 {!isLogged ? (
                   <>
-                    <Button
-                      className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
-                    >
-                      Register
-                    </Button>
+                    <Link href="/register" passHref>
+                      <Button
+                        className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
+                      >
+                        Register
+                      </Button>
+                    </Link>
 
                     <Button
                       onClick={handleLogin}
@@ -305,10 +323,14 @@ export function Navbar() {
                         <span className="text-white font-semibold text-[14px]">{userName}</span>
                       </MenubarTrigger>
                       <MenubarContent className="rounded-md border-0 shadow-md">
-                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
-                          <User className="h-4 w-4" />
-                          Profile
-                        </MenubarItem>
+                        <Link href="/profile-projects" passHref>
+                          <MenubarItem asChild className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
+                            <a>
+                              <User className="h-4 w-4" />
+                              Profile
+                            </a>
+                          </MenubarItem>
+                        </Link>
                         <MenubarSeparator />
                         <MenubarItem
                           className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
@@ -354,7 +376,7 @@ export function Navbar() {
                 <div
                   key={item.label}
                   className={cn(
-                    "grid grid-cols-3 gap-8",
+                    `grid grid-cols-${item.dropdownColumns} gap-8`,
                     activeDropdown === item.label ? "" : "hidden"
                   )}
                 >
@@ -386,214 +408,224 @@ export function Navbar() {
                 </div>
               )
             ))}
-            
+
             <div className="flex justify-end mt-8 mb-2">
-              <Button 
-                className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
-              >
-                Get a free consultation!
-              </Button>
+              <Link href="/contact" passHref>
+                <Button
+                  className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
+                >
+                  Get a free consultation!
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
       {/* Mobile menu overlay */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden flex pt-[72px]">
-          <div className={cn(
-            "bg-[#14171b] h-full p-4 md:p-8",
-            "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
-          )}>
-            <div className="md:hidden opacity-65">
-              <Image
-                src="/images/navbar/senavia-small.png"
-                alt="Logo"
-                width={40}
-                height={40}
-                className="mb-8"
-              />
-            </div>
-            <div className="hidden md:block opacity-65">
-              <Logo className="mb-8" />
-            </div>
-          </div>
-
-          <div className={cn(
-            "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
-            "w-[70%] max-[500px]:w-[80%] md:flex-1"
-          )}>
-            {/* User profile info for mobile only (< 640px) */}
-            <div className="sm:hidden">
-              {isLogged ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all"></div>
-                  <div className="flex flex-col text-left">
-                    <span className="font-semibold text-[#060B20]">{userName}</span>
-                    <span className="text-sm text-gray-500">user@example.com</span>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-
-            <nav className="flex flex-col space-y-4 flex-1 justify-center py-8">
-              {navItems.map((item) => (
-                <div key={item.href} className="py-2 border-b border-gray-200 w-4/5">
-                  {item.hasDropdown ? (
-                    <>
-                      <button
-                        className="group flex items-center w-full max-[400px]:text-xl text-2xl font-semibold text-[#060B20] text-left"
-                        onClick={() => toggleMobileDropdown(item.label)}
-                      >
-                        <span className="flex-1 text-left flex items-center">
-                          {item.label}
-                          <ChevronDown
-                            className={cn(
-                              "ml-2 h-5 w-5 transition-transform duration-300",
-                              mobileDropdowns[item.label] && "rotate-180"
-                            )}
-                          />
-                        </span>
-                      </button>
-
-                      <div className={cn(
-                        "overflow-hidden transition-all duration-300",
-                        mobileDropdowns[item.label] ? "mt-3 max-h-[500px] overflow-y-auto" : "max-h-0"
-                      )}>
-                        {item.dropdownContent?.map((content) => (
-                          content.areaLinks ? (
-                            <div key={content.href} className="mb-4">
-                              <button
-                                onClick={() => toggleAreaDropdown(content.label)}
-                                className="w-full py-2 max-[400px]:text-base text-lg font-semibold text-[#060B20]/80 hover:text-[#8ECF0A] flex items-center justify-between"
-                              >
-                                <span>{content.label}</span>
-                                <ChevronDown
-                                  className={cn(
-                                    "h-4 w-4 transition-transform duration-300",
-                                    areaDropdowns[content.label] && "rotate-180"
-                                  )}
-                                />
-                              </button>
-                              
-                              <div className={cn(
-                                "ml-4 overflow-hidden transition-all duration-300",
-                                areaDropdowns[content.label] ? "max-h-[300px]" : "max-h-0"
-                              )}>
-                                {content.areaLinks.map(areaLink => (
-                                  <div key={areaLink.href} className="mb-2">
-                                    <button
-                                      onClick={() => toggleAreaDropdown(areaLink.name)}
-                                      className="w-full py-1 max-[400px]:text-sm text-base text-[#060B20]/80 hover:text-[#8ECF0A] flex items-center justify-between"
-                                    >
-                                      <div className="flex items-center">
-                                        <span className="w-5 h-5 mr-2 flex items-center justify-center">
-                                          <MapPinned className="h-4 w-4" />
-                                        </span>
-                                        {areaLink.name}
-                                      </div>
-                                      <ChevronDown
-                                        className={cn(
-                                          "h-4 w-4 transition-transform duration-300",
-                                          areaDropdowns[areaLink.name] && "rotate-180"
-                                        )}
-                                      />
-                                    </button>
-                                    
-                                    {areaLink.subLinks && (
-                                      <div className={cn(
-                                        "ml-7 mt-1 flex flex-wrap gap-1 overflow-hidden transition-all duration-300",
-                                        areaDropdowns[areaLink.name] ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
-                                      )}>
-                                        {areaLink.subLinks.map(subLink => (
-                                          <Link
-                                            key={subLink.href}
-                                            href={subLink.href}
-                                            className="inline-block py-1 px-3 max-[400px]:text-xs text-sm text-[#060B20]/70 hover:text-[#8ECF0A] rounded-full bg-[#f0f0f0]"
-                                          >
-                                            {subLink.name}
-                                          </Link>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ) : (
-                            <Link
-                              key={content.href}
-                              href={content.href}
-                              className="block py-2 max-[400px]:text-base text-lg text-[#060B20]/80 hover:text-[#8ECF0A]"
-                            >
-                              {content.label}
-                            </Link>
-                          )
-                        ))}
-                      </div>
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className="block max-[400px]:text-xl text-2xl font-semibold text-[#060B20] hover:text-[#8ECF0A]"
-                    >
-                      {item.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </nav>
-              
-            {/* Botones de Settings y Log Out o Register y Login - solo para móvil (<640px) */}
-            <div className="sm:hidden mb-20 flex flex-col gap-4 w-4/5">
-              {isLogged ? (
-                <>        
-                  <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
-                    <Settings className="h-5 w-5" />
-                    Settings
-                  </Button>
-                
-                  <Button 
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
-                    style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
-                  >
-                    <LogOut className="h-5 w-5" />
-                    Log Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
-                    <User className="h-5 w-5" />
-                    Register
-                  </Button>
-                  <Button 
-                    onClick={handleLogin}
-                    className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
-                    style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
-                  >
-                    <LogOut className="h-5 w-5" />
-                    Log In
-                  </Button>
-                </>
-              )}
-            </div>
-
-            <div className="fixed bottom-5 right-8 flex gap-4">
-              <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
-                <Instagram className="h-4 w-4" />
-              </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
-                <Youtube className="h-4 w-4" />
-              </a>
-            </div>
+      <div
+        className={cn(
+          "fixed inset-0 z-40 lg:hidden flex pt-[72px] bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out",
+          isMenuOpen
+            ? "opacity-100 pointer-events-auto scale-100"
+            : "opacity-0 pointer-events-none scale-95"
+        )}
+        style={{
+          transitionProperty: 'opacity, transform',
+        }}
+      >
+        <div className={cn(
+          "bg-[#14171b] h-full p-4 md:p-8",
+          "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
+        )}>
+          {/* <div className="md:hidden opacity-65">
+            <Image
+              src="/images/navbar/senavia-small.png"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="mb-8"
+            />
+          </div> */}
+          <div className="hidden md:block opacity-65">
+            <Logo className="mb-8" />
           </div>
         </div>
-      )}
+
+        <div className={cn(
+          "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
+          "w-[70%] max-[500px]:w-[80%] md:flex-1"
+        )}>
+          {/* User profile info for mobile only (< 640px) */}
+          <div className="sm:hidden">
+            {isLogged ? (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all"></div>
+                <div className="flex flex-col text-left">
+                  <span className="font-semibold text-[#060B20]">{userName}</span>
+                  <span className="text-sm text-gray-500">user@example.com</span>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <nav className="flex flex-col space-y-4 flex-1 justify-center py-8">
+            {navItems.map((item) => (
+              <div key={item.href} className="py-2 border-b border-gray-200 w-4/5">
+                {item.hasDropdown ? (
+                  <>
+                    <button
+                      className="group flex items-center w-full max-[400px]:text-xl text-2xl font-semibold text-[#060B20] text-left"
+                      onClick={() => toggleMobileDropdown(item.label)}
+                    >
+                      <span className="flex-1 text-left flex items-center">
+                        {item.label}
+                        <ChevronDown
+                          className={cn(
+                            "ml-2 h-5 w-5 transition-transform duration-300",
+                            mobileDropdowns[item.label] && "rotate-180"
+                          )}
+                        />
+                      </span>
+                    </button>
+
+                    <div className={cn(
+                      "overflow-hidden transition-all duration-300",
+                      mobileDropdowns[item.label] ? "mt-3 max-h-[500px] overflow-y-auto" : "max-h-0"
+                    )}>
+                      {item.dropdownContent?.map((content) => (
+                        content.areaLinks ? (
+                          <div key={content.href} className="mb-4">
+                            <button
+                              onClick={() => toggleAreaDropdown(content.label)}
+                              className="w-full py-2 max-[400px]:text-base text-lg font-semibold text-[#060B20]/80 hover:text-[#8ECF0A] flex items-center justify-between"
+                            >
+                              <span>{content.label}</span>
+                              <ChevronDown
+                                className={cn(
+                                  "h-4 w-4 transition-transform duration-300",
+                                  areaDropdowns[content.label] && "rotate-180"
+                                )}
+                              />
+                            </button>
+
+                            <div className={cn(
+                              "ml-4 overflow-hidden transition-all duration-300",
+                              areaDropdowns[content.label] ? "max-h-[300px]" : "max-h-0"
+                            )}>
+                              {content.areaLinks.map(areaLink => (
+                                <div key={areaLink.href} className="mb-2">
+                                  <button
+                                    onClick={() => toggleAreaDropdown(areaLink.name)}
+                                    className="w-full py-1 max-[400px]:text-sm text-base text-[#060B20]/80 hover:text-[#8ECF0A] flex items-center justify-between"
+                                  >
+                                    <div className="flex items-center">
+                                      <span className="w-5 h-5 mr-2 flex items-center justify-center">
+                                        <MapPinned className="h-4 w-4" />
+                                      </span>
+                                      {areaLink.name}
+                                    </div>
+                                    <ChevronDown
+                                      className={cn(
+                                        "h-4 w-4 transition-transform duration-300",
+                                        areaDropdowns[areaLink.name] && "rotate-180"
+                                      )}
+                                    />
+                                  </button>
+
+                                  {areaLink.subLinks && (
+                                    <div className={cn(
+                                      "ml-7 mt-1 flex flex-wrap gap-1 overflow-hidden transition-all duration-300",
+                                      areaDropdowns[areaLink.name] ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+                                    )}>
+                                      {areaLink.subLinks.map(subLink => (
+                                        <Link
+                                          key={subLink.href}
+                                          href={subLink.href}
+                                          className="inline-block py-1 px-3 max-[400px]:text-xs text-sm text-[#060B20]/70 hover:text-[#8ECF0A] rounded-full bg-[#f0f0f0]"
+                                        >
+                                          {subLink.name}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <Link
+                            key={content.href}
+                            href={content.href}
+                            className="block py-2 max-[400px]:text-base text-lg text-[#060B20]/80 hover:text-[#8ECF0A]"
+                          >
+                            {content.label}
+                          </Link>
+                        )
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="block max-[400px]:text-xl text-2xl font-semibold text-[#060B20] hover:text-[#8ECF0A]"
+                  >
+                    {item.label}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* Botones de Settings y Log Out o Register y Login - solo para móvil (<640px) */}
+          <div className="sm:hidden mb-20 flex flex-col gap-4 w-4/5">
+            {isLogged ? (
+              <>
+                <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </Button>
+
+                <Button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
+                  style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
+                >
+                  <LogOut className="h-5 w-5" />
+                  Log Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
+                  <User className="h-5 w-5" />
+                  Register
+                </Button>
+                <Button
+                  onClick={handleLogin}
+                  className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
+                  style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
+                >
+                  <LogOut className="h-5 w-5" />
+                  Log In
+                </Button>
+              </>
+            )}
+          </div>
+
+          <div className="fixed bottom-5 right-8 flex gap-4">
+            <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
+              <Facebook className="h-4 w-4" />
+            </a>
+            <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
+              <Instagram className="h-4 w-4" />
+            </a>
+            <a href="#" className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20]">
+              <Youtube className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -64,6 +64,7 @@ interface ContactUsProps {
   isLoggedIn: boolean;
 }
 
+// !CH010 [ADD] funcionamiento del endpoint del calendario para citas
 export function ContactUs({ isLoggedIn }: ContactUsProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -123,7 +124,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
       <CardContent>
         <div className="flex flex-col md:items-center">
           {/* Bloque del formulario o del perfil */}
-          <div className="md:ml-12 justify-center md:flex-row md:flex md:gap-2">
+          <div className="md:ml-12 justify-center md:flex-row md:flex md:gap-2 align-center">
             {isLoggedIn ? (
               <Card className="bg-white border border-[#E4E4E7] mb-3 md:pt-11 md:w-96 md:h-[306px]">
                 <CardHeader>
@@ -149,7 +150,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
                   id="contact-form"
-                  className="md:justify-center md:items-center"
+                  className="md:justify-center md:items-center mr-4"
                 >
                   <FormField
                     name="name"
@@ -157,15 +158,15 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative w-full">
+                          <div className="relative w-[320px]">
                             <input
                               {...field}
                               placeholder="Full Name"
-                              className="text-[#636A9C] bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#636A9C] py-3 px-4 pl-10 text-lg md:py-2 md:text-sm md:pr-24 md:pl-10 md:mb-1 md:mt-6 md:mr-12"
+                              className="md:text-sm text-lg  md:mt-6 text-[#636A9C] bg-[#EBEDF2] rounded-sm placeholder-[#636A9C] py-2 px-4 pl-10 w-full mb-2"
                             />
                             <CircleUser
                               color="#0A1248"
-                              className="absolute inset-y-4 md:inset-y-8 left-2 opacity-60"
+                              className="absolute top-4 md:top-[30px] left-2 opacity-60"
                             />
                           </div>
                         </FormControl>
@@ -178,16 +179,16 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative w-full">
+                          <div className="relative w-[320px]">
                             <input
                               {...field}
                               placeholder="Phone Number"
-                              className="text-[#636A9C] bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#636A9C] py-3 px-4 pl-10 text-lg md:py-2 md:text-sm md:pr-24 md:pl-10 md:mb-1 md:mr-12"
+                              className="md:text-sm text-lg   text-[#636A9C] bg-[#EBEDF2] rounded-sm placeholder-[#636A9C] py-2 px-4 pl-10 w-full mb-2"
                               type="tel"
                             />
                             <Phone
                               color="#636A9C"
-                              className="absolute inset-y-4 md:inset-y-2 left-2"
+                              className="absolute top-2  left-2"
                             />
                           </div>
                         </FormControl>
@@ -200,16 +201,16 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative w-full">
+                          <div className="relative w-[320px]">
                             <input
                               {...field}
                               placeholder="Email"
-                              className="text-[#636A9C] bg-[#EBEDF2] mb-5 rounded-sm placeholder-[#636A9C] py-3 px-4 pl-10 text-lg md:py-2 md:text-sm md:pr-24 md:pl-10 md:mb-1 md:mr-12"
+                              className="md:text-sm text-lg   text-[#636A9C] bg-[#EBEDF2] rounded-sm placeholder-[#636A9C] py-2 px-4 pl-10 w-full mb-2"
                               type="email"
                             />
                             <Mail
                               color="#636A9C"
-                              className="absolute inset-y-4 md:inset-y-2 left-2"
+                              className="absolute top-2 left-2"
                             />
                           </div>
                         </FormControl>
@@ -222,7 +223,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="relative md:w-[331px] md:pr-1">
+                          <div className="relative md:w-[320px]">
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
@@ -257,8 +258,8 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <div className="w-[299px] md:w-[327px] h-36 bg-[#EBEDF2] px-3 pt-2 rounded-sm">
-                          <Label htmlFor="about" className="mb-1 mt-0 flex text-center font-normal items-center text-[#636A9C] text-xl md:text-sm ">
+                        <div className="w-full h-36 bg-[#EBEDF2] px-0 pt-2 rounded-sm">
+                          <Label htmlFor="about" className="px-2 mb-1 mt-0 flex text-center font-normal items-center text-[#636A9C] text-xl md:text-sm ">
                             <MessageSquareText className="mr-2" color="#636A9C" />
                             Tell us about your project
                           </Label>
@@ -266,8 +267,9 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                             <textarea
                               {...field}
                               id="about"
-                              className="w-full rounded-sm bg-white text-[#636A9C] py-3 px-4 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto "
+                              className="w-[96%] m-auto flex rounded-sm bg-white text-[#636A9C] py-2 px-8 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto"
                               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                              placeholder="Describe your project..."  
                             />
                           </FormControl>
                         </div>
@@ -303,7 +305,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
               />
             </div>
           </div>
-          <div>
+          <div className="flex justify-center">
             <Button
               type="submit"
               form="contact-form"

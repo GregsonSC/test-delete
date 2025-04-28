@@ -2,8 +2,33 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
 /**
- * @route POST /api/roles
- * @desc Crear un nuevo rol
+ * @swagger
+ * /api/role:
+ *   post:
+ *     tags:
+ *       - Roles
+ *     summary: Crear un nuevo rol
+ *     description: Crea un rol con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Rol creado exitosamente
+ *       400:
+ *         description: Campos faltantes o inválidos
+ *       500:
+ *         description: Error del servidor
  */
 export async function POST(request: NextRequest) {
   try {
@@ -47,8 +72,28 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * @route GET /api/roles
- * @desc Obtener todos los roles o uno específico por id (?id=)
+ * @swagger
+ * /api/role:
+ *   get:
+ *     tags:
+ *       - Roles
+ *     summary: Obtener roles
+ *     description: Obtiene todos los roles o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del rol (opcional)
+ *     responses:
+ *       200:
+ *         description: Roles obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Rol no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function GET(request: Request) {
   try {
@@ -122,8 +167,40 @@ export async function GET(request: Request) {
 }
 
 /**
- * @route PATCH /api/roles?id={id}
- * @desc Actualizar un rol parcialmente
+ * @swagger
+ * /api/role:
+ *   patch:
+ *     tags:
+ *       - Roles
+ *     summary: Actualizar un rol
+ *     description: Actualiza parcialmente un rol por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del rol a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Rol actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Rol no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function PATCH(request: Request) {
   try {
@@ -196,8 +273,27 @@ export async function PATCH(request: Request) {
 }
 
 /**
- * @route DELETE /api/roles?id={id}
- * @desc Eliminar un rol por ID
+ * @swagger
+ * /api/role:
+ *   delete:
+ *     tags:
+ *       - Roles
+ *     summary: Eliminar un rol
+ *     description: Elimina un rol existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del rol a eliminar
+ *     responses:
+ *       200:
+ *         description: Rol eliminado exitosamente
+ *       404:
+ *         description: Rol no encontrado
+ *       500:
+ *         description: Error del servidor
  */
 export async function DELETE(request: Request) {
   try {

@@ -164,7 +164,7 @@ export function RegisterPage() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="flex min-h-screen bg-secondary">
         {/* Left side - Carousel */}
         <div className="hidden lg:block lg:w-1/2 relative bg-secondary-900">
