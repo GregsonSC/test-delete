@@ -147,6 +147,14 @@ y acceder a la url: localhost:3000/api-doc.
 - **Prisma**: ORM para la creación de entidades en la DB.
 - **Swagger**: Documentación de la API
 
+# Como optimizar las imágenes
+
+1. Ir a https://tinypng.com/
+
+2. Oprimir en Convert my images automatically y seleccionar webp
+
+3. Subir la imagen y descargarla
+
 # Generar migración de Prisma
 
 ```bash
