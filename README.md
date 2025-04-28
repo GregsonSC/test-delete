@@ -118,6 +118,14 @@ la escalabilidad y la experiencia del usuario.
 - Diseño adaptativo que garantiza una experiencia óptima en dispositivos móviles, tabletas y desktops.
 - Cumplimiento con las pautas de accesibilidad web (WCAG) para asegurar que el sitio sea usable por todas las personas.
 
+# Como optimizar las imágenes
+
+1. Ir a https://tinypng.com/
+
+2. Oprimir en Convert my images automatically y seleccionar webp
+
+3. Subir la imagen y descargarla
+
 ### Documentación de la API
 
 - Se utilizó la librería next-swagger-doc de Swagger para generar automáticamente una interfaz con la documentación de todos los endpoints de la API.

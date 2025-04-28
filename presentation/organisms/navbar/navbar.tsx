@@ -23,6 +23,7 @@ interface NavItem {
   label: string;
   href: string;
   hasDropdown?: boolean;
+  dropdownColumns?: number;
   dropdownContent?: Array<{
     label: string;
     href: string;
@@ -44,6 +45,7 @@ const navItems: NavItem[] = [
     label: "Services",
     href: "#",
     hasDropdown: true,
+    dropdownColumns: 2,
     dropdownContent: [
       {
         label: "Web Design & Development",
@@ -69,6 +71,7 @@ const navItems: NavItem[] = [
     label: "Service Areas",
     href: "/service-areas",
     hasDropdown: true,
+    dropdownColumns: 3,
     dropdownContent: [
       {
         label: "Miami-Dade County",
@@ -356,7 +359,7 @@ export function Navbar() {
                 <div
                   key={item.label}
                   className={cn(
-                    "grid grid-cols-2 gap-8",
+                    `grid grid-cols-${item.dropdownColumns} gap-8`,
                     activeDropdown === item.label ? "" : "hidden"
                   )}
                 >
@@ -390,11 +393,13 @@ export function Navbar() {
             ))}
 
             <div className="flex justify-end mt-8 mb-2">
-              <Button
-                className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
-              >
-                Get a free consultation!
-              </Button>
+              <Link href="/contact" passHref>
+                <Button
+                  className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all"
+                >
+                  Get a free consultation!
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
