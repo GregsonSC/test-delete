@@ -248,6 +248,13 @@ export function RegisterPage() {
                     onChange={(e) => handleInputChange(e, 'phone')}
                     onFocus={() => setFocusedField('phone')}
                     onBlur={() => setFocusedField('')}
+                    onKeyPress={(e) => {
+                      // Allow only numbers and prevent default for other characters
+                      const isNumber = /[0-9]/.test(e.key);
+                      if (!isNumber) {
+                        e.preventDefault();
+                      }
+                    }}
                     required
                     pattern="[0-9]{10,15}"
                   />
