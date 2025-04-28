@@ -9,6 +9,7 @@ import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review
 import { LatestNews, NewsItem } from "@/presentation/molecules/news/latest-news";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
+import { reviewItems } from "@/lib/constants2";
 
 export function MarketingPage() {
   // Portfolio items data
@@ -39,45 +40,6 @@ export function MarketingPage() {
     },
   ];
 
-  // Review items data
-  const reviewItems = [
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Sarah Johnson",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Michael Chen",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Emily Rodriguez",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "David Wilson",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Jessica Lee",
-      rating: 5.0,
-      review: "Review",
-    },
-    {
-      profilePicture: "/fotos-prueba/joe.jpg",
-      name: "Robert Taylor",
-      rating: 5.0,
-      review: "Review",
-    },
-  ];
 
   // Blog news data
   const blogItems: NewsItem[] = [
