@@ -2,6 +2,57 @@ import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"];
+/**
+ * @route POST /api/activity
+ * @desc Crear una nueva actividad
+ * @swagger
+ * /api/activity:
+ *   post:
+ *     tags:
+ *       - Activity
+ *     summary: Create a new Activity
+ *     description: Creates a new activity with all required fields and a valid state.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - expectedDuration
+ *               - startDate
+ *               - endDate
+ *               - state
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-06-01
+ *               state:
+ *                 type: string
+ *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
+ *     responses:
+ *       201:
+ *         description: Activity created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -46,6 +97,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Activity");
   }
 }
+/**
+ * @route GET /api/activity
+ * @desc Obtener una o todas las actividades
+ * @swagger
+ * /api/activity:
+ *   get:
+ *     tags:
+ *       - Activity
+ *     summary: Get one or all Activities
+ *     description: Retrieve all activities or one by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: ID of the activity to retrieve.
+ *     responses:
+ *       200:
+ *         description: Activity or list of activities retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Activity not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -92,6 +170,57 @@ export async function GET(req: Request) {
     return handleError(error, "GET Activity");
   }
 }
+/**
+ * @route PATCH /api/activity
+ * @desc Actualizar una actividad existente
+ * @swagger
+ * /api/activity:
+ *   patch:
+ *     tags:
+ *       - Activity
+ *     summary: Update an Activity
+ *     description: Update fields of an existing activity using its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the activity to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-06-01
+ *               state:
+ *                 type: string
+ *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
+ *     responses:
+ *       200:
+ *         description: Activity updated successfully.
+ *       400:
+ *         description: Invalid input or ID.
+ *       404:
+ *         description: Activity not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -156,6 +285,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Activity");
   }
 }
+/**
+ * @route DELETE /api/activity
+ * @desc Eliminar una actividad
+ * @swagger
+ * /api/activity:
+ *   delete:
+ *     tags:
+ *       - Activity
+ *     summary: Delete an Activity
+ *     description: Delete an activity by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the activity to delete.
+ *     responses:
+ *       200:
+ *         description: Activity deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {

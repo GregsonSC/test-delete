@@ -2,116 +2,128 @@
 import React, { useState } from "react";
 
 export function HomePageCloudinary() {
+  const [title, setTitle] = useState("");
+  const [resume, setResume] = useState("");
+  const [content, setContent] = useState("");
+  const [topic, setTopic] = useState("WEBDESIGN");
+  const [publicationDate, setPublicationDate] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [title, setTitle] = useState<string>("");
-  const [resume, setResume] = useState<string>("");
-  const [content, setContent] = useState<string>("");
-  const [topic, setTopic] = useState<string>("WEBDESIGN");
-  const [publicationDate, setPublicationDate] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      if (!file) {
+        throw new Error("Please select an image.");
+      }
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("resume", resume);
+      formData.append("content", content);
+      formData.append("topic", topic);
+      formData.append("publicationDate", publicationDate);
+      formData.append("imageUrl", file); // este campo es manejado como archivo en el backend
+
+      const res = await fetch("/api/blog", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error creating blog.");
+      }
+
+      setSuccess(true);
+      setTitle("");
+      setResume("");
+      setContent("");
+      setTopic("WEBDESIGN");
+      setPublicationDate("");
+      setFile(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-md rounded-xl">
+      <h1 className="text-3xl font-bold mb-6 text-center">Create Blog</h1>
 
-          const formData = new FormData();
-          if (file) {
-            formData.append("file", file);
-          }
-
-          // Subir imagen a Cloudinary
-          const response = await fetch("/api/Cloudinary/upload", {
-            method: "POST",
-            body: formData,
-          });
-
-          const data = await response.json();
-          const uploadedImageUrl = data.url;
-          setImageUrl(uploadedImageUrl);
-
-          // Enviar datos del blog
-          const blogData = {
-            title,
-            resume,
-            content,
-            topic: topic,
-            publicationDate,
-            imageUrl: uploadedImageUrl,
-          };          
-
-          const response2 = await fetch("/api/blog", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(blogData),
-          });
-
-          const result = await response2.json();
-          console.log("Blog guardado:", result);
-        }}
-      >
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
-          type="file"
-          onChange={(e) => {
-            const files = e.target.files;
-            if (files && files.length > 0) {
-              setFile(files[0]);
-            }
-          }}
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          required
+          className="w-full p-2 border rounded-md"
         />
 
-        <div>
-          <label>Title</label>
-          <input
-            placeholder="Title of Blog"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+        <input
+          type="text"
+          value={resume}
+          onChange={(e) => setResume(e.target.value)}
+          placeholder="Resume"
+          required
+          className="w-full p-2 border rounded-md"
+        />
 
-        <div>
-          <label>Resumen</label>
-          <input
-            placeholder="Resumen of Blog"
-            value={resume}
-            onChange={(e) => setResume(e.target.value)}
-          />
-        </div>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Content"
+          required
+          className="w-full p-2 border rounded-md h-40"
+        />
 
-        <div>
-          <label>Content</label>
-          <input
-            placeholder="Content of Blog"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </div>
+        <select
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          required
+          className="w-full p-2 border rounded-md"
+        >
+          <option value="WEBDESIGN">Web Design</option>
+          <option value="DIGITALMARKETING">Digital Marketing</option>
+          <option value="GRAPHICDESIGN">Graphic Design</option>
+        </select>
 
-        <div>
-          <label>Category of Blog</label>
-          <select value={topic} onChange={(e) => setTopic(e.target.value)}>
-            <option value="WEBDESIGN">Web Design</option>
-            <option value="DIGITALMARKETING">Digital Marketing</option>
-            <option value="GRAPHICDESIGN">Graphic Design</option>
-          </select>
-        </div>
+        <input
+          type="date"
+          value={publicationDate}
+          onChange={(e) => setPublicationDate(e.target.value)}
+          required
+          className="w-full p-2 border rounded-md"
+        />
 
-        <div>
-          <label>Publication Date</label>
-          <input
-            type="date"
-            value={publicationDate}
-            onChange={(e) => setPublicationDate(e.target.value)}
-          />
-        </div>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          required
+          className="w-full"
+        />
 
-        <button type="submit">Enviar</button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+        >
+          {loading ? "Creating..." : "Create Blog"}
+        </button>
+
+        {error && <p className="text-red-600 text-center">{error}</p>}
+        {success && <p className="text-green-600 text-center">Blog created!</p>}
       </form>
-
-      {imageUrl && <img src={imageUrl} alt="Uploaded image" />}
     </div>
   );
 }

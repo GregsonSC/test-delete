@@ -2,6 +2,56 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
+/**
+ * @route POST /api/project
+ * @desc Crear un nuevo proyecto
+ * @swagger
+ * /api/project:
+ *   post:
+ *     tags:
+ *       - Project
+ *     summary: Create a new project
+ *     description: Create a new project with name, description, duration, dates, and current phase.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - expectedDuration
+ *               - startDate
+ *               - endDate
+ *               - currentPhase
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: integer
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-04-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-04-30
+ *               currentPhase:
+ *                 type: string
+ *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *     responses:
+ *       201:
+ *         description: Project created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -45,6 +95,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Project");
   }
 }
+/**
+ * @route GET /api/project
+ * @desc Obtener uno o todos los proyectos
+ * @swagger
+ * /api/project:
+ *   get:
+ *     tags:
+ *       - Project
+ *     summary: Get one or all projects
+ *     description: Returns all projects or one by ID if specified.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: ID of the project to retrieve.
+ *     responses:
+ *       200:
+ *         description: Project(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Project not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -92,6 +169,55 @@ export async function GET(req: Request) {
     return handleError(error, "GET Project");
   }
 }
+/**
+ * @route PATCH /api/project
+ * @desc Actualizar un proyecto
+ * @swagger
+ * /api/project:
+ *   patch:
+ *     tags:
+ *       - Project
+ *     summary: Update a project
+ *     description: Update fields of a project by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the project to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: integer
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *               currentPhase:
+ *                 type: string
+ *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *     responses:
+ *       200:
+ *         description: Project updated successfully.
+ *       400:
+ *         description: Invalid input or date format.
+ *       404:
+ *         description: Project not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -157,6 +283,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Project");
   }
 }
+/**
+ * @route DELETE /api/project
+ * @desc Eliminar un proyecto
+ * @swagger
+ * /api/project:
+ *   delete:
+ *     tags:
+ *       - Project
+ *     summary: Delete a project
+ *     description: Delete a project by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the project to delete.
+ *     responses:
+ *       200:
+ *         description: Project deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {

@@ -30,6 +30,7 @@ model User {
   createdAt    DateTime         @default(now())
   udpatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
+  UserWorkTeam UserWorkTeam[]
 }
 
 model Permission {
@@ -124,7 +125,6 @@ enum County {
 enum Topic {
   WEBDESIGN
   DIGITALMARKETING
-  GRAPHICDESIGN
 }
 
 enum Action {
@@ -325,8 +325,6 @@ model Comment {
   udpatedAt  DateTime @updatedAt
 }
 
-
-
 model Plan {
   id          Int       @id @default(autoincrement())
   name        String
@@ -394,7 +392,6 @@ enum TicketStatus {
   CLOSED
 }
 
-
 model Attachment {
   id          Int            @id @default(autoincrement())
   name        String
@@ -417,9 +414,8 @@ model Benefit {
   serviceAreaId Int?
   serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime     @default(now())
-  udpatedAt     DateTime     @updatedAt
-
+  createdAt DateTime @default(now())
+  udpatedAt DateTime @updatedAt
 }
 
 enum TypeAttachment {
@@ -428,4 +424,42 @@ enum TypeAttachment {
   URL
   VIDEO
   OTHERS
+}
+
+model WorkTeam {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String
+  state        StateWorkTeam
+  area         AreaWorkTeam
+  createdAt    DateTime       @default(now())
+  udpatedAt    DateTime       @updatedAt
+  UserWorkTeam UserWorkTeam[]
+}
+
+enum StateWorkTeam {
+  AVAILABLE
+  INACTIVE
+  ASSIGNED
+}
+
+enum AreaWorkTeam {
+  BACKEND
+  FRONTEND
+  DESIGN
+  MANAGEMENT
+  ADMINISTRATIVE
+  MARKETING
+  SALES
+  DEVOPS
+  SUPPORT
+}
+
+model UserWorkTeam {
+  user_id     Int
+  workTeam_id Int
+  user        User     @relation(fields: [user_id], references: [id])
+  workTeam    WorkTeam @relation(fields: [workTeam_id], references: [id])
+
+  @@id([user_id, workTeam_id])
 }
