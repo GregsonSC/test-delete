@@ -82,7 +82,7 @@ export function ProfileProjects() {
   const showList = !selectedItem;
 
   return (
-    <MainLayout>
+    <MainLayout showFooter={false}>
       {/* Section */}
       <section className="bg-gray-50 pt-20 md:pt-20 lg:pt-0">
         {/* Inner Container */}

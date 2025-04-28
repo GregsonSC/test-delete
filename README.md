@@ -1,5 +1,7 @@
 # Proyecto de Migración a Next.js para Senavia Corp
 
+![Logo Senavia](/public/senavia/main.jpeg)
+
 Este documento detalla las funcionalidades y características que se implementarán en la migración del sitio web de Senavia Corp a Next.js.
 
 ## Instalación y Configuración

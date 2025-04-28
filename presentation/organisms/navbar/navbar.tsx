@@ -222,7 +222,20 @@ export function Navbar() {
   // Function to handle logout
   const handleLogout = () => {
     setIsLogged(false);
+
+    // Limpiar todas las cookies
+    if (typeof document !== "undefined") {
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
+      });
+    }
+
+    // Redirigir a login
+    window.location.href = "/login";
   };
+
 
   return (
     <>
@@ -310,10 +323,14 @@ export function Navbar() {
                         <span className="text-white font-semibold text-[14px]">{userName}</span>
                       </MenubarTrigger>
                       <MenubarContent className="rounded-md border-0 shadow-md">
-                        <MenubarItem className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
-                          <User className="h-4 w-4" />
-                          Profile
-                        </MenubarItem>
+                        <Link href="/profile-projects" passHref>
+                          <MenubarItem asChild className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
+                            <a>
+                              <User className="h-4 w-4" />
+                              Profile
+                            </a>
+                          </MenubarItem>
+                        </Link>
                         <MenubarSeparator />
                         <MenubarItem
                           className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
