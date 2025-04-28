@@ -32,7 +32,7 @@ export function ContactInfo(type: number) {
               </p>
               <Button className="rounded-full bg-[#0A1248] text-white">
                 <Phone color="white" />
-                (954) 706-4084
+                <a href="tel:+19547064084" className="font-bold">(954) 706-4084</a>
               </Button>
             </div>
           </div>
@@ -64,7 +64,7 @@ export function ContactInfo(type: number) {
               </p>
               <Button className="rounded-full bg-[#0A1248] text-white">
                 <Phone color="white" />
-                <span className="font-bold">(954) 706-4084</span>
+                <a href="tel:+19547064084" className="font-bold">(954) 706-4084</a>
               </Button>
             </div>
             {/* Círculo blanco - solo visible en xl en adelante */}
