@@ -64,6 +64,7 @@ interface ContactUsProps {
   isLoggedIn: boolean;
 }
 
+// !CH010 [ADD] funcionamiento del endpoint del calendario para citas
 export function ContactUs({ isLoggedIn }: ContactUsProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
