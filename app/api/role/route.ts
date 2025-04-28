@@ -1,26 +1,100 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 
-//Insert New Role
+/**
+ * @swagger
+ * /api/role:
+ *   post:
+ *     tags:
+ *       - Roles
+ *     summary: Crear un nuevo rol
+ *     description: Crea un rol con los datos enviados en el body.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Rol creado exitosamente
+ *       400:
+ *         description: Campos faltantes o inválidos
+ *       500:
+ *         description: Error del servidor
+ */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
     if (!data.name) {
-      return NextResponse.json({ message: "Role name is required" }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Role name is required",
+          errors: ["Missing 'name' field"],
+        },
+        { status: 400 }
+      );
     }
-    const newRole = await db.role.create({
-      data,
-    });
-    if (newRole) {
-      return NextResponse.json(newRole, { status: 201 });
-    }
+
+    const newRole = await db.role.create({ data });
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: [newRole],
+        message: "Role created successfully",
+        errors: [],
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating role:", error);
-    return NextResponse.json({ message: "Error creating role", error }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error creating role",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
-//Role all
+
+/**
+ * @swagger
+ * /api/role:
+ *   get:
+ *     tags:
+ *       - Roles
+ *     summary: Obtener roles
+ *     description: Obtiene todos los roles o uno específico si se proporciona el parámetro `id`.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         description: ID del rol (opcional)
+ *     responses:
+ *       200:
+ *         description: Roles obtenidos exitosamente
+ *       400:
+ *         description: ID inválido
+ *       404:
+ *         description: Rol no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -34,32 +108,100 @@ export async function GET(request: Request) {
           description: true,
         },
       });
-      return NextResponse.json(roles);
+
+      return NextResponse.json({
+        success: true,
+        data: roles,
+        message: "Roles fetched successfully",
+        errors: [],
+      });
     }
+
     const id = Number(requestId);
     if (isNaN(id)) {
-      return NextResponse.json({ message: "The id must be a valid number" }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "The id must be a valid number",
+          errors: ["Invalid ID"],
+        },
+        { status: 400 }
+      );
     }
-    const role = await db.role.findUnique({
-      where: { id },
-    });
+
+    const role = await db.role.findUnique({ where: { id } });
+
     if (!role) {
-      return NextResponse.json({ error: "Role not found" }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Role not found",
+          errors: ["Role does not exist"],
+        },
+        { status: 404 }
+      );
     }
-    return NextResponse.json(role, { status: 200 });
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: [role],
+        message: "Role fetched successfully",
+        errors: [],
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       {
+        success: false,
+        data: [],
         message: "Error fetching role",
-        error,
+        errors: [error instanceof Error ? error.message : "Unknown error"],
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
 
+/**
+ * @swagger
+ * /api/role:
+ *   patch:
+ *     tags:
+ *       - Roles
+ *     summary: Actualizar un rol
+ *     description: Actualiza parcialmente un rol por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del rol a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Rol actualizado exitosamente
+ *       400:
+ *         description: ID inválido o datos faltantes
+ *       404:
+ *         description: Rol no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -67,57 +209,133 @@ export async function PATCH(request: Request) {
     const data = await request.json();
 
     if (!data || Object.keys(data).length === 0) {
-      return NextResponse.json({ message: "No data provided" }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "No data provided",
+          errors: ["Missing request body"],
+        },
+        { status: 400 }
+      );
     }
 
     const id = Number(requestId);
     if (isNaN(id) || !requestId) {
-      return NextResponse.json({ error: "The ID must be a valid number" }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "The ID must be a valid number",
+          errors: ["Invalid ID"],
+        },
+        { status: 400 }
+      );
     }
 
-    const role = await db.role.findUnique({
-      where: { id },
-    });
+    const role = await db.role.findUnique({ where: { id } });
 
     if (!role) {
-      return NextResponse.json({ error: "Role not found" }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Role not found",
+          errors: ["Role does not exist"],
+        },
+        { status: 404 }
+      );
     }
 
-    // Actualizar solo los campos proporcionados en `data`
     const updatedRole = await db.role.update({
       where: { id },
-      data, // PATCH permite modificaciones parciales
+      data,
     });
 
-    return NextResponse.json(updatedRole);
+    return NextResponse.json({
+      success: true,
+      data: [updatedRole],
+      message: "Role updated successfully",
+      errors: [],
+    });
   } catch (error) {
     console.error("Error updating role:", error);
-    return NextResponse.json({ message: "Error updating role", error }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error updating role",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
 
-
+/**
+ * @swagger
+ * /api/role:
+ *   delete:
+ *     tags:
+ *       - Roles
+ *     summary: Eliminar un rol
+ *     description: Elimina un rol existente por su ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del rol a eliminar
+ *     responses:
+ *       200:
+ *         description: Rol eliminado exitosamente
+ *       404:
+ *         description: Rol no encontrado
+ *       500:
+ *         description: Error del servidor
+ */
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
 
     const id = Number(requestId);
-
     const roleExists = await db.role.findUnique({ where: { id } });
 
     if (!roleExists) {
-      return NextResponse.json({ message: "role not found" }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Role not found",
+          errors: ["Role does not exist"],
+        },
+        { status: 404 }
+      );
     }
 
     const role = await db.role.delete({ where: { id } });
-    if (!role) {
-      return NextResponse.json({ message: "role not found" }, { status: 404 });
-    }
 
-    return NextResponse.json({ message: "Role deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: [role],
+        message: "Role deleted successfully",
+        errors: [],
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error deleting role:", error);
-    return NextResponse.json({ message: "Error deleting role", error }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error deleting role",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }

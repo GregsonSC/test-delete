@@ -9,24 +9,27 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id          Int              @id @default(autoincrement())
-  name        String
-  email       String           @unique
-  password    String
-  phone       String
-  imageUrl    String
-  role        Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId      Int //Dato para hacer la relacion
-  leads       Lead[] // Relación Uno a Muchos con Lead
-  permissions UserPermission[]
-  createdAt   DateTime         @default(now())
-  udpatedAt   DateTime         @updatedAt
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String
+  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId       Int //Dato para hacer la relacion
+  leads        Lead[] // Relación Uno a Muchos con Lead
+  permissions  UserPermission[]
+  Comment      Comment[]
+  tickets      UserTicket[]
+  createdAt    DateTime         @default(now())
+  udpatedAt    DateTime         @updatedAt
+  UserActivity UserActivity[]
 }
 
 model Permission {
@@ -37,7 +40,7 @@ model Permission {
   active            Boolean
   serviceAssociated ServiceAssociated
   createdAt         DateTime          @default(now())
-  udpatedAt         DateTime          @updatedAt
+  updatedAt         DateTime          @updatedAt
   RolePermission    RolePermission[]
   UserPermission    UserPermission[]
 }
@@ -50,10 +53,11 @@ model Project {
   startDate        String
   endDate          String
   estimate_id      Int?
-  estimate         Estimate?     @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
+  estimate         Estimate?    @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
   currentPhase     CurrentPhase
   createdAt        DateTime     @default(now())
-  udpatedAt        DateTime     @updatedAt
+  updatedAt        DateTime     @updatedAt
+  Phase            Phase[]
 }
 
 model Estimate {
@@ -62,11 +66,13 @@ model Estimate {
   description   String
   state         EstimateState
   lead_id       Int?
-  lead          Lead?          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
   totalValue    Decimal
   Project       Project[]
+  costs         Cost[]
+  comments      Comment[]
   createdAt     DateTime      @default(now())
-  udpatedAt     DateTime      @updatedAt
+  updatedAt     DateTime      @updatedAt
 }
 
 model Blog {
@@ -78,11 +84,11 @@ model Blog {
   publicationDate String
   imageUrl        String
   createdAt       DateTime @default(now())
-  udpatedAt       DateTime @updatedAt
+  updatedAt       DateTime @updatedAt
 }
 
 model ServiceArea {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   name             String
   description      String
   active           Boolean
@@ -92,13 +98,21 @@ model ServiceArea {
   testimonialEmbed String
   service_id       Int?
   service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  udpatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Benefit          Benefit[]
 }
 
 model Service {
   id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  active      Boolean
   ServiceArea ServiceArea[]
+  plans       Plan[]
+  leads       Lead[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 enum County {
@@ -155,7 +169,7 @@ model Role {
   user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
   permissions RolePermission[]
   createdAt   DateTime         @default(now())
-  udpatedAt   DateTime         @updatedAt
+  updatedAt   DateTime         @updatedAt
 }
 
 model RolePermission {
@@ -176,12 +190,14 @@ model Lead {
   name        String
   description String
   state       LeadState
-  starDate    String
+  startDate   String
   endDate     String
   userId      Int? // Clave foránea
   user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId   Int?
+  service     Service?   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   createdAt   DateTime   @default(now())
-  udpatedAt   DateTime   @updatedAt
+  updatedAt   DateTime   @updatedAt
   Estimate    Estimate[]
 }
 
@@ -203,8 +219,213 @@ model UserPermission {
 }
 
 model Product {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String
   url         String
+  Attachment  Attachment[]
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+model Phase {
+  id               Int        @id @default(autoincrement())
+  name             PhaseName
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  project_id       Int?
+  project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  state            PhaseState
+  Comment          Comment[]
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  Activity         Activity[]
+}
+
+enum PhaseName {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum PhaseState {
+  PLANNING
+  INPROCESS
+  TESTING
+  FINISHED
+}
+
+model Activity {
+  id               Int            @id @default(autoincrement())
+  name             String
+  description      String
+  expectedDuration String
+  startDate        String
+  endDate          String
+  phase_id         Int?
+  phase            Phase?         @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  state            StateActivity
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  UserActivity     UserActivity[]
+  Attachment       Attachment[]
+}
+
+enum StateActivity {
+  PENDING
+  ASSIGNED
+  INPROCESS
+  REVIEWING
+  FINISHED
+}
+
+model UserActivity {
+  user_id     Int
+  activity_id Int
+  user        User     @relation(fields: [user_id], references: [id])
+  activity    Activity @relation(fields: [activity_id], references: [id])
+
+  @@id([user_id, activity_id])
+}
+
+model Cost {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  type        CostType
+  value       Float
+  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  estimateId  Int
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum CostType {
+  MANPOWER
+  TECHNOLOGIES
+  LICENSE
+  OTHERS
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  sendDate   String
+  sendTime   String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  estimateId Int
+  estimate   Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phaseId    Int
+  phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  udpatedAt  DateTime @updatedAt
+}
+
+
+
+model Plan {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  type        PlanType
+  variants    Variant[] // Relación uno-a-muchos con Variant
+  serviceId   Int
+  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  udpatedAt   DateTime  @updatedAt
+}
+
+model Variant {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  benefits    String
+  price       Float
+  planId      Int
+  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
+  createdAt   DateTime @default(now())
+  udpatedAt   DateTime @updatedAt
+}
+
+enum PlanType {
+  MONTHLY
+  SINGLEPAYMENT
+}
+
+model UserTicket {
+  userId   Int
+  ticketId Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@id([userId, ticketId])
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  title       String
+  type        TicketPlan
+  description String
+  status      TicketStatus
+  users       UserTicket[]
+  Attachment  Attachment[]
+  createdAt   DateTime     @default(now())
+  udpatedAt   DateTime     @updatedAt
+}
+
+enum TicketPlan {
+  BUG
+  REQUEST
+  REVIEW
+  OTHER
+}
+
+enum TicketStatus {
+  PENDING
+  ASSIGNED
+  INPROCESS
+  UNDERREVIEW
+  SOLVED
+  CLOSED
+}
+
+
+model Attachment {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String
+  type        TypeAttachment
+  url         String
+  activityId  Int?
+  activity    Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  ticketId    Int?
+  ticket      Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  productId    Int?
+  product      Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+}
+
+model Benefit {
+  id            Int          @id @default(autoincrement())
+  title         String
+  description   String
+  serviceAreaId Int?
+  serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime     @default(now())
+  udpatedAt     DateTime     @updatedAt
+
+}
+
+enum TypeAttachment {
+  IMAGE
+  DOCUMENT
+  URL
+  VIDEO
+  OTHERS
 }

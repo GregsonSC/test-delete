@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Axios, { AxiosResponse } from "axios";
+import { toast } from "sonner";
 
 // API Base URLs
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.senavia.com";
@@ -17,7 +18,17 @@ export const endpoints = {
   contact: {
     submit: `${API}/contact`,
   },
-  
+  blog: {
+    getPosts: `${API}/blog`,
+    createPost: `${API}/blog`,
+    updatePost: (id: string) => `${API}/blog?id=${id}`,
+    deletePost: (id: string) => `${API}/blog?id=${id}`,
+  },
+  // Add authentication endpoints
+  auth: {
+    registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
+  },
+
   // Test endpoint for checking API connectivity
   test: `${API}/health-check`,
 };
@@ -96,6 +107,11 @@ export const useFetch = () => {
         console.log("Request canceled by Axios");
       } else {
         console.error("Error in request:", error);
+        try {
+          //toast.error(error.message); Esta linea mostraba un toast de error pero no deberia verse porque la api ya nos regresa mensajes de error
+        } catch (error) {
+          console.error("Error in toast:", error);
+        }
         status = error.response ? error.response.status : 500;
         response = error.response?.data;
         errorLogs = error.response ? error.response.data : "Unknown error";
@@ -111,7 +127,6 @@ export const useFetch = () => {
 };
 
 export default endpoints;
-
 
 /* 
 

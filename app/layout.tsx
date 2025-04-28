@@ -14,6 +14,22 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="dark">
+      <head>
+        <link rel="icon" href="/senavia/senavia.ico" />
+        <title>Senavia Corp</title>
+        <meta name="description" content="Digital Agency That Generates Business Growth" />
+        {/* SEO Meta Tags */}
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Senavia Corp" />
+        <meta property="og:description" content="Digital Agency That Generates Business Growth" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/senavia/main.jpeg" />
+        <meta property="og:url" content="https://senavia.com" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Senavia Corp" />
+        <meta name="twitter:description" content="Digital Agency That Generates Business Growth" />
+        <meta name="twitter:image" content="/senavia/main.jpeg" />
+      </head>
       <body className={`${inter.className} bg-[#050A2B]`}>
         <ThemeProvider
           attribute="class"
@@ -28,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // # TODO: revisar aqui el cambio de estilos
           toastOptions={{
             style: {
-              background: "#04081E", // aqui markus !!!
+              background: "#04081E",
             },
           }}
         />

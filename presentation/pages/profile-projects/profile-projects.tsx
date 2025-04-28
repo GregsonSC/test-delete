@@ -1,148 +1,303 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { ProfileChat } from "@/presentation/atoms/chat/profile-chat";
-import { ProfileProjectCard } from "@/presentation/atoms/profile-project/profile-project-card";
-import { ProfileProjectDetail } from "@/presentation/atoms/profile-project/profile-project-detail";
+// Re-import project components and data
+import { projects, requests } from "@/lib/constants";
+import { ProfileProjectCard } from "@/presentation/atoms/profile-project/profile-project-card"; // Re-added
+import { ProfileProjectDetail } from "@/presentation/atoms/profile-project/profile-project-detail"; // Re-added
+import { RequestCard } from "@/presentation/atoms/profile-project/request/request-card";
+import { RequestDetail } from "@/presentation/atoms/profile-project/request/request-detail";
 
-// Sample documents data
-const projectDocuments = [
-    { id: "doc1", name: "Document1.docx", url: "#" },
-    { id: "doc2", name: "Document2.docx", url: "#" },
-    { id: "doc3", name: "Document3.docx", url: "#" },
-    { id: "doc4", name: "Document4.docx", url: "#" },
-    { id: "doc5", name: "Document1.docx", url: "#" },
-    { id: "doc6", name: "Document2.docx", url: "#" },
-    { id: "doc7", name: "Document3.docx", url: "#" },
-    { id: "doc8", name: "Document4.docx", url: "#" }
-];
+// Define types
+type Request = typeof requests[0];
+type Project = typeof projects[0]; // Re-added Project type
+// Assuming both have a compatible chatHistory structure
+type ChatMessage = (Request["chatHistory"] | Project["chatHistory"])[0];
 
 export function ProfileProjects() {
-    const [activeTab, setActiveTab] = useState<"leads" | "projects">("projects");
+  // State for active tab ('leads' or 'projects') and selected IDs
+  const [activeTab, setActiveTab] = useState<"leads" | "projects">("leads");
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null); // Re-added Project ID state
 
-    // Sample projects data
-    const projects = [
-        {
-            id: "1",
-            name: "Beach Resort Website",
-            progress: 75,
-            phase: "Project Phase",
-        },
-        { id: "2", name: "Corporate Portal", progress: 45, phase: "Design" },
-        { id: "3", name: "E-commerce Platform", progress: 90, phase: "Testing" },
-        { id: "4", name: "Mobile App", progress: 30, phase: "Development" },
-    ];
+  // --- Derived State (Memoized for performance) ---
+  // Get the full selected item (request or project) based on ID and active tab
+  const selectedItem: Request | Project | null = useMemo(() => {
+    if (activeTab === "leads" && selectedRequestId) {
+      return requests.find((r) => r.id === selectedRequestId) || null;
+    } else if (activeTab === "projects" && selectedProjectId) {
+      return projects.find((p) => p.id === selectedProjectId) || null;
+    }
+    return null;
+    // Update dependencies
+  }, [activeTab, selectedRequestId, selectedProjectId]);
 
-    return (
-        <MainLayout>
-            <section className="bg-gray-50 ">
-                <div className="w-full px-5 py-4 overflow-x-hidden lg:mt-0 mt-20">
-                    <div className="grid grid-cols-1 md:grid-cols-[35%_1fr] gap-6">
-                        {/* Left column - Projects list */}
-                        <div className="bg-white rounded-lg p-4" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
-                            {/* Tabs */}
-                            <div className="flex mb-4">
-                                <button
-                                    className={cn(
-                                        "px-6 py-0 rounded-full mr-2 text-lg font-bold",
-                                        activeTab === "leads"
-                                            ? "bg-[#99CC33] text-white"
-                                            : "bg-transparent text-[#739926] border border-[#99CC33]"
-                                    )}
-                                    onClick={() => setActiveTab("leads")}
-                                >
-                                    Leads
-                                </button>
-                                <button
-                                    className={cn(
-                                        "px-6 py-0 rounded-full text-lg font-bold",
-                                        activeTab === "projects"
-                                            ? "bg-[#99CC33] text-white"
-                                            : "bg-transparent text-[#739926] border border-[#99CC33]"
-                                    )}
-                                    onClick={() => setActiveTab("projects")}
-                                >
-                                    Projects
-                                </button>
-                            </div>
+  // Get the chat history for the selected item
+  const currentChatHistory: ChatMessage[] = useMemo(() => {
+    // Selected item can be Request or Project, both should have chatHistory
+    return selectedItem?.chatHistory || [];
+  }, [selectedItem]);
 
-                            {/* Project cards container */}
-                            <div
-                                className="h-[650px] overflow-y-auto space-y-4 pr-2"
-                                style={{
-                                    msOverflowStyle: 'none',
-                                    scrollbarWidth: 'none'
-                                }}
-                            >
-                                <style jsx>{`
-                                    div::-webkit-scrollbar {
-                                        display: none;
-                                    }
-                                `}</style>
-                                {activeTab === "projects" && projects.map((project) => (
-                                    <ProfileProjectCard
-                                        key={project.id}
-                                        projectName={project.name}
-                                        progress={project.progress}
-                                        phase={project.phase}
-                                    />
-                                ))}
-                                {activeTab === "leads" && (
-                                    <div className="text-center text-gray-500 mt-10">
-                                        No leads available
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+  // --- Event Handlers ---
+  // Re-add handleProjectSelect
+  const handleProjectSelect = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    setSelectedRequestId(null); // Clear request selection
+    if (activeTab !== "projects") setActiveTab("projects"); // Switch tab if needed
+  };
 
-                        {/* Right column - Project details and chat */}
-                        <div className="flex flex-col space-y-6">
-                            {/* Project details section */}
-                            <div className="bg-white rounded-lg p-4 max-w-full h-[300px] overflow-auto" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-                                <style jsx>{`
-                                    div::-webkit-scrollbar {
-                                        display: none;
-                                    }
-                                `}</style>
-                                <div className="grid grid-cols-1 gap-4 h-full overflow-y-auto">
-                                    {[...Array(5)].map((_, index) => (
-                                        <div key={index} className="h-[120px]">
-                                            <ProfileProjectDetail
-                                                description={`Project description ${index + 1}. Lorem ipsum dolor sit amet.`}
-                                                documents={projectDocuments.slice(0, 2)}
-                                                date={new Date()}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+  // Update handleRequestSelect to clear project selection
+  const handleRequestSelect = (requestId: string) => {
+    setSelectedRequestId(requestId);
+    setSelectedProjectId(null); // Clear project selection
+    // Switch to 'leads' tab if not already active when a request is selected
+    if (activeTab !== "leads") setActiveTab("leads");
+  };
 
-                            {/* Chat section */}
-                            <div className="bg-white rounded-lg p-4 flex-1 max-h-[420px]" style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
-                                <div className="mb-4">
-                                    <div className="px-6 py-0 rounded-full bg-[#99CC33] text-white text-center font-bold text-lg w-24">
-                                        Chat
-                                    </div>
-                                </div>
-                                <div className="h-[calc(100%-48px)] overflow-y-auto"
-                                     style={{ 
-                                         msOverflowStyle: 'none',
-                                         scrollbarWidth: 'none'
-                                     }}>
-                                    <style jsx>{`
-                                        div::-webkit-scrollbar {
-                                            display: none;
-                                        }
-                                    `}</style>
-                                    <ProfileChat />
-                                </div>
-                            </div>
-                        </div>
+  // Update handleTabChange to clear both selections
+  const handleTabChange = (tab: "leads" | "projects") => {
+    setActiveTab(tab);
+    // Clear selections when changing tabs
+    setSelectedRequestId(null);
+    setSelectedProjectId(null);
+  };
+
+  // --- Effects ---
+  // Update effect to reset both selections
+  useEffect(() => {
+    const handlePopState = () => {
+      setSelectedRequestId(null);
+      setSelectedProjectId(null); // Reset project ID too
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // --- Render Logic Helper ---
+  // Determine if the list view (left column) should be shown on mobile
+  // Logic depends on whether *any* item is selected, regardless of type
+  const showList = !selectedItem;
+
+  return (
+    <MainLayout showFooter={false}>
+      {/* Section */}
+      <section className="bg-gray-50 pt-20 md:pt-20 lg:pt-0">
+        {/* Inner Container */}
+        <div className="w-full md:px-5 md:py-4 h-full overflow-hidden lg:mt-0 mt-0">
+          {/* Grid */}
+          <div className={cn(
+            "grid grid-cols-1 md:grid-cols-[35%_1fr] md:gap-4",
+            !showList ? "h-[calc(100vh-5rem)]" : "h-auto", // Mobile height
+            "md:h-[calc(100vh-6.5rem)]" // Desktop height constraint
+          )}>
+            {/* Columna Izquierda - Lista */}
+            <div
+              className={cn(
+                "bg-white md:rounded-lg md:p-4",
+                "p-0 pt-2 sm:pt-0",
+                showList ? "block" : "hidden", // Mobile visibility
+                "md:block", // Desktop visibility
+                "md:h-full md:flex md:flex-col md:overflow-hidden" // Desktop layout/height/overflow
+              )}
+              style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
+            >
+              {/* Tabs */}
+              <div className="flex mb-4 px-4 md:p-0 pt-3 md:pt-0 flex-shrink-0">
+                {/* Request Tab Button */}
+                <button
+                  className={cn(
+                    "px-6 py-0 rounded-full mr-2 text-base font-bold md:text-lg",
+                    activeTab === "leads"
+                      ? "bg-[#99CC33] text-white"
+                      : "bg-transparent text-[#739926] border border-[#99CC33]"
+                  )}
+                  onClick={() => handleTabChange("leads")}
+                >
+                  Requests
+                </button>
+                {/* Project Tab Button */}
+                <button
+                  className={cn(
+                    "px-6 py-0 rounded-full text-base font-bold md:text-lg",
+                    activeTab === "projects"
+                      ? "bg-[#99CC33] text-white"
+                      : "bg-transparent text-[#739926] border border-[#99CC33]"
+                  )}
+                  onClick={() => handleTabChange("projects")}
+                >
+                  Projects
+                </button>
+              </div>
+
+              {/* Contenedor de Cards (Scrollable area) */}
+              <div
+                className={cn(
+                  "overflow-y-auto space-y-4 px-4 md:pr-2 md:pl-0", // Scrolling
+                  "md:flex-1 md:min-h-0", // Desktop flex sizing
+                  showList ? "h-[calc(100vh-8rem)]" : "", // Mobile height
+                )}
+                style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
+              >
+                <style jsx>{` div::-webkit-scrollbar { display: none; } `}</style>
+
+                {/* Render Request Cards */}
+                {activeTab === "leads" &&
+                  (requests.length > 0 ? (
+                    requests.map((request) => (
+                      <div
+                        key={request.id}
+                        onClick={() => handleRequestSelect(request.id)}
+                        className="cursor-pointer"
+                      >
+                        <RequestCard
+                          requestName={request.requestName}
+                          leadStatus={request.leadStatus}
+                          isSelected={selectedRequestId === request.id}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500 mt-10">
+                      No requests available
                     </div>
+                  ))}
+
+                 {/* Render Project Cards */}
+                 {activeTab === "projects" &&
+                   (projects.length > 0 ? (
+                     projects.map((project) => (
+                       <ProfileProjectCard
+                         key={project.id}
+                         projectName={project.name}
+                         progress={project.progress}
+                         phase={project.phase}
+                         // Assuming ProfileProjectCard has an onClick prop
+                         onClick={() => handleProjectSelect(project.id)}
+                         isSelected={selectedProjectId === project.id}
+                       />
+                     ))
+                   ) : (
+                     <div className="text-center text-gray-500 mt-10">
+                       No projects available
+                     </div>
+                   ))}
+              </div> {/* End Contenedor de Cards */}
+            </div> {/* End Columna Izquierda */}
+
+            {/* Columna Derecha - Detalles y Chat */}
+            <div
+              className={cn(
+                "flex flex-col space-y-4",
+                !showList ? "flex" : "hidden", // Mobile visibility
+                "md:flex", // Desktop visibility
+                "h-full min-h-0 w-full overflow-hidden" // Layout/height/overflow
+              )}
+            >
+              {/* --- Sección Superior Derecha (Detalles) --- */}
+              <div
+                className={cn(
+                  "bg-white rounded-lg p-4",
+                  "lg:max10-[250px]", // Outer container max height
+                  "overflow-hidden", // Outer container hides overflow
+                  "flex-shrink-0"
+                )}
+                style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
+              >
+                {/* Contenedor interno para scroll */}
+                <div 
+                  className="overflow-y-auto h-full"
+                  style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#99CC33 #f0f0f0'
+                  }}
+                >
+                  <style jsx>{`
+                    div::-webkit-scrollbar {
+                      width: 8px;
+                    }
+                    div::-webkit-scrollbar-track {
+                      background: #f0f0f0;
+                      border-radius: 10px;
+                    }
+                    div::-webkit-scrollbar-thumb {
+                      background-color: #99CC33;
+                      border-radius: 10px;
+                      border: 2px solid #f0f0f0;
+                    }
+                    div::-webkit-scrollbar-thumb:hover {
+                      background-color: #739926;
+                    }
+                  `}</style>
+                   
+                   {/* Placeholder when no item is selected */}
+                   {!selectedItem && (
+                     <div className="flex items-center justify-center h-full text-gray-400">
+                       {activeTab === 'leads' ? 'Select a request to see details.' : 'Select a project to see details.'}
+                     </div>
+                   )}
+
+                   {/* Render Request Details */}
+                   {selectedItem && activeTab === 'leads' && 'requestName' in selectedItem && (
+                     <RequestDetail
+                       requestName={selectedItem.requestName}
+                       associatedService={selectedItem.associatedService}
+                       companyPlan={selectedItem.companyPlan}
+                       description={selectedItem.description}
+                       leadStatus={selectedItem.leadStatus}
+                     />
+                   )}
+
+                   {/* Render ALL Project Details */}
+                   {selectedItem && activeTab === 'projects' && 'progress' in selectedItem && (
+                     selectedItem.details.map((detail, index) => (
+                       <ProfileProjectDetail
+                         key={index}
+                         description={detail.description}
+                         documents={detail.documents}
+                         date={detail.date}
+                       
+                       />
+                     ))
+                   )}
                 </div>
-            </section>
-        </MainLayout>
-    );
+              </div>
+
+              {/* --- Sección Inferior Derecha (Chat) --- */}
+              <div
+                className={cn(
+                  "bg-white rounded-lg p-4",
+                  "flex-1 min-h-0 flex flex-col overflow-hidden" // Sizing/Layout/Overflow
+                )}
+                style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
+              >
+                {/* Título del Chat */}
+                <div className="mb-4 flex-shrink-0">
+                  <div className="px-6 py-0 rounded-full bg-[#99CC33] text-white text-center font-bold text-lg w-24 inline-block">
+                    Chat
+                  </div>
+                </div>
+                {/* Área de Mensajes del Chat (Scrollable) */}
+             
+                
+                  {/* Placeholder or Chat Messages */}
+                  {!selectedItem ? (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      {/* Update placeholder based on active tab */}
+                      {activeTab === 'leads' ? 'Select a request to see the chat.' : 'Select a project to see the chat.'}
+                    </div>
+                  ) : (
+                    <ProfileChat messages={currentChatHistory} />
+                  )}
+              
+
+              </div>
+            </div> {/* Fin Columna Derecha */}
+          </div> {/* Fin Grid */}
+        </div> {/* Fin Inner Container */}
+      </section> {/* Fin Section */}
+    </MainLayout>
+  );
 }

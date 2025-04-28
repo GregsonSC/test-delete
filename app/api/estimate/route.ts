@@ -1,32 +1,7 @@
-import { NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-// Función de respuesta genérica
-function createResponse({
-  success,
-  data = null,
-  message,
-  errors = [],
-}: {
-  success: boolean;
-  data?: any;
-  message: string;
-  errors?: string[];
-}) {
-  return NextResponse.json({ success, data, message, errors });
-}
-
-// Manejo de errores
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:`, error);
-  return createResponse({
-    success: false,
-    message: `An error occurred in ${context}.`,
-    errors: [error instanceof Error ? error.message : "Unknown error"],
-  });
-}
-
-// POST - Crear estimate
+const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED", "INVOICE", "PAID"];
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -37,6 +12,16 @@ export async function POST(request: Request) {
         success: false,
         message: "All fields are required.",
         errors: ["Missing one or more required fields."],
+        status: 400,
+      });
+    }
+
+    if (!validState.includes(state)) {
+      return createResponse({
+        success: false,
+        message: "Invalid state.",
+        errors: [`State must be one of: ${validState.join(", ")}`],
+        status: 400,
       });
     }
 
@@ -45,6 +30,7 @@ export async function POST(request: Request) {
         success: false,
         message: "Invalid totalValue.",
         errors: ["totalValue must be a decimal number."],
+        status: 400,
       });
     }
 
@@ -54,6 +40,7 @@ export async function POST(request: Request) {
       success: true,
       data: newEstimate,
       message: "Estimate created successfully.",
+      status: 201,
     });
   } catch (error) {
     return handleError(error, "POST estimate");
@@ -72,6 +59,7 @@ export async function GET(req: Request) {
         success: true,
         data: estimates,
         message: "Estimates retrieved successfully.",
+        status: 200,
       });
     }
 
@@ -81,6 +69,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
+        status: 400,
       });
     }
 
@@ -91,6 +80,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Estimate not found.",
         errors: ["No estimate exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -98,6 +88,7 @@ export async function GET(req: Request) {
       success: true,
       data: estimate,
       message: "Estimate retrieved successfully.",
+      status: 201,
     });
   } catch (error) {
     return handleError(error, "GET estimate");
@@ -117,6 +108,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -125,7 +117,19 @@ export async function PATCH(request: Request) {
         success: false,
         message: "No update data provided.",
         errors: ["At least one field must be provided for update."],
+        status: 400,
       });
+    }
+    
+    if (data.state) {
+      if (!validState.includes(data.state)) {
+        return createResponse({
+          success: false,
+          message: "Invalid state.",
+          errors: [`State must be one of: ${validState.join(", ")}`],
+          status: 400,
+        });
+      }
     }
 
     const estimate = await db.estimate.findUnique({ where: { id } });
@@ -135,6 +139,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Estimate not found.",
         errors: ["No estimate exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -147,6 +152,7 @@ export async function PATCH(request: Request) {
       success: true,
       data: updateEstimate,
       message: "Estimate updated successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "PATCH estimate");
@@ -165,6 +171,7 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
+        status: 400,
       });
     }
 
@@ -177,6 +184,7 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Estimate has related projects.",
         errors: ["Cannot delete estimate because it is associated with projects."],
+        status: 400,
       });
     }
 
@@ -185,6 +193,7 @@ export async function DELETE(req: Request) {
     return createResponse({
       success: true,
       message: "Estimate deleted successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "DELETE estimate");

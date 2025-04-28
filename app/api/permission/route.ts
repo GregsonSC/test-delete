@@ -1,30 +1,16 @@
-import { NextResponse } from "next/server";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
-
-function createResponse({
-  success,
-  data = null,
-  message = "",
-  errors = [],
-}: {
-  success: boolean;
-  data?: any;
-  message: string;
-  errors?: string[];
-}) {
-  return NextResponse.json({ success, data, message, errors });
-}
-
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:`, error);
-  return createResponse({
-    success: false,
-    message: `An error occurred in ${context}.`,
-    errors: [error instanceof Error ? error.message : "Unknown error"],
-  });
-}
-
-// POST - Crear permiso
+const validServiceAssociated = [
+  " NORMALUSERS",
+  "ADMINUSERS",
+  "LEADS",
+  "ESTIMATES",
+  "PROJECTS",
+  "BLOGS",
+  "PRODUCTS",
+  "SERVICEAREAS",
+];
+const validAction = [" GET", "CREATE", "UPDATE", "DELETE"];
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -35,6 +21,7 @@ export async function POST(request: Request) {
         success: false,
         message: "Missing required fields.",
         errors: ["All fields are required."],
+        status: 400,
       });
     }
 
@@ -43,6 +30,23 @@ export async function POST(request: Request) {
         success: false,
         message: "Invalid field type.",
         errors: ["'active' must be a boolean."],
+        status: 400,
+      });
+    }
+    if (!validServiceAssociated.includes(serviceAssociated)) {
+      return createResponse({
+        success: false,
+        message: "Invalid service associated.",
+        errors: [`Service Associated must be one of: ${validServiceAssociated.join(", ")}`],
+        status: 400,
+      });
+    }
+    if (!validAction.includes(action)) {
+      return createResponse({
+        success: false,
+        message: "Invalid action.",
+        errors: [`Action must be one of: ${validAction.join(", ")}`],
+        status: 400,
       });
     }
 
@@ -52,6 +56,7 @@ export async function POST(request: Request) {
       success: true,
       data: newPermission,
       message: "Permission created successfully.",
+      status: 201,
     });
   } catch (error) {
     return handleError(error, "POST permission");
@@ -70,6 +75,7 @@ export async function GET(req: Request) {
         success: true,
         data: permissions,
         message: "Permissions retrieved successfully.",
+        status: 200,
       });
     }
 
@@ -79,6 +85,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
+        status: 400,
       });
     }
 
@@ -89,6 +96,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Permission not found.",
         errors: ["No permission exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -96,6 +104,7 @@ export async function GET(req: Request) {
       success: true,
       data: permission,
       message: "Permission retrieved successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "GET permission");
@@ -115,6 +124,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -122,10 +132,42 @@ export async function PATCH(request: Request) {
       return createResponse({
         success: false,
         message: "No update data provided.",
+
         errors: ["At least one field must be provided for update."],
+        status: 400,
       });
     }
+    if (data.active) {
+      if (typeof data.active !== "boolean") {
+        return createResponse({
+          success: false,
+          message: "Invalid field type.",
+          errors: ["'active' must be a boolean."],
+          status: 400,
+        });
+      }
+    }
+    if (data.validServiceAssociated) {
+      if (!data.validServiceAssociated.includes(data.serviceAssociated)) {
+        return createResponse({
+          success: false,
+          message: "Invalid service associated.",
+          errors: [`Service Associated must be one of: ${validServiceAssociated.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
 
+    if (data.action) {
+      if (!validAction.includes(data.action)) {
+        return createResponse({
+          success: false,
+          message: "Invalid action.",
+          errors: [`Action must be one of: ${validAction.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
     const permission = await db.permission.findUnique({ where: { id } });
 
     if (!permission) {
@@ -133,6 +175,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Permission not found.",
         errors: ["No permission exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -145,6 +188,7 @@ export async function PATCH(request: Request) {
       success: true,
       data: updatePermission,
       message: "Permission updated successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "PATCH permission");
@@ -163,6 +207,7 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The id must be a valid number."],
+        status: 400,
       });
     }
 
@@ -171,6 +216,7 @@ export async function DELETE(req: Request) {
     return createResponse({
       success: true,
       message: "Permission deleted successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "DELETE permission");

@@ -21,7 +21,7 @@ export function ProfileProjectDetail({
   date = new Date(),
 }: ProfileProjectDetailProps) {
   return (
-    <div className="flex flex-col md:flex-row h-full border-4 border-[#8ECF0A] rounded-lg overflow-hidden" 
+    <div className="flex flex-col md:flex-row h-[210px] border-4 border-[#8ECF0A] rounded-lg overflow-hidden mb-2 mr-2" 
          style={{ 
            background: 'white',
            boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
@@ -54,8 +54,8 @@ export function ProfileProjectDetail({
               rel="noopener noreferrer"
               className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
-              <FileText size={18} className="text-gray-500" />
-              <span className="text-gray-600 text-sm truncate">{doc.name}</span>
+              <FileText size={16} className="text-gray-500 flex-shrink-0" />
+              <span className="text-gray-600 text-sm truncate max-w-[calc(100%-24px)]">{doc.name}</span>
             </a>
           ))}
           {documents.length === 0 && (

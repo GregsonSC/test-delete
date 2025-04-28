@@ -1,52 +1,37 @@
-import { NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-// Función reutilizable para respuestas
-function createResponse({
-  success,
-  data = null,
-  message,
-  errors = [],
-}: {
-  success: boolean;
-  data?: any;
-  message: string;
-  errors?: string[];
-}) {
-  return NextResponse.json({ success, data, message, errors });
-}
-
-// Manejo centralizado de errores
-function handleError(error: unknown, context: string) {
-  console.error(`Error in ${context}:`, error);
-  return createResponse({
-    success: false,
-    message: `An error occurred in ${context}.`,
-    errors: [error instanceof Error ? error.message : "Unknown error"],
-  });
-}
-
+const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
 // POST - Crear blog
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     const { title, resume, content, topic, publicationDate, imageUrl } = data;
 
-    // Validaciones básicas
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
       return createResponse({
         success: false,
         message: "All fields are required.",
         errors: ["Missing one or more required fields."],
+        status: 400,
       });
     }
 
-    // Validar formato de fecha
+    if (!validTopics.includes(topic)) {
+      return createResponse({
+        success: false,
+        message: "Invalid topic.",
+        errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+        status: 400,
+      });
+    }
+
     if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
       return createResponse({
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
       });
     }
 
@@ -56,13 +41,13 @@ export async function POST(request: Request) {
       success: true,
       data: newBlog,
       message: "Blog created successfully.",
+      status: 201,
     });
   } catch (error) {
     return handleError(error, "POST Blog");
   }
 }
 
-// GET - Obtener blog(s)
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -74,6 +59,7 @@ export async function GET(req: Request) {
         success: true,
         data: blogs,
         message: "Blogs retrieved successfully.",
+        status: 200,
       });
     }
 
@@ -83,6 +69,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -93,6 +80,7 @@ export async function GET(req: Request) {
         success: false,
         message: "Blog not found.",
         errors: ["No blog exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -100,6 +88,7 @@ export async function GET(req: Request) {
       success: true,
       data: blog,
       message: "Blog retrieved successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "GET Blog");
@@ -119,6 +108,16 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
+      });
+    }
+    if (!data || Object.keys(data).length === 0) {
+      return createResponse({
+        success: false,
+        message: "No update data provided.",
+
+        errors: ["At least one field must be provided for update."],
+        status: 400,
       });
     }
 
@@ -127,7 +126,19 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for the publicationDate."],
+        status: 400,
       });
+    }
+
+    if (data.topic) {
+      if (!validTopics.includes(data.topic)) {
+        return createResponse({
+          success: false,
+          message: "Invalid topic.",
+          errors: [`Topic must be one of: ${validTopics.join(", ")}`],
+          status: 400,
+        });
+      }
     }
 
     const blog = await db.blog.findUnique({ where: { id } });
@@ -137,6 +148,7 @@ export async function PATCH(request: Request) {
         success: false,
         message: "Blog not found.",
         errors: ["No blog exists with the given ID."],
+        status: 404,
       });
     }
 
@@ -149,6 +161,7 @@ export async function PATCH(request: Request) {
       success: true,
       data: updateBlog,
       message: "Blog updated successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "PATCH Blog");
@@ -167,6 +180,7 @@ export async function DELETE(req: Request) {
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
+        status: 400,
       });
     }
 
@@ -175,6 +189,7 @@ export async function DELETE(req: Request) {
     return createResponse({
       success: true,
       message: "Blog deleted successfully.",
+      status: 200,
     });
   } catch (error) {
     return handleError(error, "DELETE Blog");

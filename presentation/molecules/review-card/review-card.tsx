@@ -9,8 +9,16 @@ export function GoogleReviewCard({
     rating = 5.0,
     totalReviews = 25,
 }: GoogleReviewCardProps) {
+
+    const placeId = 'ChIJqxUQgZUF2YgRiuQT1s2z6b4';
+    const reviewUrl = `https://search.google.com/local/writereview?placeid=${placeId}`;
+
+    const handleClick = () => {
+        window.open(reviewUrl, '_blank', 'noopener,noreferrer');
+    };
+    
     return (
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 border border-[#99CC33] rounded-md xl:w-[992px] xl:h-[112px] bg-white/50">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 border border-[#99CC33] rounded-md xl:w-[992px] xl:h-[112px] bg-white/95 hover:bg-white/80">
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row justify-start items-center">
                     <img src="/iconos_2/google.png" alt="Google" className="w-9 h-9" />
@@ -33,8 +41,7 @@ export function GoogleReviewCard({
                 </div>
             </div>
             <a
-                href="https://search.google.com/local/writereview?placeid=ChIJqxUQgZUF2YgRiuQT1s2z6b4"
-                target="_blank"
+                onClick={handleClick}
                 rel="noopener noreferrer"
             >
                 <Button className="bg-[#99CC33] text-black hover:bg-[#85b92d] rounded-full">
