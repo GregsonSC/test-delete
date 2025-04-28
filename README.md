@@ -120,14 +120,6 @@ la escalabilidad y la experiencia del usuario.
 - Diseño adaptativo que garantiza una experiencia óptima en dispositivos móviles, tabletas y desktops.
 - Cumplimiento con las pautas de accesibilidad web (WCAG) para asegurar que el sitio sea usable por todas las personas.
 
-# Como optimizar las imágenes
-
-1. Ir a https://tinypng.com/
-
-2. Oprimir en Convert my images automatically y seleccionar webp
-
-3. Subir la imagen y descargarla
-
 ### Documentación de la API
 
 - Se utilizó la librería next-swagger-doc de Swagger para generar automáticamente una interfaz con la documentación de todos los endpoints de la API.
@@ -136,7 +128,13 @@ la escalabilidad y la experiencia del usuario.
 - **app/api-doc/react-swagger.tsx**: Componente que utiliza la librería swagger-ui-react para renderizar una interfaz de Swagger de acuerdo a las especificaciones anteriormente definidas.
 - **app/api-doc/page.tsx**: Página que renderiza el componente gráfico.
 - Para añadir un endpoint a la documentación se debe agregar un comentario a la ruta correspondiente con metadatos que describan el funcionamiento y características del endpoint, como se muestra en los ejemplos de la ruta app/api/lead.
-- Para visualizar la documentación se debe acceder a la url: localhost:3000/api-doc
+- Para visualizar la documentación se debe correr el servidor con el comando:
+
+```bash
+yarn dev
+```
+
+y acceder a la url: localhost:3000/api-doc.
 
 ## Tecnologías Utilizadas
 
@@ -174,6 +172,14 @@ npx prisma studio
 ```bash
 yarn upgrade-interactive --latest
 ```
+
+# Rutas que requieren el token de autenticación (el usuario debe haber iniciado sesión)
+
+- api/lead/route.ts GET y GET by ID (Los usuarios deben haber iniciado sesión para observar desde su perfil los Request que han hecho)
+- api/project/route.ts GET y GET by ID (Los usuarios deben haber iniciado sesión para observar desde su perfil los Projects creados a partir de sus Request)
+- api/estimate/route.ts GET y GET by ID (Los usuarios deben haber iniciado sesión para observar desde su perfil los Estimates creados a partir de sus Request)
+- api/projectupdate/route.ts GET y GET by ID (Los usuarios deben haber iniciado sesión para observar desde su perfil las actualizaciones asociadas a sus proyectos)
+- api/user/route.ts GET, GET by ID, PATCH (Los usuarios deben haber iniciado sesión para observar la información de su cuenta y actualizarla)
 
 //--- back end
 para iniciar utilizamos este comando para crear las tablas :npx migrate generate
