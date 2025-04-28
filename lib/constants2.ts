@@ -2,7 +2,7 @@
 
 import { NewsItem } from "@/presentation/molecules/news/latest-news";
 
-// Portfolio items data
+// Portfolio items data (using placeholder images and links)
 export const portfolioItems = [
     {
         title: "E-commerce Redesign",
@@ -24,10 +24,40 @@ export const portfolioItems = [
         title: "SEO Transformation",
         description:
             "Achieved first page rankings for 15 competitive keywords, resulting in 87% increase in organic traffic.",
-        imageUrl: "https://picsum.photos/645/577?random=3",
+        imageUrl: "/images/portfolio/portafolioTestImg.webp",
         href: "/portfolio/seo",
         tags: ["Real Estate", "SEO", "Content Marketing"],
     },
+    {
+        title: "Page title 1",
+        description: "Brief description of project 1.",
+        imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
+        href: "/portfolio/project-1", // Replace with actual link
+      },
+      {
+        title: "Page title 2",
+        description: "Brief description of project 2.",
+        imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
+        href: "/portfolio/project-2", // Replace with actual link
+      },
+      {
+        title: "Page title 3",
+        description: "Brief description of project 3.",
+        imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
+        href: "/portfolio/project-3", // Replace with actual link
+      },
+      {
+        title: "Page title 4",
+        description: "Brief description of project 4.",
+        imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
+        href: "/portfolio/project-4", // Replace with actual link
+      },
+      {
+        title: "Page title 5",
+        description: "Brief description of project 5.",
+        imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
+        href: "/portfolio/project-5", // Replace with actual link
+      },
 ];
 
 // Review items data
