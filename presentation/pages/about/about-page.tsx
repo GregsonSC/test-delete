@@ -100,7 +100,7 @@ export function AboutPage() {
                         icon="/images/marketing/icon1.png"
                         title="Web Design & Development"
                         content="Engaging and powerful web design that converts visitors into new clients and more sales."
-                        link="/services/advertising"
+                        link="/websites"
                         style={{borderRadius: '3px',
                           border: '3px solid transparent',
                           borderImageSlice: 1,
@@ -112,7 +112,7 @@ export function AboutPage() {
                         icon="/images/marketing/icon2.png"
                         title="Generate Traffic, Leads & Sales"
                         content="Drive more leads with a tailored marketing strategy designed exclusively for your business."
-                        link="/services/social-media"
+                        link="/marketing"
                         style={{  borderRadius: "3px", 
                           border: "3px solid transparent", 
                           borderImage: "linear-gradient(to right, #99CC33, #33CCCC, #99CC33) 2", 
@@ -125,7 +125,7 @@ export function AboutPage() {
                         icon="/images/marketing/icon3.png"
                         title="Create your Professional Brand"
                         content="We build a unique visual identity that leaves lasting impression on your brand."
-                        link="/services/seo"
+                        link="/marketing"
                         style={{ 
                           borderRadius: "3px", 
                           border: "3px solid transparent", 
