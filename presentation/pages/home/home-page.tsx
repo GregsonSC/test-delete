@@ -63,33 +63,33 @@ export function HomePage() {
 
 
       {/* --- PARTNERS LOGOS SECTION --- */}
-      <section className="w-full bg-[#04071F00]-900 py-8 lg:h-[150px]">
+      <section className="w-full bg-white py-8 lg:h-[150px]">
         <div className="container mx-auto h-full flex items-center justify-center">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-5 lg:gap-0 xl:gap-5">
             <img
-              src="/images/home/google.svg"
+              src="home/googleAnalytic.png"
               alt="Google Analytics"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/webflow.svg"
+              src="home/webflow.png"
               alt="Webflow"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/shopify.svg"
+              src="home/shopify.png"
               alt="Shopify"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/paypal.svg"
+              src="home/paypal.png"
               alt="PayPal"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/stripe.svg"
+              src="home/stripe.png"
               alt="Stripe"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
           </div>
         </div>
