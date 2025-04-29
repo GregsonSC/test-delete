@@ -3,6 +3,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Analytics from "./analytics";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="twitter:image" content="/senavia/main.jpeg" />
       </head>
       <body className={`${inter.className} bg-[#050A2B]`}>
+        <Suspense>
+          <Analytics />
+        </Suspense>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
