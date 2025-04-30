@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
-import { Navbar } from "@/presentation/organisms/navbar/navbar";
-import { Mail,Lock   } from 'lucide-react';
+import { Mail, Lock, Loader2 } from 'lucide-react';
+import AuthViewModel from "./AuthViewModel";
+import { toast } from "sonner";
 
 const testimonials = [
   {
@@ -32,6 +32,20 @@ const testimonials = [
 
 export function LoginPage() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { login, loading } = AuthViewModel();
+  
+  // State for form inputs
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  // Add validation state for each field
+  const [validations, setValidations] = useState({
+    email: "",
+    password: ""
+  });
+  
+  // Add focus state tracking
+  const [focusedField, setFocusedField] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,6 +53,97 @@ export function LoginPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Handle form submission
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // Create credentials object to match the LoginCredentials interface
+    const credentials = {
+      email,
+      password
+    };
+
+    // Create a promise for the login process
+    const loginPromise = login(credentials).then(result => {
+      if (result && result.success) {
+        // Clear form on success
+        setEmail("");
+        setPassword("");
+        // Reset validation states
+        setValidations({
+          email: "",
+          password: ""
+        });
+        return result; // Return successful result
+      } else {
+        // If the API returns success: false, throw an error to trigger the error toast
+        throw new Error(result?.message || "Login failed");
+      }
+    });
+    
+    // Use toast.promise to handle all states
+    toast.promise(loginPromise, {
+      loading: "Logging in...",
+      success: (result) => {
+        return result.message || "Login successful!";
+      },
+      error: (error) => {
+        return error?.message || "Login failed. Please check your credentials.";
+      },
+    });
+  };
+
+  // Handle input validation on change
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+    
+    // Update the field value
+    if (field === 'email') setEmail(value);
+    if (field === 'password') setPassword(value);
+    
+    // Validate the field
+    if (value === '') {
+      // Empty field - neutral state
+      setValidations(prev => ({ ...prev, [field]: "" }));
+    } else if (e.target.checkValidity()) {
+      // Valid input
+      setValidations(prev => ({ ...prev, [field]: "valid" }));
+    } else {
+      // Invalid input
+      setValidations(prev => ({ ...prev, [field]: "invalid" }));
+    }
+  };
+
+  // Get border style based on validation and focus state
+  const getBorderStyle = (field: string) => {
+    // When field is focused and empty, show green border
+    if (focusedField === field && 
+        (field === 'email' ? email === '' : 
+         field === 'password' ? password === '' : false)) {
+      return "border-[#99cc33] border-2";
+    }
+    
+    // When field is focused and has invalid content, show red border
+    if (focusedField === field && validations[field as keyof typeof validations] === "invalid") {
+      return "border-red-500 border-2";
+    }
+    
+    // When field is focused and has valid content, show green border
+    if (focusedField === field) {
+      return "border-[#99cc33] border-2";
+    }
+    
+    // When field is not focused but has content
+    if (validations[field as keyof typeof validations] === "valid") {
+      return "border-[#99cc33] border-2";
+    } else if (validations[field as keyof typeof validations] === "invalid") {
+      return "border-red-500 border-2";
+    }
+    
+    // Default state
+    return "border-input";
+  };
 
   return (
     <>
@@ -88,33 +193,59 @@ export function LoginPage() {
             <p className="text-[#D3E8A9] text-lg">Sign in to your account to continue</p>
           </div>
 
-          <div className=" items-center justify-center">
-
-            <div className=" flex flex-col items-center justify-center mb-9">
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col items-center justify-center mb-9">
 
               <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-[10px] pointer-events-none">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                   <Mail color="#A2ABE7"/>
                 </div>
-                <Input id="email" type="email" placeholder="Email" className="w-full rounded-lg bg-background pl-11 placeholder:text-[#A2ABE7] " />
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Email"
+                  className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('email')} outline-none`}
+                  value={email}
+                  onChange={(e) => handleInputChange(e, 'email')}
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField('')}
+                  required
+                />
               </div>
 
               <div className="relative w-80 h-10 xl:w-[330px]">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-[10px] pointer-events-none">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                   <Lock color="#A2ABE7"/>
                 </div>
-                <Input id="password" type="password" placeholder="Password" className="w-full rounded-lg bg-background pl-11 placeholder:text-[#A2ABE7] " />
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('password')} outline-none`}
+                  value={password}
+                  onChange={(e) => handleInputChange(e, 'password')}
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField('')}
+                  required
+                  minLength={3}
+                />
               </div>
 
             </div>
-
-          </div>
           
-          <div className="px-16">
-            <Button className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200hover:bg-primary/90  hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)]">
-            Log In
-            </Button>
-          </div>
+            <div className="px-16">
+              <Button 
+                type="submit"
+                className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200 hover:bg-primary/90 hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)] disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Log In"
+                )}
+              </Button>
+            </div>
 
             <div className="text-center text-xs font-medium">
               New to Senavia? Go to{" "}
@@ -122,6 +253,7 @@ export function LoginPage() {
                 Register
               </Link>
             </div>
+          </form>
         </div>
       </div>
     </div>

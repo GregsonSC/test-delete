@@ -1,16 +1,8 @@
 import { useState } from "react";
 import { useFetch } from "@/lib/services/endpoints";
 import { endpoints } from "@/lib/services/endpoints";
-import { AuthUser } from "@/components/interface/modules/Auth";
-
-// Define a potential structure for the registration API response
-interface RegisterApiResponse {
-  success: boolean;
-  data?: AuthUser;
-  message: string;
-  errors?: string[];
-  token?: string;
-}
+import { AuthUser, RegisterApiResponse, LoginApiResponse, LoginCredentials } from "@/components/interface/modules/Auth";
+import { setCookie, deleteCookie } from "cookies-next";
 
 const AuthViewModel = () => {
   const { fetchData } = useFetch();
@@ -41,7 +33,6 @@ const AuthViewModel = () => {
         return apiResponse; // Return the API response directly
       } else {
         // For HTTP errors, return the error from the API or a generic message
-        // Removed the status code from the error message
         return {
           success: false,
           message: errorLogs?.message || response?.message || "Registration failed",
@@ -59,8 +50,61 @@ const AuthViewModel = () => {
     }
   };
 
+  /**
+   * Logs in a user.
+   * @param credentials - Object containing email and password
+   */
+  const login = async (credentials: LoginCredentials) => {
+    setLoading(true);
+    
+    try {
+      const { response, status, errorLogs } = await fetchData<LoginApiResponse>(
+        endpoints.auth.loginUser,
+        "post",
+        credentials,
+        "json"
+      );
+      
+      console.log("Login Response:", response);
+      console.log("Login Status:", status);
+      
+      const apiResponse = response as LoginApiResponse;
+      
+      if (status === 200) {
+        // Store the token in cookies if it exists in the response
+        if (apiResponse.data?.[0]?.token) {
+          setCookie('auth_token', apiResponse.data[0].token);
+        }
+        return apiResponse; // Return the API response directly
+      } else {
+        return apiResponse; // Return the API response directly with error messages
+      }
+    } catch (err: any) {
+      console.error("Error during login:", err);
+      return {
+        success: false,
+        message: err.message || "An unexpected error occurred",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Logs out the current user by removing the token
+   */
+  const logout = () => {
+    deleteCookie('auth_token');
+    return {
+      success: true,
+      message: "Logged out successfully"
+    };
+  };
+
   return {
     register,
+    login,
+    logout,
     loading,
   };
 };

@@ -27,6 +27,7 @@ export const endpoints = {
   // Add authentication endpoints
   auth: {
     registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
+    loginUser: `${API}/auth/login`, // Endpoint for user login (POST)
   },
 
   // Test endpoint for checking API connectivity
@@ -48,13 +49,13 @@ const CONFIG_FORM = {
   },
 };
 
-const CONFIG_FORM_TOKEN = {
+/* const CONFIG_FORM_TOKEN = {
   headers: {
     accept: "/",
     "Content-Type": "multipart/form-data",
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
-};
+}; */
 
 export interface FetchResponse<T> {
   response: T | null;
@@ -67,7 +68,7 @@ export const useFetch = () => {
   const configTypes: Record<string, object> = {
     json: CONFIG_JSON,
     form: CONFIG_FORM,
-    token: CONFIG_FORM_TOKEN,
+  /*   token: CONFIG_FORM_TOKEN, */
   };
 
   type HttpMethod = "get" | "post" | "put" | "delete" | "patch";
