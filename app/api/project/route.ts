@@ -1,5 +1,7 @@
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
+import { authMiddleware } from "@/middleware/Secure-middleware";
+import { NextRequest } from "next/server";
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 /**
@@ -48,6 +50,8 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *         description: Project created successfully.
  *       400:
  *         description: Missing or invalid fields.
+ *       401:
+ *         description: Unauthorized. Missing or invalid JWT token.
  *       500:
  *         description: Server error.
  */
@@ -123,7 +127,11 @@ export async function POST(request: Request) {
  *         description: Server error.
  */
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  // Verificar el token JWT
+  const auth = authMiddleware(req);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
@@ -244,7 +252,7 @@ export async function PATCH(request: Request) {
         });
       }
     }
-    
+
     if (
       (data.startDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.startDate)) ||
       (data.endDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.endDate))

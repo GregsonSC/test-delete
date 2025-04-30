@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { authMiddleware } from "@/middleware/Secure-middleware";
 
 /**
  * @swagger
  * tags:
  *   - name: Lead
  *     description: Operations related to leads
- * 
+ *
  * /api/lead:
  *   post:
  *     tags:
@@ -102,6 +103,8 @@ import db from "@/lib/prisma";
  *                   type: array
  *                   items:
  *                     type: string
+ *       401:
+ *         description: Unauthorized. Missing or invalid JWT token.
  *       500:
  *         description: Internal server error.
  *         content:
@@ -170,7 +173,7 @@ export async function POST(request: NextRequest) {
  * tags:
  *   - name: Lead
  *     description: Operations related to leads
- * 
+ *
  * /api/lead:
  *   get:
  *     tags:
@@ -271,7 +274,11 @@ export async function POST(request: NextRequest) {
  *                   items:
  *                     type: string
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // Validar el token antes de continuar
+  const auth = authMiddleware(request);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
@@ -357,7 +364,7 @@ export async function GET(request: Request) {
  * tags:
  *   - name: Lead
  *     description: Operations related to leads
- * 
+ *
  * /api/lead:
  *   patch:
  *     tags:
@@ -579,7 +586,7 @@ export async function PATCH(request: Request) {
  * tags:
  *   - name: Lead
  *     description: Operations related to leads
- * 
+ *
  * /api/lead:
  *   delete:
  *     tags:

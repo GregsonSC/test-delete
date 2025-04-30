@@ -1,6 +1,7 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
-
+import { authMiddleware } from "@/middleware/Secure-middleware";
+import { NextRequest } from "next/server";
 const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED", "INVOICE", "PAID"];
 /**
  * @route POST /api/estimate
@@ -111,13 +112,19 @@ export async function POST(request: Request) {
  *         description: Estimate(s) retrieved successfully.
  *       400:
  *         description: Invalid ID.
+ *       401:
+ *         description: Unauthorized. Missing or invalid JWT token.
  *       404:
  *         description: Estimate not found.
  *       500:
  *         description: Server error.
  */
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  // Validar el token JWT antes de continuar
+  const auth = authMiddleware(req);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
