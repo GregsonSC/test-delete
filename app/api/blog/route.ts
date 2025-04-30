@@ -100,8 +100,7 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
  *                     type: string
  */
 export async function POST(request: Request) {
-  try {
-    console.log("deberia funcionar")
+  try {    
     const formData = await request.formData();
 
     const title = formData.get("title")?.toString();
@@ -194,8 +193,6 @@ export async function POST(request: Request) {
  *       500:
  *         description: Server error.
  */
-
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

@@ -1,5 +1,7 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
+import { createImage } from "../cloudinary/upload/route";
+import { TypeAttachment } from "@prisma/client";
 
 const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
 
@@ -49,8 +51,21 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { name, description, type, url, activityId, ticketId } = data;
+    //const data = await request.json();
+    const formData = await request.formData();
+    //const { name, description, type, url, activityId, ticketId } = data;
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const type = formData.get("type")?.toString();
+
+    const url = await createImage(formData);
+
+    const activityId = formData.get("activityId")
+      ? parseInt(formData.get("activityId")!.toString(), 10)
+      : undefined;
+    const ticketId = formData.get("ticketId")
+      ? parseInt(formData.get("ticketId")!.toString(), 10)
+      : undefined;
 
     if (!name || !description || !type || !url) {
       return createResponse({
@@ -69,7 +84,17 @@ export async function POST(request: Request) {
       });
     }
 
-    const newAttachment = await db.attachment.create({ data });
+    const newAttachment = await db.attachment.create({
+      data: {
+        name,
+        description,
+        type: type as TypeAttachment,
+        url,
+        /*activityId,
+        ticketId,*/
+      },
+    });
+
     return createResponse({
       success: true,
       data: newAttachment,
@@ -205,7 +230,7 @@ export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const id = Number(requestId);
-    const data = await request.json();
+    //const data = await request.json();
 
     if (isNaN(id) || !requestId) {
       return createResponse({
@@ -215,8 +240,19 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    if (data.type) {
-      if (!validType.includes(data.type)) {
+    const formData = await request.formData();
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const type = formData.get("type")?.toString();
+
+    let url;
+    const hasImage = formData.get("url");
+    if (hasImage && typeof hasImage === "object") {
+      url = await createImage(formData);
+    }
+
+    if (type) {
+      if (!validType.includes(type)) {
         return createResponse({
           success: false,
           message: "Invalid type.",
@@ -225,7 +261,9 @@ export async function PATCH(request: Request) {
         });
       }
     }
+
     const attachment = await db.attachment.findUnique({ where: { id } });
+
     if (!attachment) {
       return createResponse({
         success: false,
@@ -234,10 +272,24 @@ export async function PATCH(request: Request) {
         status: 404,
       });
     }
+    const updatedData: any = {};
+    if (name) updatedData.name = name;
+    if (description) updatedData.description = description;
+    if (type) updatedData.type = type as TypeAttachment;
+    if (url) updatedData.url = url;
+
+    if (Object.keys(updatedData).length === 0) {
+      return createResponse({
+        success: false,
+        message: "No update data provided.",
+        errors: ["At least one field must be provided for update."],
+        status: 400,
+      });
+    }
 
     const updateAttachment = await db.attachment.update({
       where: { id },
-      data: { ...data },
+      data: updatedData,
     });
 
     return createResponse({

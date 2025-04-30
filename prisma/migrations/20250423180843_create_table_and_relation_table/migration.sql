@@ -1,15 +1,15 @@
 /*
   Warnings:
 
-  - Added the required column `udpatedAt` to the `Benefit` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `udpatedAt` to the `Plan` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `udpatedAt` to the `Product` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `Benefit` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `Plan` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `Product` table without a default value. This is not possible if the table is not empty.
   - Added the required column `description` to the `Ticket` table without a default value. This is not possible if the table is not empty.
   - Added the required column `status` to the `Ticket` table without a default value. This is not possible if the table is not empty.
   - Added the required column `title` to the `Ticket` table without a default value. This is not possible if the table is not empty.
   - Added the required column `type` to the `Ticket` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `udpatedAt` to the `Ticket` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `udpatedAt` to the `Variant` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `Ticket` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `Variant` table without a default value. This is not possible if the table is not empty.
 
 */
 -- CreateEnum
@@ -26,15 +26,15 @@ ALTER TABLE "Attachment" ADD COLUMN     "productId" INTEGER;
 
 -- AlterTable
 ALTER TABLE "Benefit" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "udpatedAt" TIMESTAMP(3) NOT NULL;
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
 ALTER TABLE "Plan" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "udpatedAt" TIMESTAMP(3) NOT NULL;
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
 ALTER TABLE "Product" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "udpatedAt" TIMESTAMP(3) NOT NULL;
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
 ALTER TABLE "Ticket" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -42,11 +42,11 @@ ADD COLUMN     "description" TEXT NOT NULL,
 ADD COLUMN     "status" "TicketStatus" NOT NULL,
 ADD COLUMN     "title" TEXT NOT NULL,
 ADD COLUMN     "type" "TicketPlan" NOT NULL,
-ADD COLUMN     "udpatedAt" TIMESTAMP(3) NOT NULL;
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
 ALTER TABLE "Variant" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "udpatedAt" TIMESTAMP(3) NOT NULL;
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
 
 -- CreateTable
 CREATE TABLE "UserTicket" (

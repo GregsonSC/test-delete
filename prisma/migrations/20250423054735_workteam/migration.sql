@@ -2,7 +2,7 @@
   Warnings:
 
   - You are about to drop the column `createdAt` on the `Attachment` table. All the data in the column will be lost.
-  - You are about to drop the column `udpatedAt` on the `Attachment` table. All the data in the column will be lost.
+  - You are about to drop the column `updatedAt` on the `Attachment` table. All the data in the column will be lost.
 
 */
 -- CreateEnum
@@ -22,7 +22,7 @@ ALTER TABLE "UserTicket" DROP CONSTRAINT "UserTicket_userId_fkey";
 
 -- AlterTable
 ALTER TABLE "Attachment" DROP COLUMN "createdAt",
-DROP COLUMN "udpatedAt";
+DROP COLUMN "updatedAt";
 
 -- CreateTable
 CREATE TABLE "WorkTeam" (
@@ -32,7 +32,7 @@ CREATE TABLE "WorkTeam" (
     "state" "StateWorkTeam" NOT NULL,
     "area" "AreaWorkTeam" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "WorkTeam_pkey" PRIMARY KEY ("id")
 );

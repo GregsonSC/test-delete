@@ -28,7 +28,7 @@ model User {
   Comment      Comment[]
   tickets      UserTicket[]
   createdAt    DateTime         @default(now())
-  udpatedAt    DateTime         @updatedAt
+  updatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
   UserWorkTeam UserWorkTeam[]
 }
@@ -47,18 +47,19 @@ model Permission {
 }
 
 model Project {
-  id               Int          @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   name             String
   description      String
   expectedDuration String
   startDate        String
   endDate          String
   estimate_id      Int?
-  estimate         Estimate?    @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
+  estimate         Estimate?       @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
   currentPhase     CurrentPhase
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   Phase            Phase[]
+  ProjectUpdate    ProjectUpdate[]
 }
 
 model Estimate {
@@ -219,29 +220,30 @@ model UserPermission {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   description String
   url         String
   Attachment  Attachment[]
-  createdAt   DateTime @default(now())
-  udpatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Phase {
-  id               Int        @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   name             PhaseName
   description      String
   expectedDuration String
   startDate        String
   endDate          String
   project_id       Int?
-  project          Project?   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project          Project?        @relation(fields: [project_id], references: [id], onDelete: Cascade)
   state            PhaseState
   Comment          Comment[]
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   Activity         Activity[]
+  ProjectUpdate    ProjectUpdate[]
 }
 
 enum PhaseName {
@@ -300,7 +302,7 @@ model Cost {
   estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
   estimateId  Int
   createdAt   DateTime @default(now())
-  udpatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
 }
 
 enum CostType {
@@ -322,7 +324,7 @@ model Comment {
   phaseId    Int
   phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
-  udpatedAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 }
 
 model Plan {
@@ -334,7 +336,7 @@ model Plan {
   serviceId   Int
   service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
-  udpatedAt   DateTime  @updatedAt
+  updatedAt   DateTime  @updatedAt
 }
 
 model Variant {
@@ -346,7 +348,7 @@ model Variant {
   planId      Int
   plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
   createdAt   DateTime @default(now())
-  udpatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
 }
 
 enum PlanType {
@@ -373,7 +375,7 @@ model Ticket {
   users       UserTicket[]
   Attachment  Attachment[]
   createdAt   DateTime     @default(now())
-  udpatedAt   DateTime     @updatedAt
+  updatedAt   DateTime     @updatedAt
 }
 
 enum TicketPlan {
@@ -402,9 +404,8 @@ model Attachment {
   activity    Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
   ticketId    Int?
   ticket      Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  productId    Int?
-  product      Product?        @relation(fields: [productId], references: [id], onDelete: Cascade)
-
+  productId   Int?
+  product     Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Benefit {
@@ -415,7 +416,7 @@ model Benefit {
   serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
-  udpatedAt DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
 
 enum TypeAttachment {
@@ -433,7 +434,7 @@ model WorkTeam {
   state        StateWorkTeam
   area         AreaWorkTeam
   createdAt    DateTime       @default(now())
-  udpatedAt    DateTime       @updatedAt
+  updatedAt    DateTime       @updatedAt
   UserWorkTeam UserWorkTeam[]
 }
 
@@ -462,4 +463,24 @@ model UserWorkTeam {
   workTeam    WorkTeam @relation(fields: [workTeam_id], references: [id])
 
   @@id([user_id, workTeam_id])
+}
+
+model StudyCase {
+  id        Int      @id @default(autoincrement())
+  title     String
+  resume    String
+  videoUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectUpdate {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  date      String
+  projectId Int?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phaseId   Int?
+  phase     Phase?   @relation(fields: [phaseId], references: [id], onDelete: Cascade)
 }

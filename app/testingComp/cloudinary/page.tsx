@@ -29,7 +29,7 @@ export function HomePageCloudinary() {
       formData.append("content", content);
       formData.append("topic", topic);
       formData.append("publicationDate", publicationDate);
-      formData.append("imageUrl", file); // este campo es manejado como archivo en el backend
+      formData.append("imageUrl", file); 
 
       const res = await fetch("/api/blog", {
         method: "POST",
