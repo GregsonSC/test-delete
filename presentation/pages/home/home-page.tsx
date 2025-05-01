@@ -12,6 +12,8 @@ import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info"
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
 import { blogItems, caseItems, portfolioItems, reviewItems } from "@/lib/constants2";
 
+
+
 export function HomePage() {
   return (
     <MainLayout>
