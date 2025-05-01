@@ -3,7 +3,7 @@ import db from "@/lib/prisma";
 import argon2 from "argon2";
 import { signToken } from "@/lib/jwt";
 import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
-
+import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
 /**
  * @swagger
  * /api/auth/login:
@@ -109,13 +109,21 @@ import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
 const limiter = loginRateLimit(3, 60 * 1000); // 3 intentos cada 60 segundos
 
 export async function POST(request: NextRequest) {
-  // Se obtiene la IP del cliente desde el encabezado 'x-forwarded-for'.
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  // Si existe, se toma la primera IP (en caso de proxies); si no, se asigna "unknown".
-  //Probar cuando allan proxies,ya que estos ocultan la ip del usuario
-  const ip = forwardedFor ? forwardedFor.split(",")[0]?.trim() : "unknown";
+  // Extraer IP
+  let ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
 
-  const limitCheck = limiter(ip as string);
+  if (!isValidIP(ip) || isPrivateIP(ip)) {
+    // Si IP no es válida o es privada, fallback
+    ip = request.headers.get("x-real-ip") || "unknown";
+  }
+
+  // Validar de nuevo el fallback
+  if (!isValidIP(ip)) {
+    ip = "unknown";
+  }
+
+  // Rate limiting basado en IP
+  const limitCheck = limiter(ip);
 
   if (!limitCheck.allowed) {
     return NextResponse.json(
@@ -131,10 +139,8 @@ export async function POST(request: NextRequest) {
 
   const { email, password } = await request.json();
 
-  //Buscamos en la BD
   const user = await db.user.findUnique({ where: { email } });
 
-  //Si las credenciales del correo y la contraseña no conciden respondera con un 401
   if (!user || !(await argon2.verify(user.password, password))) {
     return NextResponse.json(
       {
@@ -147,10 +153,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  //Si el correo y la contraseña son correctos devolvera el JWT
-  const token = signToken({ id: user.id, email: user.email, name: user.name });
+  const token = signToken({ id: user.id, email: user.email });
 
-  //Respuesta exitosa con el token
   return NextResponse.json({
     success: true,
     message: "Login successful",
