@@ -108,15 +108,13 @@ import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
 // Se crea un *rate limiter* que permite 3 intentos de login cada 60 segundos.
 const limiter = loginRateLimit(3, 60 * 1000); // 3 intentos cada 60 segundos
 
-
 export async function POST(request: NextRequest) {
   // Se obtiene la IP del cliente desde el encabezado 'x-forwarded-for'.
   const forwardedFor = request.headers.get("x-forwarded-for");
   // Si existe, se toma la primera IP (en caso de proxies); si no, se asigna "unknown".
-  //Probar cuando allan proxies,ya que estos ocultan la ip del usuario 
+  //Probar cuando allan proxies,ya que estos ocultan la ip del usuario
   const ip = forwardedFor ? forwardedFor.split(",")[0]?.trim() : "unknown";
 
-  
   const limitCheck = limiter(ip as string);
 
   if (!limitCheck.allowed) {
@@ -150,7 +148,7 @@ export async function POST(request: NextRequest) {
   }
 
   //Si el correo y la contraseña son correctos devolvera el JWT
-  const token = signToken({ id: user.id, email: user.email });
+  const token = signToken({ id: user.id, email: user.email, name: user.name });
 
   //Respuesta exitosa con el token
   return NextResponse.json({
