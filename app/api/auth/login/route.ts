@@ -113,11 +113,9 @@ export async function POST(request: NextRequest) {
   let ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
 
   if (!isValidIP(ip) || isPrivateIP(ip)) {
-    // Si IP no es válida o es privada, fallback
     ip = request.headers.get("x-real-ip") || "unknown";
   }
 
-  // Validar de nuevo el fallback
   if (!isValidIP(ip)) {
     ip = "unknown";
   }
@@ -153,12 +151,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const token = signToken({ id: user.id, email: user.email });
+  // Generar token
+  const token = signToken({ id: user.id, email: user.email ,name: user.name});
 
-  return NextResponse.json({
+  // Crear respuesta con cookie
+  const response = NextResponse.json({
     success: true,
     message: "Login successful",
-    data: [{ token }],
+    data: [],
     errors: [],
   });
+
+  // Guardar JWT en cookie
+  response.cookies.set("auth_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 24, // 1 día
+  });
+
+  return response;
 }
