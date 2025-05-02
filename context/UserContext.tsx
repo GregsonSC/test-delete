@@ -1,6 +1,6 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { getCookie } from "cookies-next";
+
 import { decodeJwt } from "jose";
 import { UserData } from "@/components/interface/modules/Auth";
 import { usePathname } from "next/navigation";
@@ -19,11 +19,15 @@ const UserContext = createContext<UserContextProps>({
     setIsLoggedIn: () => { },
 });
 
-export const UserProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<UserData | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    // Remove the useEffect that checks the cookie
+export const UserProvider = ({
+    children,
+    initialUser = null
+  }: {
+    children: ReactNode;
+    initialUser?: UserData | null;
+  }) => {
+    const [user, setUser] = useState<UserData | null>(initialUser);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!initialUser);
 
     return (
         <UserContext.Provider value={{ user, isLoggedIn, setUser, setIsLoggedIn }}>

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useFetch } from "@/lib/services/endpoints";
 import { endpoints } from "@/lib/services/endpoints";
 import { AuthUser, RegisterApiResponse, LoginApiResponse, LoginCredentials } from "@/components/interface/modules/Auth";
-import { setCookie, deleteCookie } from "cookies-next";
 
 const AuthViewModel = () => {
   const { fetchData } = useFetch();
@@ -14,21 +13,20 @@ const AuthViewModel = () => {
    */
   const register = async (userData: AuthUser) => {
     setLoading(true);
-    
     try {
       const { response, status, errorLogs } = await fetchData<RegisterApiResponse>(
         endpoints.auth.registerUser,
         "post",
         userData,
-        "json"
+        "json",
       );
-      
+
       console.log("Registration Response:", response);
       console.log("Registration Status:", status);
       console.log("Registration Error Logs:", errorLogs);
-      
+
       const apiResponse = response as RegisterApiResponse;
-      
+
       if (status === 200 || status === 201) {
         return apiResponse; // Return the API response directly
       } else {
@@ -56,29 +54,20 @@ const AuthViewModel = () => {
    */
   const login = async (credentials: LoginCredentials) => {
     setLoading(true);
-    
     try {
       const { response, status, errorLogs } = await fetchData<LoginApiResponse>(
         endpoints.auth.loginUser,
         "post",
         credentials,
-        "json"
+        "json",
+        true // withCredentials
       );
-      
+
       console.log("Login Response:", response);
       console.log("Login Status:", status);
-      
-      const apiResponse = response as LoginApiResponse;
-      
-      if (status === 200) {
-        // Store the token in cookies if it exists in the response
-        if (apiResponse.data?.[0]?.token) {
-          setCookie('auth_token', apiResponse.data[0].token);
-        }
-        return apiResponse; // Return the API response directly
-      } else {
-        return apiResponse; // Return the API response directly with error messages
-      }
+
+      return response as LoginApiResponse;
+
     } catch (err: any) {
       console.error("Error during login:", err);
       return {
@@ -94,7 +83,7 @@ const AuthViewModel = () => {
    * Logs out the current user by removing the token
    */
   const logout = () => {
-    deleteCookie('auth_token');
+    // Optionally, you can call an API endpoint to clear the cookie server-side if needed
     return {
       success: true,
       message: "Logged out successfully"

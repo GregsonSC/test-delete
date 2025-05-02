@@ -5,6 +5,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import Analytics from "./analytics";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { decodeJwt } from "jose";
+import { UserProvider } from "@/context/UserContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +16,27 @@ export const metadata = {
   description: "Digital Agency That Generates Business Growth",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Hydrate user from server-side cookie
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  let initialUser = null;
+
+  if (token) {
+    try {
+      const decoded: any = decodeJwt(token);
+      initialUser = {
+        id: decoded.id || "",
+        email: decoded.email || "",
+        name: decoded.name || "",
+        // Add other fields as needed
+      };
+      console.log("Initial User:", initialUser);
+    } catch (e) {
+      initialUser = null;
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <head>
@@ -42,11 +65,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider initialUser={initialUser}>
+            {children}
+          </UserProvider>
         </ThemeProvider>
         <Toaster
           richColors
-          // # TODO: revisar aqui el cambio de estilos
           toastOptions={{
             style: {
               background: "#04081E",
