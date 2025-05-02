@@ -11,6 +11,50 @@ const validServiceAssociated = [
   "SERVICEAREAS",
 ];
 const validAction = [" GET", "CREATE", "UPDATE", "DELETE"];
+/**
+ * @route POST /api/permission
+ * @desc Crear un nuevo permiso
+ * @swagger
+ * /api/permission:
+ *   post:
+ *     tags:
+ *       - Permission
+ *     summary: Create a new permission
+ *     description: Create a new permission with the required fields.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - action
+ *               - active
+ *               - serviceAssociated
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               action:
+ *                 type: string
+ *                 enum: [GET, CREATE, UPDATE, DELETE]
+ *               active:
+ *                 type: boolean
+ *               serviceAssociated:
+ *                 type: string
+ *                 enum: [NORMALUSERS, ADMINUSERS, LEADS, ESTIMATES, PROJECTS, BLOGS, PRODUCTS, SERVICEAREAS]
+ *     responses:
+ *       201:
+ *         description: Permission created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -63,7 +107,34 @@ export async function POST(request: Request) {
   }
 }
 
-// GET - Obtener uno o todos
+/**
+ * @route GET /api/permission
+ * @desc Obtener todos los permisos o uno por ID
+ * @swagger
+ * /api/permission:
+ *   get:
+ *     tags:
+ *       - Permission
+ *     summary: Get one or all permissions
+ *     description: Returns all permissions or a specific one if ID is provided.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: ID of the permission to retrieve.
+ *     responses:
+ *       200:
+ *         description: Permission(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Permission not found.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -111,7 +182,53 @@ export async function GET(req: Request) {
   }
 }
 
-// PATCH - Actualizar permiso
+/**
+ * @route PATCH /api/permission
+ * @desc Actualizar un permiso
+ * @swagger
+ * /api/permission:
+ *   patch:
+ *     tags:
+ *       - Permission
+ *     summary: Update a permission
+ *     description: Update fields of a permission. Only send fields to update.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the permission to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               action:
+ *                 type: string
+ *                 enum: [GET, CREATE, UPDATE, DELETE]
+ *               active:
+ *                 type: boolean
+ *               serviceAssociated:
+ *                 type: string
+ *                 enum: [NORMALUSERS, ADMINUSERS, LEADS, ESTIMATES, PROJECTS, BLOGS, PRODUCTS, SERVICEAREAS]
+ *     responses:
+ *       200:
+ *         description: Permission updated successfully.
+ *       400:
+ *         description: Invalid input or no data provided.
+ *       404:
+ *         description: Permission not found.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -195,7 +312,32 @@ export async function PATCH(request: Request) {
   }
 }
 
-// DELETE - Eliminar permiso
+/**
+ * @route DELETE /api/permission
+ * @desc Eliminar un permiso por ID
+ * @swagger
+ * /api/permission:
+ *   delete:
+ *     tags:
+ *       - Permission
+ *     summary: Delete a permission
+ *     description: Delete a permission using its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the permission to delete.
+ *     responses:
+ *       200:
+ *         description: Permission deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

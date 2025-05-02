@@ -1,7 +1,50 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
-
+import { authMiddleware } from "@/middleware/Secure-middleware";
+import { NextRequest } from "next/server";
 const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED", "INVOICE", "PAID"];
+/**
+ * @route POST /api/estimate
+ * @desc Crear una nueva estimación
+ * @swagger
+ * /api/estimate:
+ *   post:
+ *     tags:
+ *       - Estimate
+ *     summary: Create a new estimate
+ *     description: Create a new estimate with estimatedTime, description, state, totalValue and optional lead_id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - estimatedTime
+ *               - description
+ *               - state
+ *               - totalValue
+ *             properties:
+ *               estimatedTime:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *                 enum: [CREATED, PROCESSING, INREVIEW, REJECTED, ACCEPTED, INVOICE, PAID]
+ *               totalValue:
+ *                 type: number
+ *               lead_id:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Estimate created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -47,8 +90,41 @@ export async function POST(request: Request) {
   }
 }
 
-// GET - Obtener uno o todos
-export async function GET(req: Request) {
+/**
+ * @route GET /api/estimate
+ * @desc Obtener una o todas las estimaciones
+ * @swagger
+ * /api/estimate:
+ *   get:
+ *     tags:
+ *       - Estimate
+ *     summary: Get one or all estimates
+ *     description: Returns all estimates or a specific one by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: ID of the estimate to retrieve.
+ *     responses:
+ *       200:
+ *         description: Estimate(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       401:
+ *         description: Unauthorized. Missing or invalid JWT token.
+ *       404:
+ *         description: Estimate not found.
+ *       500:
+ *         description: Server error.
+ */
+
+export async function GET(req: NextRequest) {
+  // Validar el token JWT antes de continuar
+  const auth = authMiddleware(req);
+  if (auth) return auth;
+
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
@@ -95,7 +171,52 @@ export async function GET(req: Request) {
   }
 }
 
-// PATCH - Actualizar
+/**
+ * @route PATCH /api/estimate
+ * @desc Actualizar una estimación
+ * @swagger
+ * /api/estimate:
+ *   patch:
+ *     tags:
+ *       - Estimate
+ *     summary: Update an estimate
+ *     description: Update fields of an estimate by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the estimate to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               estimatedTime:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *                 enum: [CREATED, PROCESSING, INREVIEW, REJECTED, ACCEPTED, INVOICE, PAID]
+ *               totalValue:
+ *                 type: number
+ *               lead_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Estimate updated successfully.
+ *       400:
+ *         description: Invalid input or empty body.
+ *       404:
+ *         description: Estimate not found.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -159,7 +280,31 @@ export async function PATCH(request: Request) {
   }
 }
 
-// DELETE - Eliminar
+/**
+ * @route DELETE /api/estimate
+ * @desc Eliminar una estimación
+ * @swagger
+ * /api/estimate:
+ *   delete:
+ *     tags:
+ *       - Estimate
+ *     summary: Delete an estimate
+ *     description: Delete an estimate by ID. Fails if it has related projects.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the estimate to delete.
+ *     responses:
+ *       200:
+ *         description: Estimate deleted successfully.
+ *       400:
+ *         description: Invalid ID or estimate has related projects.
+ *       500:
+ *         description: Server error.
+ */
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

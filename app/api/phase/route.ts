@@ -3,6 +3,56 @@ import db from "@/lib/prisma";
 
 const validName = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
+/**
+ * @route POST /api/phase
+ * @desc Crear una nueva fase
+ * @swagger
+ * /api/phase:
+ *   post:
+ *     tags:
+ *       - Phase
+ *     summary: Create a new Phase
+ *     description: Creates a new phase with all required fields and valid name and state.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - expectedDuration
+ *               - startDate
+ *               - endDate
+ *               - state
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-06-01
+ *               state:
+ *                 type: string
+ *                 enum: [PLANNING, INPROCESS, TESTING, FINISHED]
+ *     responses:
+ *       201:
+ *         description: Phase created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function POST(request: Request) {
   try {
@@ -54,6 +104,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Phase");
   }
 }
+/**
+ * @route GET /api/phase
+ * @desc Obtener una o todas las fases
+ * @swagger
+ * /api/phase:
+ *   get:
+ *     tags:
+ *       - Phase
+ *     summary: Get one or all Phases
+ *     description: Retrieve all phases or a single phase by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: ID of the phase to retrieve.
+ *     responses:
+ *       200:
+ *         description: Phase(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Phase not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -100,6 +177,56 @@ export async function GET(req: Request) {
     return handleError(error, "GET Phase");
   }
 }
+/**
+ * @route PATCH /api/phase
+ * @desc Actualizar una fase existente
+ * @swagger
+ * /api/phase:
+ *   patch:
+ *     tags:
+ *       - Phase
+ *     summary: Update a Phase
+ *     description: Update one or more fields of a phase by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the phase to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *               state:
+ *                 type: string
+ *                 enum: [PLANNING, INPROCESS, TESTING, FINISHED]
+ *     responses:
+ *       200:
+ *         description: Phase updated successfully.
+ *       400:
+ *         description: Invalid input or ID.
+ *       404:
+ *         description: Phase not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -171,6 +298,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Phase");
   }
 }
+/**
+ * @route DELETE /api/phase
+ * @desc Eliminar una fase
+ * @swagger
+ * /api/phase:
+ *   delete:
+ *     tags:
+ *       - Phase
+ *     summary: Delete a Phase
+ *     description: Delete a phase by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the phase to delete.
+ *     responses:
+ *       200:
+ *         description: Phase deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {

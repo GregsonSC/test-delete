@@ -3,6 +3,50 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
 
+/**
+ * @route POST /api/attachment
+ * @desc Crear un nuevo archivo adjunto
+ * @swagger
+ * /api/attachment:
+ *   post:
+ *     tags:
+ *       - Attachment
+ *     summary: Create a new Attachment
+ *     description: Creates a new attachment with name, description, type, and url fields.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - type
+ *               - url
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum: [IMAGE, DOCUMENT, URL, VIDEO, OTHERS]
+ *               url:
+ *                 type: string
+ *               activityId:
+ *                 type: integer
+ *               ticketId:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Attachment created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -36,6 +80,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Attachment");
   }
 }
+/**
+ * @route GET /api/attachment
+ * @desc Obtener uno o todos los archivos adjuntos
+ * @swagger
+ * /api/attachment:
+ *   get:
+ *     tags:
+ *       - Attachment
+ *     summary: Get one or all Attachments
+ *     description: Retrieve all attachments or a specific one by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: ID of the attachment to retrieve.
+ *     responses:
+ *       200:
+ *         description: Attachment(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Attachment not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -81,6 +152,54 @@ export async function GET(req: Request) {
     return handleError(error, "GET Attachment");
   }
 }
+/**
+ * @route PATCH /api/attachment
+ * @desc Actualizar un archivo adjunto existente
+ * @swagger
+ * /api/attachment:
+ *   patch:
+ *     tags:
+ *       - Attachment
+ *     summary: Update an Attachment
+ *     description: Update one or more fields of an attachment by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the attachment to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum: [IMAGE, DOCUMENT, URL, VIDEO, OTHERS]
+ *               url:
+ *                 type: string
+ *               activityId:
+ *                 type: integer
+ *               ticketId:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Attachment updated successfully.
+ *       400:
+ *         description: Invalid input or ID.
+ *       404:
+ *         description: Attachment not found.
+ *       500:
+ *         description: Server error.
+ */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -131,6 +250,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Attachment");
   }
 }
+/**
+ * @route DELETE /api/attachment
+ * @desc Eliminar un archivo adjunto
+ * @swagger
+ * /api/attachment:
+ *   delete:
+ *     tags:
+ *       - Attachment
+ *     summary: Delete an Attachment
+ *     description: Delete an attachment by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the attachment to delete.
+ *     responses:
+ *       200:
+ *         description: Attachment deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {

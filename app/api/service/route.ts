@@ -1,6 +1,40 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
-
+/**
+ * @route POST /api/service
+ * @desc Crear un nuevo servicio
+ * @swagger
+ * /api/service:
+ *   post:
+ *     tags:
+ *       - Service
+ *     summary: Create a new Service
+ *     description: Creates a new service with name, description, and active fields.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - active
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               active:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Service created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -36,6 +70,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Service");
   }
 }
+/**
+ * @route GET /api/service
+ * @desc Obtener uno o todos los servicios
+ * @swagger
+ * /api/service:
+ *   get:
+ *     tags:
+ *       - Service
+ *     summary: Get one or all Services
+ *     description: Retrieve all services or a specific one by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: ID of the service to retrieve.
+ *     responses:
+ *       200:
+ *         description: Service(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Service not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -80,6 +141,46 @@ export async function GET(req: Request) {
     return handleError(error, "GET Service");
   }
 }
+/**
+ * @route PATCH /api/service
+ * @desc Actualizar un servicio existente
+ * @swagger
+ * /api/service:
+ *   patch:
+ *     tags:
+ *       - Service
+ *     summary: Update a Service
+ *     description: Update one or more fields of a service by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the service to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               active:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Service updated successfully.
+ *       400:
+ *         description: Invalid input or ID.
+ *       404:
+ *         description: Service not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -138,6 +239,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Service");
   }
 }
+/**
+ * @route DELETE /api/service
+ * @desc Eliminar un servicio
+ * @swagger
+ * /api/service:
+ *   delete:
+ *     tags:
+ *       - Service
+ *     summary: Delete a Service
+ *     description: Delete a service by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the service to delete.
+ *     responses:
+ *       200:
+ *         description: Service deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {
