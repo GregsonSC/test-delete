@@ -28,7 +28,7 @@ model User {
   Comment      Comment[]
   tickets      UserTicket[]
   createdAt    DateTime         @default(now())
-  udpatedAt    DateTime         @updatedAt
+  updatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
   UserWorkTeam UserWorkTeam[]
 }
