@@ -72,6 +72,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/cookie": "^1.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22",
     "@types/react": "^19",
