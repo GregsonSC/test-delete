@@ -112,10 +112,11 @@ export async function POST(request: NextRequest) {
   // Extraer IP
   let ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
 
+  // Valida la IP y en caso de ser privada o inválida, intenta usar 'x-real-ip'
   if (!isValidIP(ip) || isPrivateIP(ip)) {
     ip = request.headers.get("x-real-ip") || "unknown";
   }
-
+  // Si aún no es válida, marca la IP como desconocida
   if (!isValidIP(ip)) {
     ip = "unknown";
   }

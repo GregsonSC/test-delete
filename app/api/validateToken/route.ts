@@ -7,7 +7,7 @@ import { verifyToken } from "@/lib/jwt"; // asegúrate de tener esta función
  * /api/validateToken:
  *   get:
  *     tags:
- *       - validacion
+ *       - ValidateToken
  *     summary: Validar sesión de usuario
  *     description: Valida si el usuario tiene una sesión activa leyendo el token desde la cookie `auth_token`.
  *     parameters:
