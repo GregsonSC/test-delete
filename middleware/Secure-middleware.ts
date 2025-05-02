@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 // Funciones internas
 export function generateToken(payload: object) {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: "7h",
   });
 }
 

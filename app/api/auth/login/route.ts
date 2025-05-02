@@ -3,7 +3,7 @@ import db from "@/lib/prisma";
 import argon2 from "argon2";
 import { signToken } from "@/lib/jwt";
 import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
-
+import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
 /**
  * @swagger
  * /api/auth/login:
@@ -105,15 +105,24 @@ import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
  *                   example: ["Rate limit exceeded"]
  */
 
+// Se crea un *rate limiter* que permite 3 intentos de login cada 60 segundos.
 const limiter = loginRateLimit(3, 60 * 1000); // 3 intentos cada 60 segundos
 
-
 export async function POST(request: NextRequest) {
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  const ip = forwardedFor ? forwardedFor.split(",")[0]?.trim() : "unknown";
+  // Extraer IP
+  let ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
 
-  
-  const limitCheck = limiter(ip as string);
+  // Valida la IP y en caso de ser privada o inválida, intenta usar 'x-real-ip'
+  if (!isValidIP(ip) || isPrivateIP(ip)) {
+    ip = request.headers.get("x-real-ip") || "unknown";
+  }
+  // Si aún no es válida, marca la IP como desconocida
+  if (!isValidIP(ip)) {
+    ip = "unknown";
+  }
+
+  // Rate limiting basado en IP
+  const limitCheck = limiter(ip);
 
   if (!limitCheck.allowed) {
     return NextResponse.json(
@@ -143,12 +152,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const token = signToken({ id: user.id, email: user.email });
+  // Generar token
+  const token = signToken({ id: user.id, email: user.email ,name: user.name});
 
-  return NextResponse.json({
+  // Crear respuesta con cookie
+  const response = NextResponse.json({
     success: true,
     message: "Login successful",
-    data: [{ token }],
+    data: [],
     errors: [],
   });
+
+  // Guardar JWT en cookie
+  response.cookies.set("auth_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 24, // 1 día
+  });
+
+  return response;
 }
