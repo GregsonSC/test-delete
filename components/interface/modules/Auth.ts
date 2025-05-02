@@ -54,4 +54,23 @@ interface LoginApiResponse {
   errors: string[];
 }
 
-export type { AuthUser, LoginCredentials, AuthApiResponse, RegisterApiResponse, LoginApiResponse };
+interface UserData {
+  id: string;
+  email: string;
+  name: string;
+}
+
+interface UserContextProps {
+  user: UserData | null;
+  setUser: (user: UserData | null) => void;
+}
+
+export type {
+  AuthUser,
+  LoginCredentials,
+  AuthApiResponse,
+  RegisterApiResponse,
+  LoginApiResponse,
+  UserData,
+  UserContextProps,
+};
