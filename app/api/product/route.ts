@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { createImage } from "../cloudinary/upload/route";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Product
+ *     description: Project previously developed by the company for a client, which is associated with one of the current or past services (websites, digital marketing, or graphic design). The collection of these products constitutes the company's portfolio.
  * /api/product:
  *   post:
  *     tags:
@@ -35,9 +40,21 @@ import db from "@/lib/prisma";
 export async function POST(request: NextRequest) {
   try {
     const form = await request.formData();
+
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
-    const url = form.get("url")?.toString();
+
+    const urlForm = form.get("url");
+
+    if (!(urlForm instanceof File)) {
+      return createResponse({
+        success: false,
+        message: "The image must be valid file.",
+        errors: ["Must be uploaded as file."],
+        status: 400,
+      });
+    }
+    const url = await createImage(urlForm);
 
     if (!name || !description || !url) {
       return NextResponse.json(
@@ -225,36 +242,47 @@ export async function PATCH(request: Request) {
     const id = Number(requestId);
 
     if (!requestId || isNaN(id)) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "The ID must be a valid number",
-        errors: ["Invalid or missing ID"]
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "The ID must be a valid number",
+          errors: ["Invalid or missing ID"],
+        },
+        { status: 400 }
+      );
     }
 
     const form = await request.formData();
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
-    const url = form.get("url")?.toString();
+
+    const urlForm = form.get("url");
+    const url = urlForm instanceof File ? await createImage(urlForm) : undefined;
 
     if (!name && !description && !url) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "No data provided",
-        errors: ["Empty body"]
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "No data provided",
+          errors: ["Empty body"],
+        },
+        { status: 400 }
+      );
     }
 
     const product = await db.product.findUnique({ where: { id } });
     if (!product) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "Product not found",
-        errors: ["Product does not exist"]
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Product not found",
+          errors: ["Product does not exist"],
+        },
+        { status: 404 }
+      );
     }
 
     const updatedProduct = await db.product.update({
@@ -262,27 +290,29 @@ export async function PATCH(request: Request) {
       data: {
         ...(name && { name }),
         ...(description && { description }),
-        ...(url && { url })
-      }
+        ...(url && { url }),
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: [updatedProduct],
       message: "Product updated successfully",
-      errors: []
+      errors: [],
     });
   } catch (error) {
     console.error("Error updating product:", error);
-    return NextResponse.json({
-      success: false,
-      data: [],
-      message: "Error updating product",
-      errors: [error instanceof Error ? error.message : "Unknown error"]
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error updating product",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
-
 
 /**
  * @swagger

@@ -1,9 +1,10 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 /**
- * @route POST /api/benefit
- * @desc Crear un nuevo beneficio
  * @swagger
+ *  tags:
+ *   - name: Benefit
+ *     description: Reasons why users should choose the services of each service area. Each area has a list of benefits that are dynamically rendered on its dedicated page.
  * /api/benefit:
  *   post:
  *     tags:
@@ -275,5 +276,3 @@ export async function DELETE(req: Request) {
     return handleError(error, "DELETE Benefit");
   }
 }
-
-

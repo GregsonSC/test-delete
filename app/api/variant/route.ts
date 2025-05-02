@@ -3,6 +3,10 @@ import db from "@/lib/prisma";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Variant
+ *     description: Each plan offered by the company can have one or more variants, which differ based on the price and the amount of benefits they offer.
+ * 
  * /api/variant:
  *   post:
  *     tags:

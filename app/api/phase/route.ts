@@ -4,9 +4,11 @@ import db from "@/lib/prisma";
 const validName = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
 /**
- * @route POST /api/phase
- * @desc Crear una nueva fase
  * @swagger
+ * tags:
+ *   - name: Phase
+ *     description: Stage of a project, which can be one of the following: Analysis, Design, Development, or Deploy.
+ *
  * /api/phase:
  *   post:
  *     tags:

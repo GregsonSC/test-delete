@@ -1,11 +1,15 @@
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
+import { County } from "@prisma/client";
+import { createImage } from "../cloudinary/upload/route";
 
 const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
+
 /**
- * @route POST /api/service-area
- * @desc Crear una nueva zona de servicio
  * @swagger
+ * tags:
+ *   - name: ServiceArea
+ *     description: Area or locality in the United States where the company currently operates or has operated in the past. Each zone has a dedicated page for each of the company’s services, featuring content specialized for that location.
  * /api/service-area:
  *   post:
  *     tags:
@@ -56,27 +60,43 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const {
-      name,
-      description,
-      active,
-      county,
-      heroImageUrl,
-      benefitsImageUrl,
-      testimonialEmbed,
-      service_id,
-    } = data;
+    const formData = await request.formData();
+
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const county = formData.get("county")?.toString();
+    
+    const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
+    const activeStr = formData.get("active")?.toString();
+    const serviceIdStr = formData.get("service_id")?.toString();
+    
+    const heroImageFile = formData.get("heroImageUrl");
+    const benefitsImageFile = formData.get("benefitsImageUrl");
+    
+    
+    if (!(heroImageFile instanceof File) || !(benefitsImageFile instanceof File)) {
+      return createResponse({
+        success: false,
+        message: "Both images must be valid files.",
+        errors: ["heroImage and benefitsImage must be uploaded as files."],
+        status: 400,
+      });
+    }
+    
+    const heroImageUrl = await createImage(heroImageFile);
+    const benefitsImageUrl = await createImage(benefitsImageFile);
+    
+    const active = activeStr === "true";
+    const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;
 
     if (
       !name ||
       !description ||
-      active === undefined ||
+      activeStr === undefined ||
       !county ||
       !heroImageUrl ||
       !benefitsImageUrl ||
       !testimonialEmbed
-      // || !service_id
     ) {
       return createResponse({
         success: false,
@@ -85,15 +105,28 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+
     if (!validCounty.includes(county)) {
       return createResponse({
         success: false,
         message: "Invalid county.",
-        errors: [`County must be one of: ${county.join(", ")}`],
+        errors: [`County must be one of: ${validCounty.join(", ")}`],
         status: 400,
       });
     }
-    const newServiceArea = await db.serviceArea.create({ data });
+
+    const newServiceArea = await db.serviceArea.create({
+      data: {
+        name,
+        description,
+        active,
+        county: county as County,
+        heroImageUrl,
+        benefitsImageUrl,
+        testimonialEmbed,
+        service_id,
+      },
+    });
 
     return createResponse({
       success: true,
@@ -105,6 +138,7 @@ export async function POST(request: Request) {
     return handleError(error, "POST ServiceArea");
   }
 }
+
 /**
  * @route GET /api/service-area
  * @desc Obtener una o todas las zonas de servicio
@@ -236,7 +270,6 @@ export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const id = Number(requestId);
-    const data = await request.json();
 
     if (isNaN(id) || !requestId) {
       return createResponse({
@@ -248,7 +281,6 @@ export async function PATCH(request: Request) {
     }
 
     const existingServiceArea = await db.serviceArea.findUnique({ where: { id } });
-
     if (!existingServiceArea) {
       return createResponse({
         success: false,
@@ -257,20 +289,58 @@ export async function PATCH(request: Request) {
         status: 404,
       });
     }
-    if (data.county) {
-      if (!validCounty.includes(data.county)) {
-        return createResponse({
-          success: false,
-          message: "Invalid county.",
-          errors: [`County must be one of: ${validCounty.join(", ")}`],
-          status: 400,
-        });
-      }
+
+    const formData = await request.formData();
+
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const county = formData.get("county")?.toString();
+    const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
+    const activeStr = formData.get("active")?.toString();
+    const serviceIdStr = formData.get("service_id")?.toString();
+
+    const heroImageFile = formData.get("heroImageUrl");
+    const benefitsImageFile = formData.get("benefitsImageUrl");
+
+    if (county && !validCounty.includes(county)) {
+      return createResponse({
+        success: false,
+        message: "Invalid county.",
+        errors: [`County must be one of: ${validCounty.join(", ")}`],
+        status: 400,
+      });
+    }
+
+    const heroImageUrl =
+      heroImageFile instanceof File ? await createImage(heroImageFile) : undefined;
+    const benefitsImageUrl =
+      benefitsImageFile instanceof File ? await createImage(benefitsImageFile) : undefined;
+
+    const active = activeStr !== undefined ? activeStr === "true" : undefined;
+    const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;
+
+    const updatedData: any = {};
+    if (name) updatedData.name = name;
+    if (description) updatedData.description = description;
+    if (county) updatedData.county = county;
+    if (testimonialEmbed) updatedData.testimonialEmbed = testimonialEmbed;
+    if (active !== undefined) updatedData.active = active;
+    if (service_id) updatedData.service_id = service_id;
+    if (heroImageUrl) updatedData.heroImageUrl = heroImageUrl;
+    if (benefitsImageUrl) updatedData.benefitsImageUrl = benefitsImageUrl;
+
+    if (Object.keys(updatedData).length === 0) {
+      return createResponse({
+        success: false,
+        message: "No update data provided.",
+        errors: ["At least one field must be provided for update."],
+        status: 400,
+      });
     }
 
     const updatedServiceArea = await db.serviceArea.update({
       where: { id },
-      data,
+      data: updatedData,
     });
 
     return createResponse({
@@ -283,6 +353,8 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH ServiceArea");
   }
 }
+
+
 /**
  * @route DELETE /api/service-area
  * @desc Eliminar una zona de servicio

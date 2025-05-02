@@ -3,9 +3,10 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED", "INVOICE", "PAID"];
 /**
- * @route POST /api/estimate
- * @desc Crear una nueva estimación
  * @swagger
+ * tags:
+ *   - name: Estimate
+ *     description: Set of costs required for the execution of a project. An estimate that has been approved by the client becomes an invoice, and will therefore be displayed in the Invoices section.
  * /api/estimate:
  *   post:
  *     tags:

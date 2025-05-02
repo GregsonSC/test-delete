@@ -1,9 +1,10 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 /**
- * @route POST /api/service
- * @desc Crear un nuevo servicio
  * @swagger
+ * tags:
+ *   - name: Service
+ *     description: Work performed by the company in which it specializes, aimed at fulfilling client requests. Currently, there are two available services: Web Design and Development, and Digital Marketing.
  * /api/service:
  *   post:
  *     tags:

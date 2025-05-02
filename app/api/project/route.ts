@@ -1,11 +1,14 @@
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
+import { CurrentPhase } from "@prisma/client";
+import { createImage } from "../cloudinary/upload/route";
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
-/**
- * @route POST /api/project
- * @desc Crear un nuevo proyecto
+/** 
  * @swagger
+ * tags:
+ *   - name: Project
+ *     description: When a client pays the invoice corresponding to the request they made to acquire a company service, it formally becomes a project. A work team is assigned to it, and its various phases begin to be developed.
  * /api/project:
  *   post:
  *     tags:
@@ -54,10 +57,29 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, currentPhase } = data;
+    const formData = await request.formData();
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !currentPhase) {
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const expectedDuration = formData.get("expectedDuration")?.toString();
+    const startDate = formData.get("startDate")?.toString();
+    const endDate = formData.get("endDate")?.toString();
+    const currentPhase = formData.get("currentPhase")?.toString();
+
+    const imagePreviewFile = formData.get("imagePreviewUrl");
+    const imagePreviewUrl = imagePreviewFile instanceof File
+      ? await createImage(imagePreviewFile)
+      : undefined;
+
+    if (
+      !name ||
+      !description ||
+      !expectedDuration ||
+      !startDate ||
+      !endDate ||
+      !currentPhase ||
+      !imagePreviewUrl
+    ) {
       return createResponse({
         success: false,
         message: "Missing required fields.",
@@ -65,6 +87,7 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+
     if (!validCurrentPhase.includes(currentPhase)) {
       return createResponse({
         success: false,
@@ -74,7 +97,8 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
       return createResponse({
         success: false,
         message: "Invalid date format.",
@@ -83,7 +107,17 @@ export async function POST(request: Request) {
       });
     }
 
-    const newProject = await db.project.create({ data });
+    const newProject = await db.project.create({
+      data: {
+        name,
+        description,
+        expectedDuration,
+        startDate,
+        endDate,
+        currentPhase: currentPhase as CurrentPhase,
+        imagePreviewUrl,
+      },
+    });
 
     return createResponse({
       success: true,
@@ -95,6 +129,7 @@ export async function POST(request: Request) {
     return handleError(error, "POST Project");
   }
 }
+
 /**
  * @route GET /api/project
  * @desc Obtener uno o todos los proyectos
@@ -224,35 +259,12 @@ export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const id = Number(requestId);
-    const data = await request.json();
 
     if (isNaN(id) || !requestId) {
       return createResponse({
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
-        status: 400,
-      });
-    }
-    if (data.currentPhase) {
-      if (!validCurrentPhase.includes(data.currentPhase)) {
-        return createResponse({
-          success: false,
-          message: "Invalid current phase.",
-          errors: [`Current phase must be one of: ${validCurrentPhase.join(", ")}`],
-          status: 400,
-        });
-      }
-    }
-    
-    if (
-      (data.startDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.startDate)) ||
-      (data.endDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.endDate))
-    ) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Invalid startDate format. Use YYYY-MM-DD."],
         status: 400,
       });
     }
@@ -268,9 +280,62 @@ export async function PATCH(request: Request) {
       });
     }
 
+    const formData = await request.formData();
+
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const expectedDuration = formData.get("expectedDuration")?.toString();
+    const startDate = formData.get("startDate")?.toString();
+    const endDate = formData.get("endDate")?.toString();
+    const currentPhase = formData.get("currentPhase")?.toString();
+
+    const imageFile = formData.get("imagePreviewUrl");
+    const imagePreviewUrl =
+      imageFile instanceof File ? await createImage(imageFile) : undefined;
+
+    if (currentPhase && !validCurrentPhase.includes(currentPhase)) {
+      return createResponse({
+        success: false,
+        message: "Invalid current phase.",
+        errors: [`Current phase must be one of: ${validCurrentPhase.join(", ")}`],
+        status: 400,
+      });
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (
+      (startDate && !dateRegex.test(startDate)) ||
+      (endDate && !dateRegex.test(endDate))
+    ) {
+      return createResponse({
+        success: false,
+        message: "Invalid date format.",
+        errors: ["Use YYYY-MM-DD format for startDate and endDate."],
+        status: 400,
+      });
+    }
+
+    const updatedData: any = {};
+    if (name) updatedData.name = name;
+    if (description) updatedData.description = description;
+    if (expectedDuration) updatedData.expectedDuration = expectedDuration;
+    if (startDate) updatedData.startDate = startDate;
+    if (endDate) updatedData.endDate = endDate;
+    if (currentPhase) updatedData.currentPhase = currentPhase;
+    if (imagePreviewUrl) updatedData.imagePreviewUrl = imagePreviewUrl;
+
+    if (Object.keys(updatedData).length === 0) {
+      return createResponse({
+        success: false,
+        message: "No update data provided.",
+        errors: ["At least one field must be provided for update."],
+        status: 400,
+      });
+    }
+
     const updateProject = await db.project.update({
       where: { id },
-      data: { ...data },
+      data: updatedData,
     });
 
     return createResponse({
@@ -283,6 +348,7 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Project");
   }
 }
+
 /**
  * @route DELETE /api/project
  * @desc Eliminar un proyecto

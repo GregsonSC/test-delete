@@ -15,6 +15,9 @@ const validArea = [
 ];
 /**
  * @swagger
+ * tags:
+ *   - name: WorkTeam
+ *     description: Group of users assigned to the development of a project or another internal activity of the company.
  * /api/workteam:
  *   post:
  *     tags:
@@ -101,7 +104,6 @@ const validArea = [
  *                   items:
  *                     type: string
  */
-
 
 export async function POST(request: Request) {
   try {
@@ -216,7 +218,6 @@ export async function POST(request: Request) {
  *                   items:
  *                     type: string
  */
-
 
 export async function GET(req: Request) {
   try {
@@ -347,7 +348,6 @@ export async function GET(req: Request) {
  *                   items:
  *                     type: string
  */
-
 
 export async function PATCH(request: Request) {
   try {
@@ -483,7 +483,6 @@ export async function PATCH(request: Request) {
  *                   items:
  *                     type: string
  */
-
 
 export async function DELETE(req: Request) {
   try {
