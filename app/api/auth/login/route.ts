@@ -159,11 +159,14 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({
     success: true,
     message: "Login successful",
-    data: [],
+    data: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    },
     errors: [],
   });
 
-  // Guardar JWT en cookie
   response.cookies.set("auth_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
