@@ -28,6 +28,7 @@ export const endpoints = {
   auth: {
     registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
     loginUser: `${API}/auth/login`, // Endpoint for user login (POST)
+    logoutUser: `${API}/logOut`, // Endpoint for user logout (POST)
   },
 
   // Test endpoint for checking API connectivity

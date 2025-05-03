@@ -225,7 +225,7 @@ export function Navbar() {
   };
 
   // Function to handle logout
-  const handleLogout = () => {
+  const handleLogout = () => { //cambiarlo por endpoint
     setIsLoggedIn(false);
     setUser(null);
 

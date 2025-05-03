@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { decodeJwt } from "jose";
 import { UserProvider } from "@/context/UserContext";
+import TokenValidator from '@/components/auth/TokenValidator';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -66,6 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <UserProvider initialUser={initialUser}>
+            <TokenValidator />
             {children}
           </UserProvider>
         </ThemeProvider>

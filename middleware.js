@@ -22,14 +22,22 @@ export async function middleware(request) {
 
   // Check if the user is authenticated (using a token in cookies)
   const token = request.cookies.get("auth_token")?.value;
+  
+  // Create a response object that we'll modify as needed
+  let response = NextResponse.next();
 
-  // If user is on auth page and has a valid token, redirect to profile
+  // If user is on auth page and has a token
   if (isAuthPage && token) {
     const { valid } = await validateToken(token);
     if (valid) {
+      // Redirect to profile if token is valid
       return NextResponse.redirect(new URL("/profile-settings", request.url));
+    } else {
+      // Clear the invalid token and continue to auth page
+      response = NextResponse.next();
+      response.cookies.delete("auth_token");
+      return response;
     }
-    // If token is invalid, continue to the auth page
   }
 
   // For non-auth pages (protected routes), verify authentication
@@ -42,13 +50,17 @@ export async function middleware(request) {
     // Verify token for protected routes
     const { valid } = await validateToken(token);
     if (!valid) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      // Clear the invalid token and redirect to login with a special parameter
+      const loginUrl = new URL("/login?session_expired=true", request.url);
+      response = NextResponse.redirect(loginUrl);
+      response.cookies.delete("auth_token");
+      return response;
     }
     // Token is valid, proceed to the protected route
   }
 
   // For all other cases, proceed normally
-  return NextResponse.next();
+  return response;
 }
 
 // Configure middleware to run on specific paths

@@ -50,7 +50,11 @@ interface RegisterApiResponse {
 interface LoginApiResponse {
   success: boolean;
   message: string;
-  data: Array<{ token?: string }>;
+  data: {
+    id: string;
+    email: string;
+    name: string;
+  };
   errors: string[];
 }
 
