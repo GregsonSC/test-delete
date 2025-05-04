@@ -3,11 +3,12 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 import { createImage } from "../cloudinary/upload/route";
 import { Topic } from "@prisma/client";
 
-const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
+const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
 /**
- * @route POST /api/blog
- * @desc Crear un nuevo Blog
  * @swagger
+ * tags:
+ *   - name: Blog
+ *     description: News or posts related to software development and digital marketing topics published by the company.
  * /api/blog:
  *   post:
  *     tags:
@@ -101,7 +102,6 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING", "GRAPHICDESIGN"];
  */
 export async function POST(request: Request) {
   try {
-    console.log("deberia funcionar")
     const formData = await request.formData();
 
     const title = formData.get("title")?.toString();
@@ -109,8 +109,17 @@ export async function POST(request: Request) {
     const content = formData.get("content")?.toString();
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
-    
-    const imageUrl = await createImage(formData);
+
+    const imageUrlForm = formData.get("imageUrl");
+    if (!(imageUrlForm instanceof File)) {
+      return createResponse({
+        success: false,
+        message: "The image must be valid file.",
+        errors: ["Must be uploaded as file."],
+        status: 400,
+      });
+    }
+    const imageUrl = await createImage(imageUrlForm);
 
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
       return createResponse({
@@ -194,8 +203,6 @@ export async function POST(request: Request) {
  *       500:
  *         description: Server error.
  */
-
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -316,11 +323,8 @@ export async function PATCH(request: Request) {
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
 
-    let imageUrl;
-    const hasImage = formData.get("imageUrl");
-    if (hasImage && typeof hasImage === "object") {
-      imageUrl = await createImage(formData);
-    }
+    const imageUrlForm = formData.get("imageUrl");
+    const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
     // Validaciones
     if (publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {

@@ -11,10 +11,11 @@ const validServiceAssociated = [
   "SERVICEAREAS",
 ];
 const validAction = [" GET", "CREATE", "UPDATE", "DELETE"];
-/**
- * @route POST /api/permission
- * @desc Crear un nuevo permiso
+/** 
  * @swagger
+ * tags:
+ *   - name: Permission
+ *     description: Action that a user can perform on a service of the web application, for example, creating, editing, or deleting users.
  * /api/permission:
  *   post:
  *     tags:

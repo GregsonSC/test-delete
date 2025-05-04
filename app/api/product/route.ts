@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
+import { createImage } from "../cloudinary/upload/route";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Product
+ *     description: Project previously developed by the company for a client, which is associated with one of the current or past services (websites, digital marketing, or graphic design). The collection of these products constitutes the company's portfolio.
  * /api/product:
  *   post:
  *     tags:
@@ -34,33 +39,59 @@ import db from "@/lib/prisma";
  */
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
+    const form = await request.formData();
 
-    if (!data.name) {
-      return NextResponse.json({
+    const name = form.get("name")?.toString();
+    const description = form.get("description")?.toString();
+
+    const urlForm = form.get("url");
+
+    if (!(urlForm instanceof File)) {
+      return createResponse({
         success: false,
-        data: [],
-        message: "Product name is required",
-        errors: ["Missing 'name' field"]
-      }, { status: 400 });
+        message: "The image must be valid file.",
+        errors: ["Must be uploaded as file."],
+        status: 400,
+      });
+    }
+    const url = await createImage(urlForm);
+
+    if (!name || !description || !url) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "All fields are required.",
+          errors: ["Missing one or more required fields."],
+        },
+        { status: 400 }
+      );
     }
 
-    const newProduct = await db.product.create({ data });
+    const newProduct = await db.product.create({
+      data: { name, description, url },
+    });
 
-    return NextResponse.json({
-      success: true,
-      data: [newProduct],
-      message: "Product created successfully",
-      errors: []
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: [newProduct],
+        message: "Product created successfully",
+        errors: [],
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating product:", error);
-    return NextResponse.json({
-      success: false,
-      data: [],
-      message: "Error creating product",
-      errors: [error instanceof Error ? error.message : "Unknown error"]
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error creating product",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -104,53 +135,65 @@ export async function GET(request: Request) {
       });
       const Attachment = await db.product.findMany({
         include: {
-          Attachment: true
+          Attachment: true,
         },
       });
 
       return NextResponse.json({
         success: true,
-        data: products,Attachment,
+        data: products,
+        Attachment,
         message: "Products fetched successfully",
-        errors: []
+        errors: [],
       });
     }
 
     const id = Number(requestId);
     if (isNaN(id)) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "The id must be a valid number",
-        errors: ["Invalid ID"]
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "The id must be a valid number",
+          errors: ["Invalid ID"],
+        },
+        { status: 400 }
+      );
     }
 
-    const product = await db.product.findUnique({ where: { id },
-      include:{Attachment:true} });
+    const product = await db.product.findUnique({ where: { id }, include: { Attachment: true } });
 
     if (!product) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "Product not found",
-        errors: ["Product with given ID does not exist"]
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Product not found",
+          errors: ["Product with given ID does not exist"],
+        },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: [product],
-      message: "Product fetched successfully",
-      errors: []
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: [product],
+        message: "Product fetched successfully",
+        errors: [],
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      data: [],
-      message: "Error fetching product",
-      errors: [error instanceof Error ? error.message : "Unknown error"]
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error fetching product",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -196,56 +239,78 @@ export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
-    const data = await request.json();
+    const id = Number(requestId);
 
-    if (!data || Object.keys(data).length === 0) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "No data provided",
-        errors: ["Empty body"]
-      }, { status: 400 });
+    if (!requestId || isNaN(id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "The ID must be a valid number",
+          errors: ["Invalid or missing ID"],
+        },
+        { status: 400 }
+      );
     }
 
-    const id = Number(requestId);
-    if (isNaN(id) || !requestId) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "The ID must be a valid number",
-        errors: ["Invalid or missing ID"]
-      }, { status: 400 });
+    const form = await request.formData();
+    const name = form.get("name")?.toString();
+    const description = form.get("description")?.toString();
+
+    const urlForm = form.get("url");
+    const url = urlForm instanceof File ? await createImage(urlForm) : undefined;
+
+    if (!name && !description && !url) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "No data provided",
+          errors: ["Empty body"],
+        },
+        { status: 400 }
+      );
     }
 
     const product = await db.product.findUnique({ where: { id } });
     if (!product) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "Product not found",
-        errors: ["Product does not exist"]
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Product not found",
+          errors: ["Product does not exist"],
+        },
+        { status: 404 }
+      );
     }
 
     const updatedProduct = await db.product.update({
       where: { id },
-      data,
+      data: {
+        ...(name && { name }),
+        ...(description && { description }),
+        ...(url && { url }),
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: [updatedProduct],
       message: "Product updated successfully",
-      errors: []
+      errors: [],
     });
   } catch (error) {
     console.error("Error updating product:", error);
-    return NextResponse.json({
-      success: false,
-      data: [],
-      message: "Error updating product",
-      errors: [error instanceof Error ? error.message : "Unknown error"]
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error updating product",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -281,32 +346,38 @@ export async function DELETE(request: Request) {
     const productExists = await db.product.findUnique({ where: { id } });
 
     if (!productExists) {
-      return NextResponse.json({
-        success: false,
-        data: [],
-        message: "Product not found",
-        errors: ["No product found with that ID"]
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Product not found",
+          errors: ["No product found with that ID"],
+        },
+        { status: 404 }
+      );
     }
 
     const deletedProduct = await db.product.delete({ where: { id } });
 
-    return NextResponse.json({
-      success: true,
-      data: [deletedProduct],
-      message: "Product deleted successfully",
-      errors: []
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: [deletedProduct],
+        message: "Product deleted successfully",
+        errors: [],
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error deleting product:", error);
-    return NextResponse.json({
-      success: false,
-      data: [],
-      message: "Error deleting product",
-      errors: [error instanceof Error ? error.message : "Unknown error"]
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        message: "Error deleting product",
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      },
+      { status: 500 }
+    );
   }
 }
-
-
-

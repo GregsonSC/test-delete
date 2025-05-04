@@ -1,12 +1,15 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
+import { createImage } from "../cloudinary/upload/route";
+import { TypeAttachment } from "@prisma/client";
 
 const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
 
 /**
- * @route POST /api/attachment
- * @desc Crear un nuevo archivo adjunto
  * @swagger
+ * tags:
+ *   - name: Attachment
+ *     description: Digital resource that must be stored in the project's file database, as it can be an image, a document, a video, among others. Several tables are related to this one since they need to have associated resources, such as an Activity, a Ticket, among others.
  * /api/attachment:
  *   post:
  *     tags:
@@ -49,10 +52,35 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { name, description, type, url, activityId, ticketId } = data;
+    const formData = await request.formData();
 
-    if (!name || !description || !type || !url) {
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const type = formData.get("type")?.toString();
+
+    const urlForm = formData.get("url");
+
+    if (!(urlForm instanceof File)) {
+      return createResponse({
+        success: false,
+        message: "The image must be valid file.",
+        errors: ["Must be uploaded as file."],
+        status: 400,
+      });
+    }
+    const url = await createImage(urlForm);
+
+    const activityId = formData.get("activityId")
+      ? parseInt(formData.get("activityId")!.toString(), 10)
+      : undefined;
+    const ticketId = formData.get("ticketId")
+      ? parseInt(formData.get("ticketId")!.toString(), 10)
+      : undefined;
+    const productId = formData.get("productId")
+      ? parseInt(formData.get("productId")!.toString(), 10)
+      : undefined;
+
+    if (!name || !description || !type || !url || !activityId || !ticketId) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -69,7 +97,18 @@ export async function POST(request: Request) {
       });
     }
 
-    const newAttachment = await db.attachment.create({ data });
+    const newAttachment = await db.attachment.create({
+      data: {
+        name,
+        description,
+        type: type as TypeAttachment,
+        url,
+        activityId,
+        ticketId,
+        productId,
+      },
+    });
+
     return createResponse({
       success: true,
       data: newAttachment,
@@ -205,7 +244,6 @@ export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const id = Number(requestId);
-    const data = await request.json();
 
     if (isNaN(id) || !requestId) {
       return createResponse({
@@ -215,8 +253,16 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    if (data.type) {
-      if (!validType.includes(data.type)) {
+    const formData = await request.formData();
+    const name = formData.get("name")?.toString();
+    const description = formData.get("description")?.toString();
+    const type = formData.get("type")?.toString();
+
+    const urlForm = formData.get("url");
+    const url = urlForm instanceof File ? await createImage(urlForm) : undefined;
+
+    if (type) {
+      if (!validType.includes(type)) {
         return createResponse({
           success: false,
           message: "Invalid type.",
@@ -225,7 +271,9 @@ export async function PATCH(request: Request) {
         });
       }
     }
+
     const attachment = await db.attachment.findUnique({ where: { id } });
+
     if (!attachment) {
       return createResponse({
         success: false,
@@ -234,10 +282,24 @@ export async function PATCH(request: Request) {
         status: 404,
       });
     }
+    const updatedData: any = {};
+    if (name) updatedData.name = name;
+    if (description) updatedData.description = description;
+    if (type) updatedData.type = type as TypeAttachment;
+    if (url) updatedData.url = url;
+
+    if (Object.keys(updatedData).length === 0) {
+      return createResponse({
+        success: false,
+        message: "No update data provided.",
+        errors: ["At least one field must be provided for update."],
+        status: 400,
+      });
+    }
 
     const updateAttachment = await db.attachment.update({
       where: { id },
-      data: { ...data },
+      data: updatedData,
     });
 
     return createResponse({

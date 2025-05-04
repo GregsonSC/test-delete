@@ -3,6 +3,9 @@ import db from "@/lib/prisma";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Role
+ *     description: Roles are sets of permissions that can be assigned to multiple users who share the same or similar responsibilities, without having to manually assign each permission individually.
  * /api/role:
  *   post:
  *     tags:

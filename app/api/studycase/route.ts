@@ -1,60 +1,39 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
-const validState = ["AVAILABLE", "INACTIVE", "ASSIGNED"];
-const validArea = [
-  "BACKEND",
-  "FRONTEND",
-  "DESIGN",
-  "MANAGEMENT",
-  "ADMINISTRATIVE",
-  "MARKETING",
-  "SALES",
-  "DEVOPS",
-  "SUPPORT",
-];
 /**
+ * @route POST /api/studycase
+ * @desc Crear un nuevo StudyCase
  * @swagger
- * tags:
- *   - name: WorkTeam
- *     description: Group of users assigned to the development of a project or another internal activity of the company.
- * /api/workteam:
+ * /api/studycase:
  *   post:
  *     tags:
- *       - WorkTeam
- *     summary: Create a new WorkTeam
- *     description: Create a new WorkTeam with the provided data.
+ *       - StudyCase
+ *     summary: Create a new StudyCase
+ *     description: Create a new StudyCase with the required data.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - description
- *               - state
- *               - area
+ *               - title
+ *               - resume
+ *               - videoUrl
  *             properties:
- *               name:
+ *               title:
  *                 type: string
- *                 description: Name of the work team.
- *                 example: Backend Team
- *               description:
+ *                 description: "Title of the study case."
+ *               resume:
  *                 type: string
- *                 description: Description of the work team.
- *                 example: Responsible for building backend APIs and services.
- *               state:
+ *                 description: "Short summary of the study case."
+ *               videoUrl:
  *                 type: string
- *                 description: State of the work team. Must be one of the valid options.
- *                 example: AVAILABLE
- *               area:
- *                 type: string
- *                 description: Area assigned to the work team. Must be one of the valid options.
- *                 example: BACKEND
+ *                 description: "URL of the video explaining the study case."
  *     responses:
  *       201:
- *         description: WorkTeam created successfully.
+ *         description: StudyCase created successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -65,10 +44,22 @@ const validArea = [
  *                   example: true
  *                 data:
  *                   type: object
- *                   description: The created work team object.
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     title:
+ *                       type: string
+ *                       example: Análisis de UX
+ *                     resume:
+ *                       type: string
+ *                       example: Evaluación de experiencia de usuario en plataforma bancaria.
+ *                     videoUrl:
+ *                       type: string
+ *                       example: https://videos.com/ux-caso1
  *                 message:
  *                   type: string
- *                   example: WorkTeam created successfully.
+ *                   example: StudyCase created successfully.
  *       400:
  *         description: Bad request, missing or invalid fields.
  *         content:
@@ -81,7 +72,7 @@ const validArea = [
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Invalid state.
+ *                   example: All fields are required.
  *                 errors:
  *                   type: array
  *                   items:
@@ -98,7 +89,7 @@ const validArea = [
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Error creating WorkTeam
+ *                   example: Error creating StudyCase
  *                 errors:
  *                   type: array
  *                   items:
@@ -107,10 +98,13 @@ const validArea = [
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { name, description, state, area } = data;
+    const formData = await request.formData();
 
-    if (!name || !description) {
+    const title = formData.get("title")?.toString();
+    const resume = formData.get("resume")?.toString();
+    const videoUrl = formData.get("resume")?.toString();
+
+    if (!title || !resume || !videoUrl) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -119,53 +113,40 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!validState.includes(state)) {
-      return createResponse({
-        success: false,
-        message: "Invalid state.",
-        errors: [`State must be one of: ${validState.join(", ")}`],
-        status: 400,
-      });
-    }
-    if (!validArea.includes(area)) {
-      return createResponse({
-        success: false,
-        message: "Invalid area.",
-        errors: [`Area must be one of: ${validArea.join(", ")}`],
-        status: 400,
-      });
-    }
-
-    const newWorkTeam = await db.workTeam.create({ data });
+    const newStudyCase = await db.studyCase.create({
+      data: { title, resume, videoUrl },
+    });
 
     return createResponse({
       success: true,
-      data: newWorkTeam,
-      message: "WorkTeam created successfully.",
+      data: newStudyCase,
+      message: "StudyCase created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST WorkTeam");
+    return handleError(error, "POST StudyCase");
   }
 }
 /**
+ * @route GET /api/studycase
+ * @desc Obtener uno o todos los StudyCases
  * @swagger
- * /api/workteam:
+ * /api/studycase:
  *   get:
  *     tags:
- *       - WorkTeam
- *     summary: Retrieve WorkTeams
- *     description: Get a single WorkTeam by ID or retrieve all if no ID is provided.
+ *       - StudyCase
+ *     summary: Get StudyCases
+ *     description: Retrieve all StudyCases or a specific one by ID.
  *     parameters:
  *       - in: query
  *         name: id
  *         schema:
  *           type: integer
  *         required: false
- *         description: The ID of the WorkTeam to retrieve.
+ *         description: ID of the StudyCase to retrieve.
  *     responses:
  *       200:
- *         description: WorkTeam(s) retrieved successfully.
+ *         description: StudyCases retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -176,15 +157,41 @@ export async function POST(request: Request) {
  *                   example: true
  *                 data:
  *                   oneOf:
- *                     - type: object
  *                     - type: array
  *                       items:
  *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           title:
+ *                             type: string
+ *                             example: Análisis de UX
+ *                           resume:
+ *                             type: string
+ *                             example: Evaluación de experiencia de usuario.
+ *                           videoUrl:
+ *                             type: string
+ *                             example: https://videos.com/ux-caso1
+ *                     - type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 2
+ *                         title:
+ *                           type: string
+ *                           example: Caso de UI
+ *                         resume:
+ *                           type: string
+ *                           example: Estudio de interfaces gráficas.
+ *                         videoUrl:
+ *                           type: string
+ *                           example: https://videos.com/ui-caso2
  *                 message:
  *                   type: string
- *                   example: Workteam retrieved successfully.
+ *                   example: StudyCases retrieved successfully.
  *       400:
- *         description: Invalid ID.
+ *         description: Invalid ID provided.
  *         content:
  *           application/json:
  *             schema:
@@ -201,7 +208,7 @@ export async function POST(request: Request) {
  *                   items:
  *                     type: string
  *       404:
- *         description: WorkTeam not found.
+ *         description: StudyCase not found.
  *         content:
  *           application/json:
  *             schema:
@@ -212,7 +219,24 @@ export async function POST(request: Request) {
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: WorkTeam not found.
+ *                   example: StudyCase not found.
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error retrieving StudyCase
  *                 errors:
  *                   type: array
  *                   items:
@@ -225,11 +249,11 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const workteam = await db.workTeam.findMany();
+      const studyCases = await db.studyCase.findMany();
       return createResponse({
         success: true,
-        data: workteam,
-        message: "workteam retrieved successfully.",
+        data: studyCases,
+        message: "StudyCases retrieved successfully.",
         status: 200,
       });
     }
@@ -243,63 +267,64 @@ export async function GET(req: Request) {
         status: 400,
       });
     }
-    const workteam = await db.workTeam.findUnique({ where: { id } });
 
-    if (!workteam) {
+    const studyCase = await db.studyCase.findUnique({ where: { id } });
+
+    if (!studyCase) {
       return createResponse({
         success: false,
-        message: "WorkTeam not found.",
-        errors: ["No WorkTeam exists with the given ID."],
+        message: "StudyCase not found.",
+        errors: ["No StudyCase exists with the given ID."],
         status: 404,
       });
     }
+
     return createResponse({
       success: true,
-      data: workteam,
-      message: "Workteam retrieved successfully.",
+      data: studyCase,
+      message: "StudyCase retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET WorkTeam");
+    return handleError(error, "GET StudyCase");
   }
 }
 /**
+ * @route PATCH /api/studycase
+ * @desc Actualizar un StudyCase existente
  * @swagger
- * /api/workteam:
+ * /api/studycase:
  *   patch:
  *     tags:
- *       - WorkTeam
- *     summary: Update a WorkTeam
- *     description: Update a WorkTeam by ID with the provided data.
+ *       - StudyCase
+ *     summary: Update a StudyCase
+ *     description: Update an existing StudyCase by ID. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
+ *         required: true
  *         schema:
  *           type: integer
- *         required: true
- *         description: ID of the WorkTeam to update.
+ *         description: ID of the StudyCase to update.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               title:
  *                 type: string
- *                 example: Updated Name
- *               description:
+ *                 description: "New title of the StudyCase."
+ *               resume:
  *                 type: string
- *                 example: Updated description.
- *               state:
+ *                 description: "New resume of the StudyCase."
+ *               videoUrl:
  *                 type: string
- *                 example: datos
- *               area:
- *                 type: string
- *                 example: datos
+ *                 description: "New video URL of the StudyCase."
  *     responses:
  *       200:
- *         description: WorkTeam updated successfully.
+ *         description: StudyCase updated successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -310,11 +335,24 @@ export async function GET(req: Request) {
  *                   example: true
  *                 data:
  *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     title:
+ *                       type: string
+ *                       example: Nuevo título
+ *                     resume:
+ *                       type: string
+ *                       example: Resumen actualizado
+ *                     videoUrl:
+ *                       type: string
+ *                       example: https://video.com/nuevo-url
  *                 message:
  *                   type: string
- *                   example: WorkTeam updated successfully.
+ *                   example: Studycase updated successfully.
  *       400:
- *         description: Invalid input or ID.
+ *         description: Invalid ID or no data provided for update.
  *         content:
  *           application/json:
  *             schema:
@@ -325,13 +363,13 @@ export async function GET(req: Request) {
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Invalid ID.
+ *                   example: No update data provided.
  *                 errors:
  *                   type: array
  *                   items:
  *                     type: string
  *       404:
- *         description: WorkTeam not found.
+ *         description: StudyCase not found.
  *         content:
  *           application/json:
  *             schema:
@@ -342,7 +380,24 @@ export async function GET(req: Request) {
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: WorkTeam not found.
+ *                   example: StudyCase not found.
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error updating StudyCase
  *                 errors:
  *                   type: array
  *                   items:
@@ -354,7 +409,6 @@ export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
     const id = Number(requestId);
-    const data = await request.json();
 
     if (isNaN(id) || !requestId) {
       return createResponse({
@@ -364,79 +418,62 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    if (!data || Object.keys(data).length === 0) {
+
+    const formData = await request.formData();
+
+    const title = formData.get("title")?.toString();
+    const resume = formData.get("resume")?.toString();
+    const videoUrl = formData.get("videoUrl")?.toString();
+
+    const updatedData: any = {};
+    if (title) updatedData.title = title;
+    if (resume) updatedData.resume = resume;
+    if (videoUrl) updatedData.videoUrl = videoUrl;
+
+    if (Object.keys(updatedData).length === 0) {
       return createResponse({
         success: false,
         message: "No update data provided.",
-
         errors: ["At least one field must be provided for update."],
         status: 400,
       });
     }
-    if (data.state) {
-      if (!validState.includes(data.state)) {
-        return createResponse({
-          success: false,
-          message: "Invalid state.",
-          errors: [`State must be one of: ${validState.join(", ")}`],
-          status: 400,
-        });
-      }
-    }
-    if (data.area) {
-      if (!validArea.includes(data.area)) {
-        return createResponse({
-          success: false,
-          message: "Invalid area.",
-          errors: [`Area must be one of: ${validArea.join(", ")}`],
-          status: 400,
-        });
-      }
-    }
-
-    const workteam = await db.workTeam.findUnique({ where: { id } });
-    if (!workteam) {
-      return createResponse({
-        success: false,
-        message: "WorkTeam not found.",
-        errors: ["No workTeam exists with the given ID."],
-        status: 404,
-      });
-    }
-
-    const updateWorkTeam = await db.workTeam.update({
+    
+    const updatedStudyCase = await db.studyCase.update({
       where: { id },
-      data: { ...data },
+      data: updatedData,
     });
-
+    
     return createResponse({
       success: true,
-      data: updateWorkTeam,
-      message: "WorkTeam updated successfully.",
+      data: updatedStudyCase,
+      message: "Studycase updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH WorkTeam");
+    return handleError(error, "PATCH StudyCase");
   }
 }
 /**
+ * @route DELETE /api/studycase
+ * @desc Eliminar un StudyCase por ID
  * @swagger
- * /api/workteam:
+ * /api/studycase:
  *   delete:
  *     tags:
- *       - WorkTeam
- *     summary: Delete a WorkTeam
- *     description: Delete a WorkTeam by ID.
+ *       - StudyCase
+ *     summary: Delete a StudyCase
+ *     description: Delete an existing StudyCase by its ID.
  *     parameters:
  *       - in: query
  *         name: id
+ *         required: true
  *         schema:
  *           type: integer
- *         required: true
- *         description: ID of the WorkTeam to delete.
+ *         description: ID of the StudyCase to delete.
  *     responses:
  *       200:
- *         description: WorkTeam deleted successfully.
+ *         description: StudyCase deleted successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -447,9 +484,9 @@ export async function PATCH(request: Request) {
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: WorkTeam deleted successfully.
+ *                   example: StudyCase deleted successfully.
  *       400:
- *         description: Invalid ID.
+ *         description: Invalid or missing ID.
  *         content:
  *           application/json:
  *             schema:
@@ -477,7 +514,7 @@ export async function PATCH(request: Request) {
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Error deleting WorkTeam
+ *                   example: Error deleting StudyCase
  *                 errors:
  *                   type: array
  *                   items:
@@ -498,14 +535,16 @@ export async function DELETE(req: Request) {
         status: 400,
       });
     }
-    await db.workTeam.delete({ where: { id } });
+
+    await db.studyCase.delete({ where: { id } });
 
     return createResponse({
       success: true,
-      message: "workteam deleted successfully.",
+      message: "StudyCase deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE WorkTeam");
+    return handleError(error, "DELETE StudyCase");
   }
 }
+

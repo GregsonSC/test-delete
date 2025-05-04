@@ -3,6 +3,9 @@ import db from "@/lib/prisma";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Plan
+ *     description: The company offers a series of packages that allow users to access certain benefits when acquiring their services, such as greater complexity in website development, long-term support, personal brand building, among others. These plans have an associated price, which impacts the costs of an Estimate.
  * /api/plan:
  *   post:
  *     tags:

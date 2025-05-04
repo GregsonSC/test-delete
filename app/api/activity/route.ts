@@ -3,9 +3,11 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"];
 /**
- * @route POST /api/activity
- * @desc Crear una nueva actividad
  * @swagger
+ * tags:
+ *   - name: Activity
+ *     description: Task associated with a project phase that describes the activities a user must perform in order to progress. These tasks can be accessed from the Project Board section in the admin panel.
+ *
  * /api/activity:
  *   post:
  *     tags:
@@ -51,7 +53,6 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *       500:
  *         description: Server error.
  */
-
 
 export async function POST(request: Request) {
   try {
