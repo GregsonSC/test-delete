@@ -124,7 +124,7 @@ export async function POST(request: Request) {
         const data = await request.json()
         const { title, content, date, project_id, phase_id } = data;
 
-        if (!title || !content || !date /*|| !project_id || !phase_id*/) {
+        if (!title || !content || !date || !project_id || !phase_id) {
             return createResponse({
                 success: false,
                 message: "All fields are required.",

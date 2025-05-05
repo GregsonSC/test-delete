@@ -5,37 +5,39 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 /**
  * @swagger
- * tags:
- *   - name: Product
- *     description: Project previously developed by the company for a client, which is associated with one of the current or past services (websites, digital marketing, or graphic design). The collection of these products constitutes the company's portfolio.
  * /api/product:
  *   post:
  *     tags:
  *       - Product
- *     summary: Crear un nuevo producto
- *     description: Crea un producto con los datos enviados en el body.
+ *     summary: Create a new product
+ *     description: Creates a new product by uploading an image and providing name and description.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
  *               - name
+ *               - description
+ *               - url
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Premium Plan
  *               description:
  *                 type: string
+ *                 example: Access to premium features.
  *               url:
  *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
- *         description: Producto creado exitosamente
+ *         description: Product created successfully.
  *       400:
- *         description: Nombre del producto es requerido
+ *         description: Missing or invalid fields.
  *       500:
- *         description: Error del servidor
+ *         description: Server error while creating product.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -196,45 +198,48 @@ export async function GET(request: Request) {
     );
   }
 }
-
 /**
  * @swagger
  * /api/product:
  *   patch:
  *     tags:
  *       - Product
- *     summary: Actualizar un producto
- *     description: Actualiza parcialmente un producto por su ID.
+ *     summary: Update a product
+ *     description: Updates a product by ID. Accepts name, description, and a new image file. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
- *         description: ID del producto a actualizar
+ *         required: true
+ *         description: The ID of the product to update.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Updated Product Name
  *               description:
  *                 type: string
+ *                 example: Updated description for the product.
  *               url:
  *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
- *         description: Producto actualizado exitosamente
+ *         description: Product updated successfully.
  *       400:
- *         description: ID inválido o datos faltantes
+ *         description: Invalid ID or no data provided.
  *       404:
- *         description: Producto no encontrado
+ *         description: Product not found.
  *       500:
- *         description: Error del servidor
+ *         description: Server error while updating product.
  */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

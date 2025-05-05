@@ -10,16 +10,16 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  * tags:
  *   - name: ServiceArea
  *     description: Area or locality in the United States where the company currently operates or has operated in the past. Each zone has a dedicated page for each of the company’s services, featuring content specialized for that location.
- * /api/service-area:
+ * /api/servicearea:
  *   post:
  *     tags:
  *       - ServiceArea
  *     summary: Create a new ServiceArea
- *     description: Create a new ServiceArea with required fields and a valid county.
+ *     description: Create a new ServiceArea with required fields and a valid county. Images must be uploaded as multipart/form-data files.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -42,8 +42,10 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  *                 enum: [MIAMI_DATE, BROWARD, WEST_PALM_BEACH]
  *               heroImageUrl:
  *                 type: string
+ *                 format: binary
  *               benefitsImageUrl:
  *                 type: string
+ *                 format: binary
  *               testimonialEmbed:
  *                 type: string
  *               service_id:
@@ -58,6 +60,7 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  *         description: Server error.
  */
 
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -68,7 +71,9 @@ export async function POST(request: Request) {
     
     const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
     const activeStr = formData.get("active")?.toString();
+
     const serviceIdStr = formData.get("service_id")?.toString();
+    const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;
     
     const heroImageFile = formData.get("heroImageUrl");
     const benefitsImageFile = formData.get("benefitsImageUrl");
@@ -87,7 +92,6 @@ export async function POST(request: Request) {
     const benefitsImageUrl = await createImage(benefitsImageFile);
     
     const active = activeStr === "true";
-    const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;
 
     if (
       !name ||
@@ -140,10 +144,10 @@ export async function POST(request: Request) {
 }
 
 /**
- * @route GET /api/service-area
+ * @route GET /api/servicearea
  * @desc Obtener una o todas las zonas de servicio
  * @swagger
- * /api/service-area:
+ * /api/servicearea:
  *   get:
  *     tags:
  *       - ServiceArea
@@ -214,15 +218,13 @@ export async function GET(req: Request) {
   }
 }
 /**
- * @route PATCH /api/service-area
- * @desc Actualizar una zona de servicio
  * @swagger
- * /api/service-area:
+ * /api/servicearea:
  *   patch:
  *     tags:
  *       - ServiceArea
  *     summary: Update a ServiceArea
- *     description: Update one or more fields of a ServiceArea by ID.
+ *     description: Update one or more fields of a ServiceArea by ID. Fields can be updated via multipart/form-data. At least one field is required.
  *     parameters:
  *       - in: query
  *         name: id
@@ -233,7 +235,7 @@ export async function GET(req: Request) {
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -248,8 +250,10 @@ export async function GET(req: Request) {
  *                 enum: [MIAMI_DATE, BROWARD, WEST_PALM_BEACH]
  *               heroImageUrl:
  *                 type: string
+ *                 format: binary
  *               benefitsImageUrl:
  *                 type: string
+ *                 format: binary
  *               testimonialEmbed:
  *                 type: string
  *               service_id:
@@ -356,10 +360,10 @@ export async function PATCH(request: Request) {
 
 
 /**
- * @route DELETE /api/service-area
+ * @route DELETE /api/servicearea
  * @desc Eliminar una zona de servicio
  * @swagger
- * /api/service-area:
+ * /api/servicearea:
  *   delete:
  *     tags:
  *       - ServiceArea

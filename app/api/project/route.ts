@@ -7,9 +7,8 @@ import { createImage } from "../cloudinary/upload/route";
 import { authMiddleware } from "@/middleware/Secure-middleware";
 import { NextRequest } from "next/server";
 
-
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
-/** 
+/**
  * @swagger
  * tags:
  *   - name: Project
@@ -19,11 +18,11 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *     tags:
  *       - Project
  *     summary: Create a new project
- *     description: Create a new project with name, description, duration, dates, and current phase.
+ *     description: Create a new project with name, description, duration, dates, current phase, image preview, and related estimate ID.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -33,6 +32,8 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *               - startDate
  *               - endDate
  *               - currentPhase
+ *               - imagePreviewUrl
+ *               - estimate_id
  *             properties:
  *               name:
  *                 type: string
@@ -51,6 +52,11 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *               currentPhase:
  *                 type: string
  *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *               imagePreviewUrl:
+ *                 type: string
+ *                 format: binary
+ *               estimate_id:
+ *                 type: integer
  *     responses:
  *       201:
  *         description: Project created successfully.
@@ -73,10 +79,12 @@ export async function POST(request: Request) {
     const endDate = formData.get("endDate")?.toString();
     const currentPhase = formData.get("currentPhase")?.toString();
 
+    const estimateIdStr = formData.get("estimate_id")?.toString();
+    const estimate_id = estimateIdStr ? parseInt(estimateIdStr, 10) : undefined;
+
     const imagePreviewFile = formData.get("imagePreviewUrl");
-    const imagePreviewUrl = imagePreviewFile instanceof File
-      ? await createImage(imagePreviewFile)
-      : undefined;
+    const imagePreviewUrl =
+      imagePreviewFile instanceof File ? await createImage(imagePreviewFile) : undefined;
 
     if (
       !name ||
@@ -85,7 +93,8 @@ export async function POST(request: Request) {
       !startDate ||
       !endDate ||
       !currentPhase ||
-      !imagePreviewUrl
+      !imagePreviewUrl ||
+      !estimate_id
     ) {
       return createResponse({
         success: false,
@@ -123,6 +132,7 @@ export async function POST(request: Request) {
         endDate,
         currentPhase: currentPhase as CurrentPhase,
         imagePreviewUrl,
+        estimate_id,
       },
     });
 
@@ -216,15 +226,13 @@ export async function GET(req: NextRequest) {
   }
 }
 /**
- * @route PATCH /api/project
- * @desc Actualizar un proyecto
  * @swagger
  * /api/project:
  *   patch:
  *     tags:
  *       - Project
  *     summary: Update a project
- *     description: Update fields of a project by ID.
+ *     description: Update one or more fields of a project by ID. Accepts multipart/form-data with optional fields.
  *     parameters:
  *       - in: query
  *         name: id
@@ -235,30 +243,37 @@ export async function GET(req: NextRequest) {
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               title:
  *                 type: string
  *               description:
  *                 type: string
- *               expectedDuration:
- *                 type: integer
+ *               location:
+ *                 type: string
  *               startDate:
  *                 type: string
  *                 format: date
  *               endDate:
  *                 type: string
  *                 format: date
- *               currentPhase:
+ *               bannerUrl:
  *                 type: string
- *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *                 format: binary
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, APPROVED, IN_PROGRESS, COMPLETED, CANCELLED]
+ *               lead_id:
+ *                 type: integer
+ *               estimate_id:
+ *                 type: integer
  *     responses:
  *       200:
  *         description: Project updated successfully.
  *       400:
- *         description: Invalid input or date format.
+ *         description: Invalid input or ID.
  *       404:
  *         description: Project not found.
  *       500:
@@ -301,8 +316,10 @@ export async function PATCH(request: Request) {
     const currentPhase = formData.get("currentPhase")?.toString();
 
     const imageFile = formData.get("imagePreviewUrl");
-    const imagePreviewUrl =
-      imageFile instanceof File ? await createImage(imageFile) : undefined;
+    const imagePreviewUrl = imageFile instanceof File ? await createImage(imageFile) : undefined;
+
+    const estimateIdStr = formData.get("estimate_id")?.toString();
+    const estimate_id = estimateIdStr ? parseInt(estimateIdStr, 10) : undefined;
 
     if (currentPhase && !validCurrentPhase.includes(currentPhase)) {
       return createResponse({
@@ -313,13 +330,9 @@ export async function PATCH(request: Request) {
       });
     }
 
-
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-    if (
-      (startDate && !dateRegex.test(startDate)) ||
-      (endDate && !dateRegex.test(endDate))
-    ) {
+    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
       return createResponse({
         success: false,
         message: "Invalid date format.",
@@ -336,6 +349,7 @@ export async function PATCH(request: Request) {
     if (endDate) updatedData.endDate = endDate;
     if (currentPhase) updatedData.currentPhase = currentPhase;
     if (imagePreviewUrl) updatedData.imagePreviewUrl = imagePreviewUrl;
+    if (estimate_id) updatedData.estimate_id = estimate_id;
 
     if (Object.keys(updatedData).length === 0) {
       return createResponse({
