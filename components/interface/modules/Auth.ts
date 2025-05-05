@@ -15,17 +15,66 @@ interface AuthUser {
   // updatedAt?: string; // Or Date
 }
 
-// You can also define interfaces for login responses or other auth-related data structures here
+/**
+ * Interface for login credentials
+ */
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
-export type { AuthUser };
+/**
+ * Interface for auth API responses
+ */
+interface AuthApiResponse {
+  success: boolean;
+  message: string;
+  data: Array<{ token?: string }>;
+  errors: string[];
+}
 
-// Re-using the generic ApiResponse from Blog.ts might be useful,
-// or you can define a specific one for Auth if needed.
-// Example:
-// export interface AuthApiResponse<T> {
-//   success: boolean;
-//   data: T; // Often a single user object or token
-//   message: string;
-//   errors?: string[]; // Optional errors
-//   token?: string; // Optional JWT token
-// }
+/**
+ * Interface for registration API response
+ */
+interface RegisterApiResponse {
+  success: boolean;
+  data?: AuthUser;
+  message: string;
+  errors?: string[];
+  token?: string;
+}
+
+/**
+ * Interface for login API response
+ */
+interface LoginApiResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    email: string;
+    name: string;
+  };
+  errors: string[];
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  name: string;
+}
+
+interface UserContextProps {
+  user: UserData | null;
+  setUser: (user: UserData | null) => void;
+}
+
+export type {
+  AuthUser,
+  LoginCredentials,
+  AuthApiResponse,
+  RegisterApiResponse,
+  LoginApiResponse,
+  UserData,
+  UserContextProps,
+};

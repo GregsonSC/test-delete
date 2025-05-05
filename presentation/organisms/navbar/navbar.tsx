@@ -18,6 +18,7 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import { useUser } from "@/context/UserContext";
 
 interface NavItem {
   label: string;
@@ -191,8 +192,11 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
   const [areaDropdowns, setAreaDropdowns] = useState<Record<string, boolean>>({});
-  const [isLogged, setIsLogged] = useState(false);
-  const userName = "Name"; // This would come from your auth system
+  // Remove local isLogged and userName
+  // const [isLogged, setIsLogged] = useState(false);
+  // const userName = "Name"; // This would come from your auth system
+
+  const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -216,12 +220,14 @@ export function Navbar() {
 
   // Function to handle login
   const handleLogin = () => {
-    setIsLogged(true);
+    setIsLoggedIn(true);
+    // Optionally, setUser with user data if you have it
   };
 
   // Function to handle logout
-  const handleLogout = () => {
-    setIsLogged(false);
+  const handleLogout = () => { //cambiarlo por endpoint
+    setIsLoggedIn(false);
+    setUser(null);
 
     // Limpiar todas las cookies
     if (typeof document !== "undefined") {
@@ -296,7 +302,7 @@ export function Navbar() {
             <div className="flex items-center gap-[20px] lg:gap-3">
               {/* Auth buttons - Different styling on mobile vs desktop */}
               <div className="hidden sm:flex gap-[20px]">
-                {!isLogged ? (
+                {!isLoggedIn ? (
                   <>
                     <Link href="/register" passHref>
                       <Button
@@ -306,12 +312,12 @@ export function Navbar() {
                       </Button>
                     </Link>
 
-                    <Button
-                      onClick={handleLogin}
+                    <Link
+                      href="/login"
                       className="rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
                     >
                       Log In
-                    </Button>
+                    </Link>
                   </>
                 ) : (
                   <Menubar className="border-0 bg-transparent">
@@ -320,16 +326,12 @@ export function Navbar() {
                         <div className="w-9 h-9 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]">
                           {/* User icon removed */}
                         </div>
-                        <span className="text-white font-semibold text-[14px]">{userName}</span>
+                        <span className="text-white font-semibold text-[14px]">{user?.name || "User"}</span>
                       </MenubarTrigger>
                       <MenubarContent className="rounded-md border-0 shadow-md">
-                        <Link href="/profile-projects" passHref>
-                          <MenubarItem asChild className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black">
-                            <a>
-                              <User className="h-4 w-4" />
-                              Profile
-                            </a>
-                          </MenubarItem>
+                        <Link href="/profile-settings" className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black px-2 py-2">
+                          <User className="h-4 w-4" />
+                          Profile
                         </Link>
                         <MenubarSeparator />
                         <MenubarItem
@@ -458,12 +460,12 @@ export function Navbar() {
         )}>
           {/* User profile info for mobile only (< 640px) */}
           <div className="sm:hidden">
-            {isLogged ? (
+            {isLoggedIn && user ? (
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all"></div>
                 <div className="flex flex-col text-left">
-                  <span className="font-semibold text-[#060B20]">{userName}</span>
-                  <span className="text-sm text-gray-500">user@example.com</span>
+                  <span className="font-semibold text-[#060B20]">{user.name}</span>
+                  <span className="text-sm text-gray-500">{user.email}</span>
                 </div>
               </div>
             ) : null}
@@ -579,7 +581,7 @@ export function Navbar() {
 
           {/* Botones de Settings y Log Out o Register y Login - solo para móvil (<640px) */}
           <div className="sm:hidden mb-20 flex flex-col gap-4 w-4/5">
-            {isLogged ? (
+            {isLoggedIn ? (
               <>
                 <Button className="flex items-center gap-2 bg-[#f5f5f5] text-[#060B20] hover:bg-[#e5e5e5] rounded-lg py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]">
                   <Settings className="h-5 w-5" />
@@ -601,14 +603,14 @@ export function Navbar() {
                   <User className="h-5 w-5" />
                   Register
                 </Button>
-                <Button
-                  onClick={handleLogin}
+                <Link
+                  href="/login"
                   className="flex items-center gap-2 text-black hover:text-white rounded-full py-3 px-4 max-[400px]:text-base text-lg font-semibold justify-start w-auto max-w-[200px]"
                   style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
                 >
                   <LogOut className="h-5 w-5" />
                   Log In
-                </Button>
+                </Link>
               </>
             )}
           </div>

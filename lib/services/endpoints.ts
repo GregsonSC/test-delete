@@ -27,6 +27,8 @@ export const endpoints = {
   // Add authentication endpoints
   auth: {
     registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
+    loginUser: `${API}/auth/login`, // Endpoint for user login (POST)
+    logoutUser: `${API}/logOut`, // Endpoint for user logout (POST)
   },
 
   // Test endpoint for checking API connectivity
@@ -48,6 +50,14 @@ const CONFIG_FORM = {
   },
 };
 
+/* const CONFIG_FORM_TOKEN = {
+  headers: {
+    accept: "/",
+    "Content-Type": "multipart/form-data",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+}; */
+
 export interface FetchResponse<T> {
   response: T | null;
   loading: boolean;
@@ -59,6 +69,7 @@ export const useFetch = () => {
   const configTypes: Record<string, object> = {
     json: CONFIG_JSON,
     form: CONFIG_FORM,
+    // token: CONFIG_FORM_TOKEN,
   };
 
   type HttpMethod = "get" | "post" | "put" | "delete" | "patch";
@@ -74,6 +85,7 @@ export const useFetch = () => {
    * @param {object|null} body - Data to send in the request (optional)
    * @param {string} typeConfig - Configuration type ("json" or "form")
    * @param {object|null} formFiles - Files to send in the form (optional)
+   * @param {boolean} withCredentials - Whether to send cookies (optional)
    * @returns {Promise<FetchResponse<T>>} - Object with response, loading state, status code and errors
    */
   const fetchData = async <T>(
@@ -81,7 +93,8 @@ export const useFetch = () => {
     method: string,
     body: object | null = null,
     typeConfig: "json" | "form" = "json",
-    formFiles: object | null = null
+    withCredentials: boolean = false, // <-- Move withCredentials here
+    formFiles?: object                // <-- Make formFiles last and optional
   ): Promise<FetchResponse<T>> => {
     let response: T | null = null;
     let loading = true;
@@ -93,6 +106,10 @@ export const useFetch = () => {
 
       if (formFiles) {
         axiosConfig = { ...axiosConfig, data: formFiles };
+      }
+
+      if (withCredentials) {
+        axiosConfig = { ...axiosConfig, withCredentials: true };
       }
 
       if (isValidHttpMethod(method)) {
@@ -108,7 +125,7 @@ export const useFetch = () => {
       } else {
         console.error("Error in request:", error);
         try {
-          //toast.error(error.message); Esta linea mostraba un toast de error pero no deberia verse porque la api ya nos regresa mensajes de error
+          //toast.error(error.message);
         } catch (error) {
           console.error("Error in toast:", error);
         }

@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
-import { Navbar } from "@/presentation/organisms/navbar/navbar";
-import { CircleUser, Phone, Mail, Lock, Loader2 } from "lucide-react";
+// Update the imports to include Eye and EyeOff icons
+import { CircleUser, Phone, Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import AuthViewModel from "./AuthViewModel";
 import { AuthUser } from "@/components/interface/modules/Auth";
 import { toast } from "sonner";
@@ -36,11 +36,19 @@ export function RegisterPage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const { register, loading } = AuthViewModel(); // Remove error from destructuring
 
+  // Add state for password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  
   // State for form inputs
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // Toggle password visibility function
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -248,6 +256,13 @@ export function RegisterPage() {
                     onChange={(e) => handleInputChange(e, 'phone')}
                     onFocus={() => setFocusedField('phone')}
                     onBlur={() => setFocusedField('')}
+                    onKeyPress={(e) => {
+                      // Allow only numbers and prevent default for other characters
+                      const isNumber = /[0-9]/.test(e.key);
+                      if (!isNumber) {
+                        e.preventDefault();
+                      }
+                    }}
                     required
                     pattern="[0-9]{10,15}"
                   />
@@ -276,7 +291,7 @@ export function RegisterPage() {
                   </div>
                   <input
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('password')} outline-none`}
                     value={password}
@@ -286,6 +301,18 @@ export function RegisterPage() {
                     required
                     minLength={8}
                   />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                    onClick={togglePasswordVisibility}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} color="#A2ABE7" />
+                    ) : (
+                      <Eye size={18} color="#A2ABE7" />
+                    )}
+                  </button>
                 </div>
               </div>
 
