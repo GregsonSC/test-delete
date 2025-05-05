@@ -4,13 +4,12 @@ import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedu
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import Image from "next/image";
 
 export function AboutPage() { 
   return (
     <MainLayout >
       {/*TITULO*/}
-      <section className="lg:bg-[url('/fondos/AboutUs.png')] lg:bg-cover lg:bg-no-repeat">
+      <section className="lg:bg-[url('/fondos/AboutUs.webp')] lg:bg-cover lg:bg-no-repeat">
         <section className="relative overflow-hidden text-center justify-center" >
             <div className="flex-row">
               <video
@@ -79,7 +78,7 @@ export function AboutPage() {
         <section className="text-center lg:mt-56 mt-14 md:mt-32">
           <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-5">Locations</h1>
           <div className="mx-8">
-            <img alt="world-map" src="images/about-us/world-map.png" className="mx-auto"/>
+            <img alt="world-map" src="images/about-us/world-map.webp" className="mx-auto"/>
           </div>
         </section>
 

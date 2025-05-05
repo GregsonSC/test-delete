@@ -25,7 +25,7 @@ export function HomePage() {
         <div
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: "url('/images/home/hero-background.png')",
+            backgroundImage: "url('/images/home/hero-background.webp')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             opacity: 0.7
@@ -54,7 +54,7 @@ export function HomePage() {
 
         <div className="relative z-10 mt-16 w-full max-w-6xl mx-auto">
           <img
-            src="/images/home/hero-image.png"
+            src="/images/home/hero-image.webp"
             alt="Website Preview"
             className="w-full h-auto "
 
@@ -69,27 +69,27 @@ export function HomePage() {
         <div className="container mx-auto h-full flex items-center justify-center">
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-5 lg:gap-0 xl:gap-5">
             <img
-              src="home/googleAnalytic.png"
+              src="images/home/googleAnalytic.webp"
               alt="Google Analytics"
               className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="home/webflow.png"
+              src="images/home/webflow.webp"
               alt="Webflow"
               className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="home/shopify.png"
+              src="images/home/shopify.webp"
               alt="Shopify"
               className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="home/paypal.png"
+              src="images/home/paypal.webp"
               alt="PayPal"
               className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="home/stripe.png"
+              src="images/home/stripe.webp"
               alt="Stripe"
               className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
@@ -135,7 +135,7 @@ export function HomePage() {
       {/* Second Section */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
@@ -187,7 +187,7 @@ export function HomePage() {
       <section className=" px-4 md:px-6 mx-auto relative">
         <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
           <img
-            src="/images/marketing/portfolio-background.png"
+            src="/images/marketing/portfolio-background.webp"
             alt="Portfolio background"
             className="h-full object-contain"
           />
@@ -262,7 +262,7 @@ export function HomePage() {
       {/* Fourth Section - Blog/Resources */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
 
         <LatestNews blogItems={blogItems} caseItems={caseItems} />
