@@ -3,18 +3,22 @@ import db from "@/lib/prisma";
 
 const validName = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
+
 /**
  * @swagger
  * tags:
  *   - name: Phase
- *     description: Stage of a project, which can be one of the following: Analysis, Design, Development, or Deploy.
+ *     description: Represents a phase of a project lifecycle. Each phase has a predefined name and tracks its progress through various states.
  *
  * /api/phase:
  *   post:
  *     tags:
  *       - Phase
  *     summary: Create a new Phase
- *     description: Creates a new phase with all required fields and valid name and state.
+ *     description: >
+ *       Creates a new phase for a specific project.  
+ *       The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".  
+ *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".
  *     requestBody:
  *       required: true
  *       content:
@@ -28,10 +32,11 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *               - startDate
  *               - endDate
  *               - state
+ *               - project_id
  *             properties:
  *               name:
  *                 type: string
- *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *                 description: Name of the phase (e.g., "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY")
  *               description:
  *                 type: string
  *               expectedDuration:
@@ -46,7 +51,9 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *                 example: 2025-06-01
  *               state:
  *                 type: string
- *                 enum: [PLANNING, INPROCESS, TESTING, FINISHED]
+ *                 description: Current state of the phase (e.g., "PLANNING", "INPROCESS", "TESTING", "FINISHED")
+ *               project_id:
+ *                 type: integer
  *     responses:
  *       201:
  *         description: Phase created successfully.
@@ -56,12 +63,13 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *         description: Server error.
  */
 
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, state } = data;
+    const { name, description, expectedDuration, startDate, endDate, state,project_id } = data;
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !state) {
+    if (!name || !description || !expectedDuration || !startDate || !endDate || !state||!project_id) {
       return createResponse({
         success: false,
         message: "Missing required fields.",
@@ -180,15 +188,20 @@ export async function GET(req: Request) {
   }
 }
 /**
- * @route PATCH /api/phase
- * @desc Actualizar una fase existente
  * @swagger
+ * tags:
+ *   - name: Phase
+ *     description: Represents a phase of a project lifecycle. Each phase has a predefined name and tracks its progress through various states.
+ *
  * /api/phase:
  *   patch:
  *     tags:
  *       - Phase
- *     summary: Update a Phase
- *     description: Update one or more fields of a phase by ID.
+ *     summary: Update an existing Phase
+ *     description: >
+ *       Updates an existing phase of a project. The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".  
+ *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".  
+ *       The phase is identified by the `id` parameter.
  *     parameters:
  *       - in: query
  *         name: id
@@ -202,10 +215,12 @@ export async function GET(req: Request) {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - project_id
  *             properties:
  *               name:
  *                 type: string
- *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *                 description: Name of the phase (e.g., "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY")
  *               description:
  *                 type: string
  *               expectedDuration:
@@ -213,17 +228,22 @@ export async function GET(req: Request) {
  *               startDate:
  *                 type: string
  *                 format: date
+ *                 example: 2025-05-01
  *               endDate:
  *                 type: string
  *                 format: date
+ *                 example: 2025-06-01
  *               state:
  *                 type: string
- *                 enum: [PLANNING, INPROCESS, TESTING, FINISHED]
+ *                 description: Current state of the phase (e.g., "PLANNING", "INPROCESS", "TESTING", "FINISHED")
+ *               project_id:
+ *                 type: integer
+ *                 description: ID of the project that the phase belongs to.
  *     responses:
  *       200:
  *         description: Phase updated successfully.
  *       400:
- *         description: Invalid input or ID.
+ *         description: Missing or invalid fields, including invalid date format or invalid state.
  *       404:
  *         description: Phase not found.
  *       500:
