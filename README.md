@@ -239,3 +239,6 @@ El Rate Limiting (limitación de tasa) es una técnica utilizada para controlar 
 Si se supera el límite, el servidor responderá con un código de estado HTTP 429 Too Many Requests.
 
 windowMs: Duración del intervalo en milisegundos.
+
+Implementacion del rate limiting en 
+- api/auth/login/route.ts
