@@ -72,8 +72,7 @@ export async function POST(request: Request) {
     const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
     const activeStr = formData.get("active")?.toString();
 
-    const serviceIdStr = formData.get("service_id")?.toString();
-    const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;
+    const service_id = formData.get("service_id")?.toString() ? parseInt(formData.get("service_id")!.toString(), 10) : undefined;
     
     const heroImageFile = formData.get("heroImageUrl");
     const benefitsImageFile = formData.get("benefitsImageUrl");
@@ -101,6 +100,7 @@ export async function POST(request: Request) {
       !heroImageUrl ||
       !benefitsImageUrl ||
       !testimonialEmbed
+      ||!service_id
     ) {
       return createResponse({
         success: false,
@@ -268,7 +268,6 @@ export async function GET(req: Request) {
  *       500:
  *         description: Server error.
  */
-
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -315,10 +314,8 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const heroImageUrl =
-      heroImageFile instanceof File ? await createImage(heroImageFile) : undefined;
-    const benefitsImageUrl =
-      benefitsImageFile instanceof File ? await createImage(benefitsImageFile) : undefined;
+    const heroImageUrl =heroImageFile instanceof File ? await createImage(heroImageFile) : undefined;
+    const benefitsImageUrl =benefitsImageFile instanceof File ? await createImage(benefitsImageFile) : undefined;
 
     const active = activeStr !== undefined ? activeStr === "true" : undefined;
     const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;

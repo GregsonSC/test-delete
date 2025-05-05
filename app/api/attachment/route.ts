@@ -95,7 +95,8 @@ export async function POST(request: Request) {
     }
     const url = await createImage(urlForm);
 
-    if (!name || !description || !type || !url || !activityId || !ticketId||!productId||!projectupdate_id) {
+    if (!name || !description || !type || !url || !activityId || !ticketId||!productId||!projectupdate_id
+    ) {
       return createResponse({
         success: false,
         message: "All fields are required.",

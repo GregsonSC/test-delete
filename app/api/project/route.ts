@@ -5,7 +5,7 @@ import { CurrentPhase } from "@prisma/client";
 import { createImage } from "../cloudinary/upload/route";
 
 import { authMiddleware } from "@/middleware/Secure-middleware";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 /**
@@ -93,8 +93,8 @@ export async function POST(request: Request) {
       !startDate ||
       !endDate ||
       !currentPhase ||
-      !imagePreviewUrl ||
-      !estimate_id
+      !imagePreviewUrl 
+      ||!estimate_id
     ) {
       return createResponse({
         success: false,
@@ -231,15 +231,20 @@ export async function GET(req: NextRequest) {
  *   patch:
  *     tags:
  *       - Project
- *     summary: Update a project
- *     description: Update one or more fields of a project by ID. Accepts multipart/form-data with optional fields.
+ *     summary: Update an existing project
+ *     description: >
+ *       Actualiza un proyecto existente según su ID. Al menos un campo debe ser enviado.
+ *       
+ *       - Los campos `startDate` y `endDate` deben tener formato `YYYY-MM-DD`.
+ *       - El campo `currentPhase` debe tener uno de los siguientes valores permitidos: 
+ *         ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY.
  *     parameters:
- *       - in: query
- *         name: id
+ *       - name: id
+ *         in: query
+ *         required: true
  *         schema:
  *           type: integer
- *         required: true
- *         description: ID of the project to update.
+ *         description: ID del proyecto a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -247,37 +252,39 @@ export async function GET(req: NextRequest) {
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               name:
  *                 type: string
+ *                 example: "Website Redesign"
  *               description:
  *                 type: string
- *               location:
+ *                 example: "Redesigning the homepage and about section"
+ *               expectedDuration:
  *                 type: string
+ *                 example: "3 months"
  *               startDate:
  *                 type: string
- *                 format: date
+ *                 example: "2025-06-01"
  *               endDate:
  *                 type: string
- *                 format: date
- *               bannerUrl:
+ *                 example: "2025-09-01"
+ *               currentPhase:
+ *                 type: string
+ *                 example: DEVELOPMENT
+ *               imagePreviewUrl:
  *                 type: string
  *                 format: binary
- *               status:
- *                 type: string
- *                 enum: [PENDING, APPROVED, IN_PROGRESS, COMPLETED, CANCELLED]
- *               lead_id:
- *                 type: integer
  *               estimate_id:
  *                 type: integer
+ *                 example: 12
  *     responses:
  *       200:
  *         description: Project updated successfully.
  *       400:
- *         description: Invalid input or ID.
+ *         description: Validation error or no data provided.
  *       404:
  *         description: Project not found.
  *       500:
- *         description: Server error.
+ *         description: Server error while updating the project.
  */
 
 export async function PATCH(request: Request) {
@@ -286,23 +293,12 @@ export async function PATCH(request: Request) {
     const requestId = searchParams.get("id");
     const id = Number(requestId);
 
-    if (isNaN(id) || !requestId) {
+    if (!requestId || isNaN(id)) {
       return createResponse({
         success: false,
         message: "Invalid ID.",
         errors: ["The ID must be a valid number."],
         status: 400,
-      });
-    }
-
-    const project = await db.project.findUnique({ where: { id } });
-
-    if (!project) {
-      return createResponse({
-        success: false,
-        message: "Project not found.",
-        errors: ["No project exists with the given ID."],
-        status: 404,
       });
     }
 
@@ -318,8 +314,47 @@ export async function PATCH(request: Request) {
     const imageFile = formData.get("imagePreviewUrl");
     const imagePreviewUrl = imageFile instanceof File ? await createImage(imageFile) : undefined;
 
-    const estimateIdStr = formData.get("estimate_id")?.toString();
-    const estimate_id = estimateIdStr ? parseInt(estimateIdStr, 10) : undefined;
+    const estimate_id = formData.get("estimate_id")
+      ? parseInt(formData.get("estimate_id")!.toString(), 10)
+      : undefined;
+
+    if (
+      !name &&
+      !description &&
+      !expectedDuration &&
+      !startDate &&
+      !endDate &&
+      !currentPhase &&
+      !imagePreviewUrl &&
+      !estimate_id
+    ) {
+      return createResponse({
+        success: false,
+        message: "No data provided.",
+        errors: ["At least one field must be provided to update."],
+        status: 400,
+      });
+    }
+
+    const project = await db.project.findUnique({ where: { id } });
+    if (!project) {
+      return createResponse({
+        success: false,
+        message: "Project not found.",
+        errors: ["No project exists with the given ID."],
+        status: 404,
+      });
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
+      return createResponse({
+        success: false,
+        message: "Invalid date format.",
+        errors: ["Use YYYY-MM-DD format for startDate and endDate."],
+        status: 400,
+      });
+    }
 
     if (currentPhase && !validCurrentPhase.includes(currentPhase)) {
       return createResponse({
@@ -330,44 +365,23 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for startDate and endDate."],
-        status: 400,
-      });
-    }
-
-    const updatedData: any = {};
-    if (name) updatedData.name = name;
-    if (description) updatedData.description = description;
-    if (expectedDuration) updatedData.expectedDuration = expectedDuration;
-    if (startDate) updatedData.startDate = startDate;
-    if (endDate) updatedData.endDate = endDate;
-    if (currentPhase) updatedData.currentPhase = currentPhase;
-    if (imagePreviewUrl) updatedData.imagePreviewUrl = imagePreviewUrl;
-    if (estimate_id) updatedData.estimate_id = estimate_id;
-
-    if (Object.keys(updatedData).length === 0) {
-      return createResponse({
-        success: false,
-        message: "No update data provided.",
-        errors: ["At least one field must be provided for update."],
-        status: 400,
-      });
-    }
-
-    const updateProject = await db.project.update({
+    const updatedProject = await db.project.update({
       where: { id },
-      data: updatedData,
+      data: {
+        ...(name && { name }),
+        ...(description && { description }),
+        ...(expectedDuration && { expectedDuration }),
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
+        ...(currentPhase && { currentPhase: currentPhase as CurrentPhase }),
+        ...(imagePreviewUrl && { imagePreviewUrl }),
+        ...(estimate_id && { estimate_id }),
+      },
     });
 
     return createResponse({
       success: true,
-      data: updateProject,
+      data: updatedProject,
       message: "Project updated successfully.",
       status: 200,
     });

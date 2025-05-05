@@ -135,16 +135,9 @@ export async function GET(request: Request) {
           url: true,
         },
       });
-      const Attachment = await db.product.findMany({
-        include: {
-          Attachment: true,
-        },
-      });
-
       return NextResponse.json({
         success: true,
         data: products,
-        Attachment,
         message: "Products fetched successfully",
         errors: [],
       });
