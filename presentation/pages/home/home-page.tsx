@@ -12,6 +12,8 @@ import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info"
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
 import { blogItems, caseItems, portfolioItems, reviewItems } from "@/lib/constants2";
 
+
+
 export function HomePage() {
   return (
     <MainLayout>
@@ -63,33 +65,33 @@ export function HomePage() {
 
 
       {/* --- PARTNERS LOGOS SECTION --- */}
-      <section className="w-full bg-[#04071F00]-900 py-8 lg:h-[150px]">
+      <section className="w-full bg-white py-8 lg:h-[150px]">
         <div className="container mx-auto h-full flex items-center justify-center">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-5 lg:gap-0 xl:gap-5">
             <img
-              src="/images/home/google.svg"
+              src="home/googleAnalytic.png"
               alt="Google Analytics"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/webflow.svg"
+              src="home/webflow.png"
               alt="Webflow"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/shopify.svg"
+              src="home/shopify.png"
               alt="Shopify"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/paypal.svg"
+              src="home/paypal.png"
               alt="PayPal"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/stripe.svg"
+              src="home/stripe.png"
               alt="Stripe"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
           </div>
         </div>
@@ -152,7 +154,7 @@ export function HomePage() {
                 icon="/images/marketing/icon1.png"
                 title="Web Design & Development"
                 content="Engaging and powerful web design that converts visitors into new clients and more sales"
-                link="/services/advertising"
+                link="/websites"
               />
 
               {/* Second Card */}
@@ -160,7 +162,7 @@ export function HomePage() {
                 icon="/images/marketing/icon2.png"
                 title="Generate Traffic, Leads & Sales"
                 content="Drive more leads with a tailored marketing strategy designed exclusively for your business "
-                link="/services/social-media"
+                link="/marketing"
               />
 
               {/* Third Card - Wrapped in a div for positioning */}
@@ -169,7 +171,7 @@ export function HomePage() {
                   icon="/images/marketing/icon3.png"
                   title="Create your Professional Brand"
                   content="We build a unique visual identity that leaves lasting impression on your brand"
-                  link="/services/seo"
+                  link="/marketing"
                 />
               </div>
             </div>

@@ -1,11 +1,10 @@
 // components/ExpandingColumns.tsx
 'use client';
-
 import { useState } from 'react';
 // ! CH002: Discover Our Process cambie el texto de Lorem y contenido en los 4 procesos
 const ExpandingColumns = () => {
   const [expandedIndex, setExpandedIndex] = useState(0);
-
+  const images:string [] = ["images/expanding-columns/request.jpg","images/expanding-columns/estimated.jpg","images/expanding-columns/invoices.jpg","images/expanding-columns/proyect.jpg"]
   return (
     <section className="bg-[#020b13] text-white py-16 px-4">
       <div className="max-w-6xl mx-auto">
@@ -19,14 +18,42 @@ const ExpandingColumns = () => {
           {[0, 1, 2, 3].map((index) => (
             <div
               key={index}
-              className={`flex flex-col justify-end items-start p-4 transition-all duration-700 ease-in-out rounded cursor-pointer bg-gradient-to-r from-lime-400 to-cyan-400 ${expandedIndex === index ? 'w-[40%]' : 'w-[15%]'
+              className={`relative overflow-hidden flex flex-col justify-end items-start p-4 transition-all duration-700 ease-in-out rounded cursor-pointer bg-gradient-to-r from-lime-400 to-cyan-400 ${expandedIndex === index ? 'w-[40%]' : 'w-[15%]'
                 }`}
-              onClick={() => setExpandedIndex(index)}
+              onClick={() => setExpandedIndex(index) }
             >
-              {index === 0 && (
-                <p className="text-md md:text-2xl font-bold text-[#0A1248]">
-                  Request
-                </p>
+              {/* Imagenes de los cuadros */}
+              <img
+                src={images[index]}
+                alt={`Image ${index}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
+                  expandedIndex === index ? 'opacity-50' : 'opacity-100'
+                }`}
+              />
+              {/*Texto de los cuadros */}
+              {expandedIndex === index && (
+                <>                
+                  {index === 0 && (
+                    <h1 className="relative text-md md:text-5xl font-bold text-[#0A1248]">
+                      Request
+                    </h1>
+                  )}
+                  {index === 1 && (
+                    <h1 className="relative text-md md:text-5xl font-bold text-[#0A1248]">
+                      Estimated
+                    </h1>
+                  )}
+                  {index === 2 && (
+                    <h1 className="relative text-md md:text-5xl font-bold text-[#0A1248]">
+                      Invoices
+                    </h1>
+                  )}
+                  {index === 3 && (
+                    <h1 className="relative text-md md:text-5xl font-bold text-[#0A1248]">
+                      Proyect
+                    </h1>
+                  )}
+                </>
               )}
             </div>
           ))}

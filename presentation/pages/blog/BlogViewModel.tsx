@@ -3,7 +3,8 @@ import { useFetch } from "@/lib/services/endpoints";
 import { endpoints } from "@/lib/services/endpoints";
 import { ApiResponse, Blog } from "@/components/interface/modules/Blog";
 
-const BlogViewModel = () => {
+
+export const BlogViewModel = () => {
   const { fetchData } = useFetch();
   const [posts, setPosts] = useState<Blog[]>([]);
 
@@ -11,7 +12,7 @@ const BlogViewModel = () => {
     getAllPosts();
   }, []);
 
-  const getAllPosts = async () => {
+const getAllPosts = async () => {
     await fetchData(endpoints.blog.getPosts, "get").then(
       ({ response, status, errorLogs }) => {
         console.log("errorLogs:", errorLogs);   

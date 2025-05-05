@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/carousel";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
+import { useState, useEffect } from "react";
+import {BlogViewModel} from "@/presentation/pages/blog/BlogViewModel";
+import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
+
 
 export interface NewsItem {
   id: string;
@@ -21,11 +25,34 @@ export interface NewsItem {
 }
 
 interface LatestNewsProps {
-  blogItems?: NewsItem[];
+  blogItems: NewsItem[];
   caseItems?: NewsItem[];
 }
 
-export function LatestNews({ blogItems = [], caseItems = [] }: LatestNewsProps) {
+export function LatestNews({caseItems = [] }: LatestNewsProps) {
+
+    const { posts } = BlogViewModel();
+    const [loading, setLoading] = useState(true);
+
+    const blogItems: NewsItem[] = posts.map((post) => ({
+    id: String(post.id),
+    title: post.title,
+    content: post.content,
+    image: post.imageUrl,
+    date: post.publicationDate,
+    tag: post.topic,
+  }));
+
+
+    useEffect(() => {
+        if (posts && posts.length > 0) {
+          setLoading(false);
+        }
+      }, [posts]);
+
+    console.log(posts);
+
+
   const [activeTab, setActiveTab] = React.useState("blog");
 
   // Determine if we should show tabs (both arrays have items)
@@ -120,15 +147,19 @@ export function LatestNews({ blogItems = [], caseItems = [] }: LatestNewsProps) 
                         : "max-w-[319px] md:max-w-[600px]"
                       }`}>
                       {displayType === 'blog' ? (
-                        <HoverCardImage
-                          image={item.image}
-                          title={item.title}
-                          content={item.content}
-                          date={item.date}
-                          tag={item.tag}
-
-                          href={`/blog/${item.id}`}
-                        />
+                        loading ? (
+                          <HoverCardImageSkeleton />
+                        ) : (
+                          <HoverCardImage
+                            image={"/images/portfolio/portafolioTestImg.webp"}
+                            title={item.title}
+                            content={item.content}
+                            date={item.date}
+                            tag={item.tag}
+                            href={`/blog/${item.id}`}
+                          />
+                        )
+                        
                       ) : (
                         <div className="w-full h-full ml-5 sm:ml-0 bg-[#1A1A1A] rounded-lg overflow-hidden flex flex-col border-2 border-[#8ECF0A] shadow-[0_0_15px_rgba(142,207,10,0.5)]">
                           <div className="p-3 sm:p-4 md:p-6 bg-[#1A1A1A] text-center">
