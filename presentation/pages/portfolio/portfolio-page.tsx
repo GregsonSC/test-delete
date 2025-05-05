@@ -1,45 +1,84 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { LatestNews } from "@/presentation/molecules/news/latest-news";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
-// Import the PortfolioCardSmall component
 import { PortfolioCardSmall } from "@/presentation/atoms/portfolio-card/portfolio-card-small";
-import { portfolioItems, reviewItems } from "@/lib/constants2";
+import { PortfolioCardSmallSkeleton } from "@/presentation/atoms/portfolio-card/portfolio-card-small-skeleton";
+import { reviewItems } from "@/lib/constants2";
 import { blogItems, caseItems } from "@/lib/constants";
+import PortfolioViewModel from "./PortfolioViewModel";
+import { Button } from "@/presentation/atoms/button/button"; // Import Button component
 
 // !CH008 [ADD] Endpoint para los card de portafolio, reemplazar por el endpoint real en un viewModel
 export function PortfolioPage() {
+  const { portfolioItems, loading, error } = PortfolioViewModel();
+
+  // Number of items to show initially and load each time
+  const itemsPerLoad = 4; // You can adjust this number
+  const [visibleItemsCount, setVisibleItemsCount] = useState(itemsPerLoad);
+
+  // Function to load more items
+  const handleLoadMore = () => {
+    setVisibleItemsCount((prevCount) => prevCount + itemsPerLoad);
+  };
+
   return (
     <MainLayout>
       {/* --- NEW PORTFOLIO SECTION --- */}
       <section className="bg-[#060B20] py-16 md:py-24">
         <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
           {/* Section Title */}
-          <h2 className="text-5xl font-bold text-white text-center mb-16 md:mb-20"> {/* Updated size and margin */}
+          <h2 className="text-5xl font-bold text-white text-center mb-16 md:mb-20">
             Explore Our Web Portfolio
           </h2>
 
           {/* Portfolio Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
-            {portfolioItems.map((item, index) => (
-              <PortfolioCardSmall
-                key={index}
-                title={item.title}
-                description={item.description}
-                imageUrl={item.imageUrl}
-                href={item.href}
-                className="w-full h-auto aspect-square" // Ensure cards maintain aspect ratio
-              />
-            ))}
+            {loading ? (
+              // Show skeletons while loading - show initial count
+              Array.from({ length: itemsPerLoad }).map((_, index) => (
+                <PortfolioCardSmallSkeleton key={`skeleton-${index}`} />
+              ))
+            ) : error ? (
+              // Show error message if fetch failed
+              <p className="text-red-500 col-span-full text-center">Error loading portfolio: {error}</p>
+            ) : portfolioItems.length === 0 ? (
+              // Show message if no items are found
+              <p className="text-gray-400 col-span-full text-center">No portfolio items found.</p>
+            ) : (
+              // Render portfolio items once loaded - slice based on visible count
+              portfolioItems.slice(0, visibleItemsCount).map((item) => (
+                <PortfolioCardSmall
+                  key={item.id}
+                  title={item.title}
+                  description={item.description}
+                  imageUrl={item.image}
+                  href={item.url}
+                  className="w-full h-auto aspect-square"
+                />
+              ))
+            )}
           </div>
+
+          {/* Load More Button */}
+          {!loading && !error && portfolioItems.length > visibleItemsCount && (
+            <div className="flex justify-center mt-12">
+              <Button variant="outline" className="rounded-full text-white border-white hover:bg-white hover:text-[#060B20]" onClick={handleLoadMore}>
+                Load More Projects
+              </Button>
+            </div>
+          )}
+
         </div>
       </section>
       {/* --- END NEW PORTFOLIO SECTION --- */}
 
-
-      {/* New Section with same container and background */}
+      {/* --- Existing Review Section --- */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
@@ -88,9 +127,7 @@ export function PortfolioPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
-
         <LatestNews blogItems={blogItems} caseItems={caseItems} />
-
       </section>
     </MainLayout>
   );

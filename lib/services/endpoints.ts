@@ -30,6 +30,9 @@ export const endpoints = {
     loginUser: `${API}/auth/login`, // Endpoint for user login (POST)
     logoutUser: `${API}/logOut`, // Endpoint for user logout (POST)
   },
+  portfolio: {
+    getProducts: `https://681426c1225ff1af162804b1.mockapi.io/portaolio`,
+  },
 
   // Test endpoint for checking API connectivity
   test: `${API}/health-check`,
