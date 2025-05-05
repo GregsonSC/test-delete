@@ -58,7 +58,7 @@ export function WebsitesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon1.png"
+                icon="/images/marketing/icon1.webp"
                 title="Custom Web Design"
                 content="Partner with our team to get a web design that combines cutting-edge technology, top-notch quality, and the innovation your business deserves. Each design is 100% customized and fully optimized for search engines."
                 link="/services/advertising"
@@ -66,7 +66,7 @@ export function WebsitesPage() {
 
               {/* Second Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon2.png"
+                icon="/images/marketing/icon2.webp"
                 title="CMS Web Development"
                 content="Managing website content has never been easier. Run your website while effortlessly updating daily content. Our clean-coded CMS web development services deliver a reliable and scalable platform for seamless content management."
                 link="/services/social-media"
@@ -75,7 +75,7 @@ export function WebsitesPage() {
               {/* Third Card - Wrapped in a div for positioning */}
               <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
                 <HoverCardWGC
-                  icon="/images/marketing/icon3.png"
+                  icon="/images/marketing/icon3.webp"
                   title="E-commerce Websites"
                   content="We specialize in creating powerful, fully responsive E-commerce websites that not only look great but perform brilliantly as well. With reliable top-notch payment gateway integration and the latest technologies working with popular platforms like Shopify, Magento, and WooCommerce."
                   link="/services/seo"

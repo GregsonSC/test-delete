@@ -96,7 +96,7 @@ export function AboutPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3  gap-8  justify-items-center">
                       {/* First Card */}
                       <HoverCardWGC
-                        icon="/images/marketing/icon1.png"
+                        icon="/images/marketing/icon1.webp"
                         title="Web Design & Development"
                         content="Engaging and powerful web design that converts visitors into new clients and more sales."
                         link="/websites"
@@ -108,7 +108,7 @@ export function AboutPage() {
         
                       {/* Second Card */}
                       <HoverCardWGC
-                        icon="/images/marketing/icon2.png"
+                        icon="/images/marketing/icon2.webp"
                         title="Generate Traffic, Leads & Sales"
                         content="Drive more leads with a tailored marketing strategy designed exclusively for your business."
                         link="/marketing"
@@ -121,7 +121,7 @@ export function AboutPage() {
       
                       {/* Third Card - Wrapped in a div for positioning */}
                       <HoverCardWGC
-                        icon="/images/marketing/icon3.png"
+                        icon="/images/marketing/icon3.webp"
                         title="Create your Professional Brand"
                         content="We build a unique visual identity that leaves lasting impression on your brand."
                         link="/marketing"
