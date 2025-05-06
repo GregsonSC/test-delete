@@ -28,3 +28,15 @@ export const loginRateLimit = (limit = 5, windowMs = 60 * 1000) => {
     return { allowed: true };
   };
 };
+
+//  Limpieza automática cada 5 minutos
+setInterval(() => {
+  const now = Date.now();
+  const windowMs = 60 * 1000;
+
+  for (const [ip, attemptInfo] of loginAttempts.entries()) {
+    if (now - attemptInfo.firstAttempt > windowMs) {
+      loginAttempts.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000); //Cada 5 minutos 
