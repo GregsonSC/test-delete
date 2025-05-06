@@ -4,12 +4,11 @@ import db from "@/lib/prisma";
 import { CurrentPhase } from "@prisma/client";
 import { createImage } from "../cloudinary/upload/route";
 
-import { authMiddleware } from "@/middleware/Secure-middleware";
+import { authMiddleware } from "@/middleware/SecureJWT-middleware";
 import { NextRequest } from "next/server";
 
-
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
-/** 
+/**
  * @swagger
  * tags:
  *   - name: Project
@@ -74,9 +73,8 @@ export async function POST(request: Request) {
     const currentPhase = formData.get("currentPhase")?.toString();
 
     const imagePreviewFile = formData.get("imagePreviewUrl");
-    const imagePreviewUrl = imagePreviewFile instanceof File
-      ? await createImage(imagePreviewFile)
-      : undefined;
+    const imagePreviewUrl =
+      imagePreviewFile instanceof File ? await createImage(imagePreviewFile) : undefined;
 
     if (
       !name ||
@@ -301,8 +299,7 @@ export async function PATCH(request: Request) {
     const currentPhase = formData.get("currentPhase")?.toString();
 
     const imageFile = formData.get("imagePreviewUrl");
-    const imagePreviewUrl =
-      imageFile instanceof File ? await createImage(imageFile) : undefined;
+    const imagePreviewUrl = imageFile instanceof File ? await createImage(imageFile) : undefined;
 
     if (currentPhase && !validCurrentPhase.includes(currentPhase)) {
       return createResponse({
@@ -313,13 +310,9 @@ export async function PATCH(request: Request) {
       });
     }
 
-
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-    if (
-      (startDate && !dateRegex.test(startDate)) ||
-      (endDate && !dateRegex.test(endDate))
-    ) {
+    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
       return createResponse({
         success: false,
         message: "Invalid date format.",

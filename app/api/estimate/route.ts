@@ -1,6 +1,6 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
-import { authMiddleware } from "@/middleware/Secure-middleware";
+import { authMiddleware } from "@/middleware/SecureJWT-middleware";
 import { NextRequest } from "next/server";
 const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED", "INVOICE", "PAID"];
 /**
@@ -242,7 +242,7 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    
+
     if (data.state) {
       if (!validState.includes(data.state)) {
         return createResponse({
