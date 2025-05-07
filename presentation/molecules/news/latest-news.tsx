@@ -13,9 +13,11 @@ import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-
 import { useState, useEffect } from "react";
 import {BlogViewModel} from "@/presentation/pages/blog/BlogViewModel";
 import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
+import { StudyCaseViewModel } from "./StudyCaseViewModel";
 
 
-export interface NewsItem {
+
+export interface blogItemInterface {
   id: string;
   title: string;
   content: string;
@@ -23,18 +25,33 @@ export interface NewsItem {
   date: string;
   tag: string;
 }
-
-interface LatestNewsProps {
-  blogItems: NewsItem[];
-  caseItems?: NewsItem[];
+export interface StudyCaseItemInterface {
+  id: string;
+  title: string;
+  content: string;
+  image: string;
 }
 
-export function LatestNews({caseItems = [] }: LatestNewsProps) {
+export interface NewsItem {
+  id: string;
+  title: string;
+  content: string;  image?:string;
+  date?: string;
+ 
+ tag?: string;
+}
+
+
+export function LatestNews() {
 
     const { posts } = BlogViewModel();
+    const {StudyCases} = StudyCaseViewModel();
     const [loading, setLoading] = useState(true);
 
-    const blogItems: NewsItem[] = posts.map((post) => ({
+    // Get the 6 most recent posts
+    const recentPosts = [...posts].slice(-6);
+    
+    const blogItems: blogItemInterface[] = recentPosts.map((post) => ({
     id: String(post.id),
     title: post.title,
     content: post.content,
@@ -43,6 +60,17 @@ export function LatestNews({caseItems = [] }: LatestNewsProps) {
     tag: post.topic,
   }));
 
+    // Last 6 items
+    const shuffledCases = [...StudyCases].slice(-6);
+    
+    const caseItems: StudyCaseItemInterface[] = shuffledCases.map((caseItem) => ({
+      id: String(caseItem.id),
+      title: caseItem.title,
+      content: caseItem.resume,
+      image: caseItem.videoUrl
+    }));
+
+
 
     useEffect(() => {
         if (posts && posts.length > 0) {
@@ -50,7 +78,10 @@ export function LatestNews({caseItems = [] }: LatestNewsProps) {
         }
       }, [posts]);
 
-    console.log(posts);
+    console.log("Posts", posts);
+    console.log("Blog Items", blogItems);
+    console.log("Study Cases", StudyCases);
+    console.log("Case Items",caseItems);
 
 
   const [activeTab, setActiveTab] = React.useState("blog");
@@ -75,8 +106,8 @@ export function LatestNews({caseItems = [] }: LatestNewsProps) {
     itemsToDisplay = caseItems;
     displayType = "cases";
   }
-
-  // ! CH004 [ADD] Endpoint para blog y estudio de casos
+  // ! CH004 [ADD] Endpoint para blog y estudio de casos 
+  // LISTOOOO pero toca cambiar un poco la logica de los viewmodel cuando este la base de datos a usar porque cambia un poco
   return (
     <div className="w-full py-12 text-white">
       <div className="mx-auto max-w-[1400px] px-4">
@@ -154,8 +185,8 @@ export function LatestNews({caseItems = [] }: LatestNewsProps) {
                             image={"/images/portfolio/portafolioTestImg.webp"}
                             title={item.title}
                             content={item.content}
-                            date={item.date}
-                            tag={item.tag}
+                            date={(item as blogItemInterface).date.slice(0,10)}
+                            tag={(item as blogItemInterface).tag === "WEBDESIGN" ? "Web Development" : (item as blogItemInterface).tag === "DIGITALMARKETING" ? "Marketing" : "Marketing"}
                             href={`/blog/${item.id}`}
                           />
                         )

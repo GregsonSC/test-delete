@@ -265,7 +265,7 @@ export function HomePage() {
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
 
-        <LatestNews blogItems={blogItems} caseItems={caseItems} />
+        <LatestNews />
 
       </section>
 

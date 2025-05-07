@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Axios, { AxiosResponse } from "axios";
+import { create } from "domain";
+import { DeleteIcon } from "lucide-react";
 import { toast } from "sonner";
 
 // API Base URLs
@@ -19,10 +21,10 @@ export const endpoints = {
     submit: `${API}/contact`,
   },
   blog: {
-    getPosts: `${API}/blog`,
-    createPost: `${API}/blog`,
-    updatePost: (id: string) => `${API}/blog?id=${id}`,
-    deletePost: (id: string) => `${API}/blog?id=${id}`,
+    getPosts: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    createPost: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    updatePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
+    deletePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
   },
   // Add authentication endpoints
   auth: {
@@ -32,7 +34,15 @@ export const endpoints = {
   },
 
   // Test endpoint for checking API connectivity
-  test: `${API}/health-check`,
+  
+  //StudyCase endpoints 
+  studycase: {
+    getCases: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase`, // Endpoint to get all study cases (GET)
+    getCase: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase/${id}`, // Endpoint to get a specific study case by ID (GET)
+    createCase: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase`, // Endpoint to create a new study case (POST)
+    updateCase: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase/${id}`, // Endpoint to update a specific study case by ID (PUT)
+    DeleteCase: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase/${id}`, // Endpoint to delete a specific study case by ID (DELETE)
+  },
 };
 
 // Header configurations
