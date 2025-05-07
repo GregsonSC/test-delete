@@ -71,6 +71,8 @@ model Estimate {
   state         EstimateState
   lead_id       Int?
   lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  plan_id       Int?
+  plan          Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
   totalValue    Decimal
   Project       Project[]
   costs         Cost[]
@@ -340,15 +342,16 @@ model Comment {
 }
 
 model Plan {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
   description String
   type        PlanType
   variants    Variant[] // Relación uno-a-muchos con Variant
   serviceId   Int
-  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Estimate    Estimate[]
 }
 
 model Variant {
@@ -407,17 +410,22 @@ enum TicketStatus {
 }
 
 model Attachment {
-  id          Int            @id @default(autoincrement())
-  name        String
-  description String
-  type        TypeAttachment
-  url         String
-  activityId  Int?
-  activity    Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  ticketId    Int?
-  ticket      Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  productId   Int?
-  product     Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id               Int            @id @default(autoincrement())
+  name             String
+  description      String
+  type             TypeAttachment
+  url              String
+  activityId       Int?
+  activity         Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  ticketId         Int?
+  ticket           Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  productId        Int?
+  product          Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  projectupdate_id Int?
+  projectupdate    ProjectUpdate? @relation(fields: [projectupdate_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Benefit {
@@ -487,16 +495,17 @@ model StudyCase {
 }
 
 model ProjectUpdate {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  date      String
-  projectId Int?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  phaseId   Int?
-  phase     Phase?   @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int          @id @default(autoincrement())
+  title      String
+  content    String
+  date       String
+  projectId  Int?
+  project    Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phaseId    Int?
+  phase      Phase?       @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attachment Attachment[]
 }
 
 model LoginAttempt {

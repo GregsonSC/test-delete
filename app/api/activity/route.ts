@@ -27,6 +27,7 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *               - startDate
  *               - endDate
  *               - state
+ *               - phase_id
  *             properties:
  *               name:
  *                 type: string
@@ -45,6 +46,15 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *               state:
  *                 type: string
  *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
+ *                 description: >
+ *                   Current status of the activity. Possible values are:
+ *                   - **PENDING**: Activity has not yet been assigned.
+ *                   - **ASSIGNED**: Activity has been assigned to a user.
+ *                   - **INPROCESS**: Activity is currently in progress.
+ *                   - **REVIEWING**: Activity has been completed and is under review.
+ *                   - **FINISHED**: Activity has been reviewed and marked as complete.
+ *               phase_id:
+ *                 type: integer
  *     responses:
  *       201:
  *         description: Activity created successfully.
@@ -57,9 +67,17 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, state } = data;
+    const { name, description, expectedDuration, startDate, endDate, state, phase_id } = data;
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !state) {
+    if (
+      !name ||
+      !description ||
+      !expectedDuration ||
+      !startDate ||
+      !endDate ||
+      !state ||
+      !phase_id
+    ) {
       return createResponse({
         success: false,
         message: "Missing required fields.",
@@ -212,6 +230,17 @@ export async function GET(req: Request) {
  *               state:
  *                 type: string
  *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
+ *                 description: >
+ *                   Current status of the activity. Possible values are:
+ *                   - **PENDING**: Activity has not yet been assigned.
+ *                   - **ASSIGNED**: Activity has been assigned to a user.
+ *                   - **INPROCESS**: Activity is currently in progress.
+ *                   - **REVIEWING**: Activity has been completed and is under review.
+ *                   - **FINISHED**: Activity has been reviewed and marked as complete.
+ *               phase_id:
+ *                 type: integer
+ *                 example: 3
+ *                 description: ID of the phase this activity belongs to.
  *     responses:
  *       200:
  *         description: Activity updated successfully.
@@ -222,7 +251,6 @@ export async function GET(req: Request) {
  *       500:
  *         description: Server error.
  */
-
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -311,7 +339,6 @@ export async function PATCH(request: Request) {
  *       500:
  *         description: Server error.
  */
-
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

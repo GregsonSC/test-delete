@@ -7,13 +7,13 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  * @swagger
  * tags:
  *   - name: Estimate
- *     description: Set of costs required for the execution of a project. An estimate that has been approved by the client becomes an invoice, and will therefore be displayed in the Invoices section.
+ *     description: A structured breakdown of anticipated costs associated with a project. Once approved by the client, an estimate transitions into an invoice and is managed within the Invoices section.
  * /api/estimate:
  *   post:
  *     tags:
  *       - Estimate
  *     summary: Create a new estimate
- *     description: Create a new estimate with estimatedTime, description, state, totalValue and optional lead_id.
+ *     description: Register a new estimate including estimated time, detailed description, current state, total monetary value, and its associated lead and plan.
  *     requestBody:
  *       required: true
  *       content:
@@ -25,18 +25,37 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *               - description
  *               - state
  *               - totalValue
+ *               - lead_id
+ *               - plan_id
  *             properties:
  *               estimatedTime:
  *                 type: integer
+ *                 example: 30
  *               description:
  *                 type: string
+ *                 example: Initial software development estimate
  *               state:
  *                 type: string
  *                 enum: [CREATED, PROCESSING, INREVIEW, REJECTED, ACCEPTED, INVOICE, PAID]
+ *                 description: >
+ *                   Current state of the estimate. Possible values are:
+ *                   - **CREATED**: Estimate has been created but not yet reviewed.
+ *                   - **PROCESSING**: Estimate is being processed.
+ *                   - **INREVIEW**: Estimate is under client review.
+ *                   - **REJECTED**: Estimate has been rejected by the client.
+ *                   - **ACCEPTED**: Estimate has been accepted by the client.
+ *                   - **INVOICE**: Estimate has been converted to an invoice.
+ *                   - **PAID**: Invoice has been paid.
  *               totalValue:
  *                 type: number
+ *                 format: float
+ *                 example: 15000.50
  *               lead_id:
  *                 type: integer
+ *                 example: 2
+ *               plan_id:
+ *                 type: integer
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Estimate created successfully.
@@ -45,13 +64,12 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *       500:
  *         description: Server error.
  */
-
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { estimatedTime, description, state, lead_id, totalValue } = data;
+    const { estimatedTime, description, state, lead_id, plan_id, totalValue } = data;
 
-    if (!estimatedTime || !description || !state || !totalValue) {
+    if (!estimatedTime || !description || !state || !totalValue || !lead_id || !plan_id) {
       return createResponse({
         success: false,
         message: "All fields are required.",
