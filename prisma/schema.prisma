@@ -27,6 +27,7 @@ model User {
   permissions  UserPermission[]
   Comment      Comment[]
   tickets      UserTicket[]
+  blogs        Blog[]
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
@@ -87,8 +88,16 @@ model Blog {
   topic           Topic
   publicationDate String
   imageUrl        String
+  SubTitle        String
+  ImageSubTitle   String
+  ContentImageUrl String
+  ImageReference  String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  User            User?    @relation(fields: [userId], references: [id])
+  userId          Int?
+  
+
 }
 
 model ServiceArea {
@@ -100,6 +109,8 @@ model ServiceArea {
   heroImageUrl     String
   benefitsImageUrl String
   testimonialEmbed String
+  MainTitle        String
+  SubTitle         String
   service_id       Int?
   service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
   createdAt        DateTime  @default(now())
@@ -229,7 +240,9 @@ model Product {
   Attachment  Attachment[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
   ProductTag  ProductTag[]
+
 }
 
 model Phase {
@@ -513,4 +526,12 @@ model ProductTag {
   tag        Tag     @relation(fields: [tag_id], references: [id], onDelete: Cascade)
 
   @@id([product_id, tag_id])
+}
+
+model LoginAttempt {
+  id          String   @id @default(uuid())
+  ip          String
+  email       String? // El correo usado en el intento, puede ser null si no se envió,En algunos intentos, la IP podría golpear el endpoint sin enviar datos válidos. Esto evita que Prisma falle al guardar.
+  success     Boolean
+  attemptedAt DateTime @default(now())
 }
