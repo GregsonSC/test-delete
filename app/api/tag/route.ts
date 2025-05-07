@@ -1,13 +1,15 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
+
+
 /**
  * @swagger
- * /api/benefit:
+ * /api/tag:
  *   post:
  *     tags:
- *       - Benefit
- *     summary: Create a new benefit
- *     description: Creates a new benefit linked to a specific service area.
+ *       - Tag
+ *     summary: Create a new tag
+ *     description: Create a new tag with a name.
  *     requestBody:
  *       required: true
  *       content:
@@ -15,35 +17,26 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *           schema:
  *             type: object
  *             required:
- *               - title
- *               - description
- *               - serviceAreaId
+ *               - name
  *             properties:
- *               title:
+ *               name:
  *                 type: string
- *                 example: Free Health Checkups
- *               description:
- *                 type: string
- *                 example: Monthly health checkups available at local clinics.
- *               serviceAreaId:
- *                 type: integer
- *                 example: 3
+ *                 description: Name of the tag.
  *     responses:
  *       201:
- *         description: Benefit created successfully.
+ *         description: Tag created successfully.
  *       400:
- *         description: Missing one or more required fields.
+ *         description: Missing or invalid fields.
  *       500:
  *         description: Server error.
  */
 
-
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { title, description, serviceAreaId } = data;
+    const { name } = data;
 
-    if (!title || !description ||! serviceAreaId) {
+    if (!name) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -52,41 +45,38 @@ export async function POST(request: Request) {
       });
     }
 
-    const newBenefit = await db.benefit.create({ data });
+    const newTag = await db.tag.create({ data });
     return createResponse({
       success: true,
-      data: newBenefit,
-      message: "Benefit created successfully.",
+      data: newTag,
+      message: "Tag created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Benefit");
+    return handleError(error, "POST Tag");
   }
 }
 /**
- * @route GET /api/benefit
- * @desc Obtener uno o todos los beneficios
  * @swagger
- * /api/benefit:
+ * /api/tag:
  *   get:
  *     tags:
- *       - Benefit
- *     summary: Get one or all Benefits
- *     description: Retrieve all benefits or a specific one by ID.
+ *       - Tag
+ *     summary: Retrieve tags
+ *     description: Retrieve a list of all tags, or a specific tag by ID.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: false
  *         schema:
  *           type: integer
- *         description: ID of the benefit to retrieve.
+ *         description: ID of the tag to retrieve (optional).
  *     responses:
  *       200:
- *         description: Benefit(s) retrieved successfully.
+ *         description: Tags retrieved successfully.
  *       400:
  *         description: Invalid ID.
  *       404:
- *         description: Benefit not found.
+ *         description: Tag not found.
  *       500:
  *         description: Server error.
  */
@@ -97,11 +87,11 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const benefits = await db.benefit.findMany();
+      const tags = await db.tag.findMany();
       return createResponse({
         success: true,
-        data: benefits,
-        message: "Benefits retrieved successfully.",
+        data: tags,
+        message: "Tags retrieved successfully.",
         status: 200,
       });
     }
@@ -115,43 +105,41 @@ export async function GET(req: Request) {
         status: 400,
       });
     }
+    const tag = await db.tag.findUnique({ where: { id } });
 
-    const benefit = await db.benefit.findUnique({ where: { id } });
-    if (!benefit) {
+    if (!tag) {
       return createResponse({
         success: false,
-        message: "Benefit not found.",
-        errors: ["No benefit exists with the given ID."],
+        message: "Tag not found.",
+        errors: ["No Tag exists with the given ID."],
         status: 404,
       });
     }
     return createResponse({
       success: true,
-      data: benefit,
-      message: "Benefit retrieved successfully.",
+      data: tag,
+      message: "Tag retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Benefit");
+    return handleError(error, "GET Tag");
   }
 }
-
 /**
  * @swagger
- * /api/benefit:
+ * /api/tag:
  *   patch:
  *     tags:
- *       - Benefit
- *     summary: Update an existing benefit
- *     description: Updates the fields of a benefit by its ID.
+ *       - Tag
+ *     summary: Update a tag
+ *     description: Update one or more fields of a tag by ID.
  *     parameters:
- *       - name: id
- *         in: query
- *         description: ID of the benefit to update
- *         required: true
+ *       - in: query
+ *         name: id
  *         schema:
  *           type: integer
- *           example: 5
+ *         required: true
+ *         description: ID of the tag to update.
  *     requestBody:
  *       required: true
  *       content:
@@ -159,22 +147,16 @@ export async function GET(req: Request) {
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               name:
  *                 type: string
- *                 example: Updated Benefit Title
- *               description:
- *                 type: string
- *                 example: Updated benefit description.
- *               serviceAreaId:
- *                 type: integer
- *                 example: 2
+ *                 description: Name of the tag.
  *     responses:
  *       200:
- *         description: Benefit updated successfully.
+ *         description: Tag updated successfully.
  *       400:
- *         description: Invalid ID or no update data provided.
+ *         description: Invalid ID or missing update data.
  *       404:
- *         description: Benefit not found.
+ *         description: Tag not found.
  *       500:
  *         description: Server error.
  */
@@ -203,54 +185,53 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    const benefit = await db.benefit.findUnique({ where: { id } });
+    const tag = await db.tag.findUnique({ where: { id } });
 
-    if (!benefit) {
+    if (!tag) {
       return createResponse({
         success: false,
-        message: "Benefit not found.",
-        errors: ["No benefit exists with the given ID."],
+        message: "Tag not found.",
+        errors: ["No Tag exists with the given ID."],
         status: 404,
       });
     }
-
-    const updateBenefit = await db.benefit.update({
+    const updateTag = await db.tag.update({
       where: { id },
       data: { ...data },
     });
 
     return createResponse({
       success: true,
-      data: updateBenefit,
-      message: "Benefit updated successfully.",
+      data: updateTag,
+      message: "Tag updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH benefit");
+    return handleError(error, "PATCH Tag");
   }
 }
 /**
- * @route DELETE /api/benefit
- * @desc Eliminar un beneficio
  * @swagger
- * /api/benefit:
+ * /api/tag:
  *   delete:
  *     tags:
- *       - Benefit
- *     summary: Delete a Benefit
- *     description: Delete a benefit by its ID.
+ *       - Tag
+ *     summary: Delete a tag
+ *     description: Delete a tag by its ID.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
- *         description: ID of the benefit to delete.
+ *         required: true
+ *         description: ID of the tag to delete.
  *     responses:
  *       200:
- *         description: Benefit deleted successfully.
+ *         description: Tag deleted successfully.
  *       400:
  *         description: Invalid ID.
+ *       404:
+ *         description: Tag not found.
  *       500:
  *         description: Server error.
  */
@@ -270,14 +251,14 @@ export async function DELETE(req: Request) {
       });
     }
 
-    await db.benefit.delete({ where: { id } });
-
+    await db.tag.delete({ where: { id } });
+    
     return createResponse({
       success: true,
-      message: "Benefit deleted successfully.",
+      message: "Tag deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE Benefit");
+    return handleError(error, "DELETE Tag");
   }
 }

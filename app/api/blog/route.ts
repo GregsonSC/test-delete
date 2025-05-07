@@ -6,15 +6,17 @@ import { Topic } from "@prisma/client";
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
 /**
  * @swagger
- * tags:
- *   - name: Blog
- *     description: News or posts related to software development and digital marketing topics published by the company.
  * /api/blog:
  *   post:
  *     tags:
  *       - Blog
- *     summary: Create a new Blog
- *     description: Create a new Blog with the provided data.
+ *     summary: Create a new blog post
+ *     description: >
+ *       Creates a new blog post with title, resume, content, topic, publication date, and an image file.
+ *       
+ *       The `topic` field must be one of the following values:
+ *       - WEBDESIGN
+ *       - DIGITALMARKETING
  *     requestBody:
  *       required: true
  *       content:
@@ -31,75 +33,34 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
  *             properties:
  *               title:
  *                 type: string
- *                 description: "Title of the blog."
+ *                 example: "The Future of Web Design"
  *               resume:
  *                 type: string
- *                 description: "Short summary of the blog."
+ *                 example: "An overview of emerging trends in web design."
  *               content:
  *                 type: string
- *                 description: "Full content of the blog."
+ *                 example: "In this article, we explore the latest in web UI/UX trends..."
  *               topic:
  *                 type: string
- *                 description: "Topic of the blog. Must be one of: WEBDESIGN, DIGITALMARKETING, GRAPHICDESIGN."
+ *                 enum: [WEBDESIGN, DIGITALMARKETING]
+ *                 example: WEBDESIGN
  *               publicationDate:
  *                 type: string
  *                 format: date
- *                 description: "Publication date of the blog in YYYY-MM-DD format."
+ *                 example: "2025-05-04"
  *               imageUrl:
  *                 type: string
- *                 description: "URL of the blog's image."
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Blog created successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   description: "The created blog object."
- *                 message:
- *                   type: string
- *                   example: Blog created successfully.
  *       400:
- *         description: Bad request, missing or invalid fields.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: All fields are required.
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
+ *         description: Validation error or missing fields.
  *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: Error creating blog
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
+ *         description: Server error while creating the blog.
  */
+
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -249,24 +210,28 @@ export async function GET(req: Request) {
     return handleError(error, "GET Blog");
   }
 }
-
 /**
- * @route PATCH /api/blog
- * @desc Actualizar un blog existente
  * @swagger
  * /api/blog:
  *   patch:
  *     tags:
  *       - Blog
- *     summary: Update a blog
- *     description: Updates a blog using the provided fields. Only sends updated fields.
+ *     summary: Update an existing blog post
+ *     description: >
+ *       Updates an existing blog post by ID. Fields are optional but at least one must be provided.
+ *       
+ *       The `topic` field must be one of the following values:
+ *       - WEBDESIGN
+ *       - DIGITALMARKETING
+ *       
+ *       The `publicationDate` must be in `YYYY-MM-DD` format.
  *     parameters:
- *       - in: query
- *         name: id
+ *       - name: id
+ *         in: query
+ *         required: true
  *         schema:
  *           type: integer
- *         required: true
- *         description: "ID of the blog to update."
+ *         description: ID of the blog post to update
  *     requestBody:
  *       required: true
  *       content:
@@ -276,16 +241,21 @@ export async function GET(req: Request) {
  *             properties:
  *               title:
  *                 type: string
+ *                 example: "Updated Web Design Trends"
  *               resume:
  *                 type: string
+ *                 example: "A brief update on design patterns in 2025."
  *               content:
  *                 type: string
+ *                 example: "In this update, we revise the 2024 design assumptions..."
  *               topic:
  *                 type: string
- *                 description: "Must be one of: WEBDESIGN, DIGITALMARKETING, GRAPHICDESIGN."
+ *                 enum: [WEBDESIGN, DIGITALMARKETING]
+ *                 example: DIGITALMARKETING
  *               publicationDate:
  *                 type: string
  *                 format: date
+ *                 example: "2025-06-01"
  *               imageUrl:
  *                 type: string
  *                 format: binary
@@ -293,13 +263,12 @@ export async function GET(req: Request) {
  *       200:
  *         description: Blog updated successfully.
  *       400:
- *         description: Invalid input or no data to update.
+ *         description: Validation error or no data provided.
  *       404:
  *         description: Blog not found.
  *       500:
- *         description: Server error.
+ *         description: Server error while updating the blog.
  */
-
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
