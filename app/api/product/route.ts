@@ -104,42 +104,99 @@ export async function POST(request: NextRequest) {
  *     tags:
  *       - Product
  *     summary: Obtener productos
- *     description: Obtiene todos los productos o uno específico si se proporciona el parámetro `id`.
+ *     description: Obtiene todos los productos paginados o uno específico si se proporciona el parámetro `id`.
  *     parameters:
  *       - in: query
  *         name: id
  *         schema:
  *           type: integer
- *         description: ID del producto (opcional)
+ *         required: false
+ *         description: ID del producto a obtener (opcional).
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Índice desde el cual iniciar la paginación. Por defecto es 0.
  *     responses:
  *       200:
- *         description: Productos obtenidos exitosamente
+ *         description: Productos obtenidos exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                 message:
+ *                   type: string
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 page:
+ *                   type: object
+ *                   properties:
+ *                     offset:
+ *                       type: integer
+ *                     productsPerPage:
+ *                       type: integer
+ *                     totalProducts:
+ *                       type: integer
  *       400:
- *         description: ID inválido
+ *         description: ID inválido.
  *       404:
- *         description: Producto no encontrado
+ *         description: Producto no encontrado.
  *       500:
- *         description: Error del servidor
+ *         description: Error interno del servidor.
  */
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
 
+    const offset = Number(searchParams.get("offset")) || 0;
+    const productsPerPage = 2;
+
     if (!requestId) {
-      const products = await db.product.findMany({
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          url: true,
-        },
-      });
+      const [products, totalProducts] = await Promise.all([
+        db.product.findMany({
+          skip: offset,
+          take: productsPerPage,
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            url: true,
+          },
+        }),
+        db.product.count(),
+      ]);
+
       return NextResponse.json({
         success: true,
         data: products,
         message: "Products fetched successfully",
         errors: [],
+        page: {
+          offset,
+          productsPerPage,
+          totalProducts,
+        },
       });
     }
 
@@ -156,7 +213,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const product = await db.product.findUnique({ where: { id }, include: { Attachment: true } });
+    const product = await db.product.findUnique({ where: { id }});
 
     if (!product) {
       return NextResponse.json(

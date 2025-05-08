@@ -4,13 +4,10 @@ import db from "@/lib/prisma";
 import { CurrentPhase } from "@prisma/client";
 import { createImage } from "../cloudinary/upload/route";
 
-<<<<<<< HEAD
+
 import { authMiddleware } from "@/middleware/SecureJWT-middleware";
 import { NextRequest } from "next/server";
-=======
-import { authMiddleware } from "@/middleware/Secure-middleware";
-import { NextRequest, NextResponse } from "next/server";
->>>>>>> 4acaeb29073f48117d043766d5316aa3ac46a6d3
+
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 /**
@@ -318,8 +315,6 @@ export async function PATCH(request: Request) {
 
     const imageFile = formData.get("imagePreviewUrl");
     const imagePreviewUrl = imageFile instanceof File ? await createImage(imageFile) : undefined;
-<<<<<<< HEAD
-=======
 
     const estimate_id = formData.get("estimate_id")
       ? parseInt(formData.get("estimate_id")!.toString(), 10)
@@ -343,6 +338,7 @@ export async function PATCH(request: Request) {
       });
     }
 
+
     const project = await db.project.findUnique({ where: { id } });
     if (!project) {
       return createResponse({
@@ -353,7 +349,10 @@ export async function PATCH(request: Request) {
       });
     }
 
+
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+
     if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
       return createResponse({
         success: false,
@@ -362,7 +361,6 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
->>>>>>> 4acaeb29073f48117d043766d5316aa3ac46a6d3
 
     if (currentPhase && !validCurrentPhase.includes(currentPhase)) {
       return createResponse({
@@ -373,40 +371,7 @@ export async function PATCH(request: Request) {
       });
     }
 
-<<<<<<< HEAD
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
-      return createResponse({
-        success: false,
-        message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for startDate and endDate."],
-        status: 400,
-      });
-    }
-
-    const updatedData: any = {};
-    if (name) updatedData.name = name;
-    if (description) updatedData.description = description;
-    if (expectedDuration) updatedData.expectedDuration = expectedDuration;
-    if (startDate) updatedData.startDate = startDate;
-    if (endDate) updatedData.endDate = endDate;
-    if (currentPhase) updatedData.currentPhase = currentPhase;
-    if (imagePreviewUrl) updatedData.imagePreviewUrl = imagePreviewUrl;
-
-    if (Object.keys(updatedData).length === 0) {
-      return createResponse({
-        success: false,
-        message: "No update data provided.",
-        errors: ["At least one field must be provided for update."],
-        status: 400,
-      });
-    }
-
-    const updateProject = await db.project.update({
-=======
     const updatedProject = await db.project.update({
->>>>>>> 4acaeb29073f48117d043766d5316aa3ac46a6d3
       where: { id },
       data: {
         ...(name && { name }),
