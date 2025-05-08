@@ -30,6 +30,8 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  *               - heroImageUrl
  *               - benefitsImageUrl
  *               - testimonialEmbed
+ *               - mainTitle  # Agregado
+ *               - subTitle   # Agregado
  *             properties:
  *               name:
  *                 type: string
@@ -51,6 +53,10 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  *               service_id:
  *                 type: integer
  *                 nullable: true
+ *               mainTitle:  
+ *                 type: string
+ *               subTitle:   
+ *                 type: string
  *     responses:
  *       201:
  *         description: ServiceArea created successfully.
@@ -71,12 +77,15 @@ export async function POST(request: Request) {
     
     const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
     const activeStr = formData.get("active")?.toString();
-
+    
     const service_id = formData.get("service_id")?.toString() ? parseInt(formData.get("service_id")!.toString(), 10) : undefined;
+
+    // Nuevos campos MainTitle y SubTitle
+    const mainTitle = formData.get("mainTitle")?.toString();
+    const subTitle = formData.get("subTitle")?.toString();
     
     const heroImageFile = formData.get("heroImageUrl");
     const benefitsImageFile = formData.get("benefitsImageUrl");
-    
     
     if (!(heroImageFile instanceof File) || !(benefitsImageFile instanceof File)) {
       return createResponse({
@@ -99,8 +108,10 @@ export async function POST(request: Request) {
       !county ||
       !heroImageUrl ||
       !benefitsImageUrl ||
-      !testimonialEmbed
-      ||!service_id
+      !testimonialEmbed ||
+      !service_id ||
+      !mainTitle || // Validación para MainTitle
+      !subTitle // Validación para SubTitle
     ) {
       return createResponse({
         success: false,
@@ -129,6 +140,8 @@ export async function POST(request: Request) {
         benefitsImageUrl,
         testimonialEmbed,
         service_id,
+        mainTitle, // Agregar MainTitle
+        subTitle, // Agregar SubTitle
       },
     });
 
