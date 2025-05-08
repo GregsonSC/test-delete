@@ -37,11 +37,11 @@ export const endpoints = {
   
   //StudyCase endpoints 
   studycase: {
-    getCases: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase`, // Endpoint to get all study cases (GET)
-    getCase: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase/${id}`, // Endpoint to get a specific study case by ID (GET)
-    createCase: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase`, // Endpoint to create a new study case (POST)
-    updateCase: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase/${id}`, // Endpoint to update a specific study case by ID (PUT)
-    DeleteCase: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/StudyCase/${id}`, // Endpoint to delete a specific study case by ID (DELETE)
+    getCases: `${API}/studycase`, // Endpoint to get all study cases (GET)
+    getCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to get a specific study case by ID (GET)
+    createCase: `${API}/studycase`, // Endpoint to create a new study case (POST)
+    updateCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to update a specific study case by ID (PATCH)
+    DeleteCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to delete a specific study case by ID (DELETE)
   },
 };
 

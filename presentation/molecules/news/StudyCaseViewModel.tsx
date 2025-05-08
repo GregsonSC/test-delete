@@ -10,19 +10,25 @@ export const StudyCaseViewModel = () => {
         getAllStudyCases();
     }, []);
     const getAllStudyCases = async () => {
-        const {response, status, errorLogs} = await fetchData(endpoints.studycase.getCases, "get");
-        if (status === 200){
-            if (response) {
-                // Aquí response es StudyCase[]
-                setStudyCases(response as unknown as StudyCase[]);
-            } else {
-                console.error("No hay datos:", errorLogs);
-                alert("Error al cargar los casos de estudio");
+        await fetchData(endpoints.studycase.getCases, "get").then(
+            ({ response, status, errorLogs }) => {
+              console.log("errorLogs:", errorLogs);   
+              const apiResponse = response as ApiResponse<StudyCase>;
+              if (status === 200) {
+                if (apiResponse.success) {
+                  console.log("Success:", apiResponse.data);
+                  setStudyCases(apiResponse.data);
+                } else {
+                  console.error("Error:", apiResponse.message);
+                  alert("Error al cargar los casos de estudio");
+                }
+                if (apiResponse.errors && apiResponse.errors.length > 0) {
+                  console.error("Validation errors:", apiResponse.errors);
+                  alert("Errores de validación al cargar los casos de estudio");
+                }
+              }
             }
-        } else {
-            console.error("HTTP error:", status, errorLogs);
-            alert("Error al cargar los posts del blog");
-        }
+          );
     };
     return { StudyCases, };
 };
