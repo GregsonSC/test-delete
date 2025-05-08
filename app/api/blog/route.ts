@@ -5,7 +5,68 @@ import { Topic } from "@prisma/client";
 
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
 
-
+/**
+ * @swagger
+ * tags:
+ *   - name: Blog
+ *     description: Endpoint for managing blog posts, including creating new posts with various attributes.
+ * /api/blog:
+ *   post:
+ *     tags:
+ *       - Blog
+ *     summary: Create a new blog post
+ *     description: Create a new blog post with required fields and valid topic. Images must be uploaded as multipart/form-data files.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - resume
+ *               - content
+ *               - topic
+ *               - publicationDate
+ *               - imageUrl
+ *               - ContentImageUrl
+ *             properties:
+ *               title:
+ *                 type: string
+ *               resume:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               topic:
+ *                 type: string
+ *                 enum: [TOPIC1, TOPIC2, TOPIC3]  # Reemplaza con los temas válidos
+ *               publicationDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Date must be in YYYY-MM-DD format.
+ *               imageUrl:
+ *                 type: string
+ *                 format: binary
+ *               ContentImageUrl:
+ *                 type: string
+ *                 format: binary
+ *               SubTitle:
+ *                 type: string
+ *               ImageSubTitle:
+ *                 type: string
+ *               ImageReference:
+ *                 type: string
+ *               userId:
+ *                 type: integer
+ *                 nullable: true
+ *     responses:
+ *       201:
+ *         description: Blog created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function POST(request: Request) {
   try {
