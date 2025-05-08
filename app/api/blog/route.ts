@@ -4,19 +4,18 @@ import { createImage } from "../cloudinary/upload/route";
 import { Topic } from "@prisma/client";
 
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
+
 /**
  * @swagger
+ * tags:
+ *   - name: Blog
+ *     description: Endpoint for managing blog posts, including creating new posts with various attributes.
  * /api/blog:
  *   post:
  *     tags:
  *       - Blog
  *     summary: Create a new blog post
- *     description: >
- *       Creates a new blog post with title, resume, content, topic, publication date, and an image file.
- *       
- *       The `topic` field must be one of the following values:
- *       - WEBDESIGN
- *       - DIGITALMARKETING
+ *     description: Create a new blog post with required fields and valid topic. Images must be uploaded as multipart/form-data files.
  *     requestBody:
  *       required: true
  *       content:
@@ -30,36 +29,44 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
  *               - topic
  *               - publicationDate
  *               - imageUrl
+ *               - ContentImageUrl
  *             properties:
  *               title:
  *                 type: string
- *                 example: "The Future of Web Design"
  *               resume:
  *                 type: string
- *                 example: "An overview of emerging trends in web design."
  *               content:
  *                 type: string
- *                 example: "In this article, we explore the latest in web UI/UX trends..."
  *               topic:
  *                 type: string
- *                 enum: [WEBDESIGN, DIGITALMARKETING]
- *                 example: WEBDESIGN
+ *                 enum: [TOPIC1, TOPIC2, TOPIC3]  # Reemplaza con los temas válidos
  *               publicationDate:
  *                 type: string
  *                 format: date
- *                 example: "2025-05-04"
+ *                 description: Date must be in YYYY-MM-DD format.
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               ContentImageUrl:
+ *                 type: string
+ *                 format: binary
+ *               SubTitle:
+ *                 type: string
+ *               ImageSubTitle:
+ *                 type: string
+ *               ImageReference:
+ *                 type: string
+ *               userId:
+ *                 type: integer
+ *                 nullable: true
  *     responses:
  *       201:
  *         description: Blog created successfully.
  *       400:
- *         description: Validation error or missing fields.
+ *         description: Missing or invalid fields.
  *       500:
- *         description: Server error while creating the blog.
+ *         description: Server error.
  */
-
 
 export async function POST(request: Request) {
   try {
@@ -71,8 +78,20 @@ export async function POST(request: Request) {
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
 
+    const SubTitle = formData.get("SubTitle")?.toString();
+    const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
+    const ImageReference = formData.get("ImageReference")?.toString();
+
+    const ContentImageUrlForm = formData.get("ContentImageUrl");
     const imageUrlForm = formData.get("imageUrl");
-    if (!(imageUrlForm instanceof File)) {
+
+
+    const userId = formData.get("userId")
+      ? parseInt(formData.get("userId")!.toString(), 10)
+      : undefined;
+
+
+    if (!(imageUrlForm instanceof File) || !(ContentImageUrlForm instanceof File)) {
       return createResponse({
         success: false,
         message: "The image must be valid file.",
@@ -81,6 +100,7 @@ export async function POST(request: Request) {
       });
     }
     const imageUrl = await createImage(imageUrlForm);
+    const ContentImageUrl = await createImage(ContentImageUrlForm);
 
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
       return createResponse({
@@ -110,7 +130,7 @@ export async function POST(request: Request) {
     }
 
     const newBlog = await db.blog.create({
-      data: { title, resume, content, topic: topic as Topic, publicationDate, imageUrl },
+      data: { title, resume, content, topic: topic as Topic, publicationDate, imageUrl, SubTitle, ImageSubTitle, ContentImageUrl, ImageReference, userId },
     });
 
     return createResponse({
@@ -292,10 +312,18 @@ export async function PATCH(request: Request) {
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
 
+    const SubTitle = formData.get("SubTitle")?.toString();
+    const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
+    const ImageReference = formData.get("ImageReference")?.toString();
+
+    const ContentImageUrlForm = formData.get("ContentImageUrl");
     const imageUrlForm = formData.get("imageUrl");
+
+    const userId = formData.get("userId")? parseInt(formData.get("userId")!.toString(), 10): undefined;
+    
+    const ContentImageUrl = ContentImageUrlForm instanceof File ? await createImage(ContentImageUrlForm) : undefined;
     const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
-    // Validaciones
     if (publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
       return createResponse({
         success: false,
@@ -331,6 +359,14 @@ export async function PATCH(request: Request) {
     if (topic) updatedData.topic = topic as Topic;
     if (publicationDate) updatedData.publicationDate = publicationDate;
     if (imageUrl) updatedData.imageUrl = imageUrl;
+
+    if (SubTitle) updatedData.SubTitle = SubTitle;
+    if (ImageSubTitle) updatedData.ImageSubTitle = ImageSubTitle;
+    if (ContentImageUrl) updatedData.ContentImageUrl = ContentImageUrl;
+    if (ImageReference) updatedData.ImageReference = ImageReference;
+    if (userId) updatedData.userId = userId;
+
+
 
     if (Object.keys(updatedData).length === 0) {
       return createResponse({
