@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils"; // Assuming you have a utility for class names
 
 // Define the structure for each item in the estimate

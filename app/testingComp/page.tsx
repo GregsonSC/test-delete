@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { DefaultToast } from "@/presentation/atoms/toast/default/default-toast";
 import { DefaultSucess } from "@/presentation/atoms/toast/sucess/default-sucess";
 import { EstimatedValue } from "@/presentation/atoms/profile-project/request/estimated-value";
+import { Invoice } from "@/presentation/atoms/profile-project/request/invoice";
 
 export default function TestingComp() {
   const promise = () =>
@@ -33,6 +34,31 @@ export default function TestingComp() {
         { name: "Frontend Development", value: 3500 },
         { name: "Backend Integration", value: 2800 },
         { name: "Testing & Deployment", value: 1200 }
+      ]
+    }
+  ];
+
+  // Sample data for Invoice
+  const sampleInvoices = [
+    {
+      title: "Website Development Invoice",
+      invoiceNumber: "INV-2023-001",
+      dueDate: "2023-12-15",
+      items: [
+        { name: "UI/UX Design", value: 1500 },
+        { name: "Frontend Development", value: 2500 },
+        { name: "Backend Integration", value: 3000 },
+        { name: "Testing & Deployment", value: 1000 }
+      ]
+    },
+    {
+      title: "Mobile App Maintenance",
+      invoiceNumber: "INV-2023-002",
+      dueDate: "2023-12-30",
+      items: [
+        { name: "Bug Fixes", value: 800 },
+        { name: "Feature Updates", value: 1200 },
+        { name: "Performance Optimization", value: 1500 }
       ]
     }
   ];
@@ -141,6 +167,21 @@ export default function TestingComp() {
             currencySymbol="$"
             onAccept={(index) => toast.success(`Estimate #${index + 1} accepted!`)}
             onDecline={(index, reason) => toast.error(`Estimate #${index + 1} declined: ${reason || "No reason provided"}`)}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Invoice Component */}
+      <Card className="w-full p-6 mt-8 bg-white">
+        <CardHeader>
+          <CardTitle className="text-[#0B1A33]">Invoice Component</CardTitle>
+          <CardDescription>Multiple invoice cards with payment functionality</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Invoice
+            invoices={sampleInvoices}
+            currencySymbol="$"
+            onGoToPayment={(index) => toast.success(`Redirecting to payment for Invoice #${sampleInvoices[index].invoiceNumber}`)}
           />
         </CardContent>
       </Card>

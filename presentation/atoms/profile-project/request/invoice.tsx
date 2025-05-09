@@ -1,0 +1,149 @@
+"use client";
+
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+
+// Define the structure for each item in the invoice
+interface InvoiceItem {
+  name: string;
+  value: number;
+}
+
+// Define the structure for an invoice group
+interface InvoiceGroup {
+  title: string;
+  items: InvoiceItem[];
+  invoiceNumber?: string;
+  dueDate?: string;
+}
+
+// Define the props for the Invoice component
+interface InvoiceProps {
+  invoices: InvoiceGroup[];
+  currencySymbol?: string;
+  onGoToPayment?: (invoiceIndex: number) => void;
+  status?: string;
+}
+
+// Helper function to format currency
+const formatCurrency = (value: number, symbol: string = "$") => {
+  return new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD',
+    currencyDisplay: 'symbol',
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  }).format(value).replace('USD', symbol);
+};
+
+export function Invoice({
+  invoices,
+  currencySymbol = "$",
+  onGoToPayment,
+  status,
+}: InvoiceProps) {
+  // Track open state for each invoice
+  const [openStates, setOpenStates] = useState<boolean[]>(new Array(invoices.length).fill(false));
+
+  // --- Render Logic ---
+  return (
+    <div className="space-y-4">
+      {invoices.map((invoice, index) => {
+        // Calculate the total value for this invoice
+        const totalValue = invoice.items.reduce((sum, item) => sum + item.value, 0);
+        
+        const isOpen = openStates[index];
+        
+        // Handlers for this specific invoice
+        const handleToggle = () => {
+          const newOpenStates = [...openStates];
+          newOpenStates[index] = !newOpenStates[index];
+          setOpenStates(newOpenStates);
+        };
+        
+        return (
+          <div
+            key={index}
+            className={cn(
+              "rounded-lg transition-all duration-300 ease-in-out overflow-hidden relative",
+              isOpen 
+                ? "p-[3px] bg-gradient-to-r from-[#99CC33] to-[#33CCCC]" 
+                : "border border-gray-200 shadow-[0_2px_8px_0_rgba(0,0,0,0.06)]"
+            )}
+          >
+            <div className={cn(
+              "w-full h-full bg-white rounded-lg",
+              isOpen ? "p-4" : ""
+            )}>
+              {/* Header (Always Visible, Clickable) */}
+              <div
+                className={cn(
+                  "flex justify-between items-center",
+                  isOpen ? "mb-4" : "p-3",
+                  "cursor-pointer"
+                )}
+                onClick={handleToggle}
+              >
+                <div className="flex flex-col">
+                  <span className="font-bold text-lg text-[#0B1A33]">{invoice.title}</span>
+                  {invoice.invoiceNumber && (
+                    <span className="text-sm text-gray-500">Invoice #{invoice.invoiceNumber}</span>
+                  )}
+                </div>
+                <div className="flex flex-col items-end">
+                  <span className="font-semibold text-lg text-[#0B1A33]">
+                    {formatCurrency(totalValue, currencySymbol)}
+                  </span>
+                  {invoice.dueDate && (
+                    <span className="text-sm text-gray-500">Due: {invoice.dueDate}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Main Content Section */}
+              <div
+                className={cn(
+                  "transition-all duration-300 ease-in-out overflow-hidden",
+                  isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                )}
+              >
+                {/* Item List */}
+                <ul className="mb-4 space-y-1 text-[#0B1A33]">
+                  {invoice.items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="flex justify-between items-center text-sm ml-4">
+                      <span>• {item.name}</span>
+                      <span>{formatCurrency(item.value, currencySymbol)}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Total Row */}
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
+                  <span className="font-semibold text-[#0B1A33]">Total</span>
+                  <span className="font-bold text-[#0B1A33]">
+                    {formatCurrency(totalValue, currencySymbol)}
+                  </span>
+                </div>
+
+                {/* Go to Payment Button */}
+                {onGoToPayment && (
+                  <div className="flex justify-end mt-5">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        if (onGoToPayment) onGoToPayment(index);
+                      }}
+                      className="px-5 py-1 bg-[#99CC33] text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
+                    >
+                      Go to Payment
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
