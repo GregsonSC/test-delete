@@ -15,7 +15,15 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
  *     tags:
  *       - Blog
  *     summary: Create a new blog post
- *     description: Create a new blog post with required fields and valid topic. Images must be uploaded as multipart/form-data files.
+ *     description: >
+ *       Create a new blog post with required fields and valid topic.
+ *       The `content` field must be a valid JSON object with the following structure:
+ *       {
+ *         "content1": "Contenido antes de la imagen",
+ *         "content2": "Contenido después de la imagen",
+ *         "quote": "Quote baje content1"
+ *       }
+ *       Images must be uploaded as multipart/form-data files.
  *     requestBody:
  *       required: true
  *       content:
@@ -25,25 +33,26 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
  *             required:
  *               - title
  *               - resume
- *               - content
  *               - topic
  *               - publicationDate
  *               - imageUrl
  *               - ContentImageUrl
+ *               - content  # Campo JSON requerido
  *             properties:
  *               title:
  *                 type: string
+ *                 example: "New Web Design Trends"
  *               resume:
  *                 type: string
- *               content:
- *                 type: string
+ *                 example: "A brief overview of design patterns in 2025."
  *               topic:
  *                 type: string
- *                 enum: [TOPIC1, TOPIC2, TOPIC3]  # Reemplaza con los temas válidos
+ *                 enum: [WEBDESIGN, DIGITALMARKETING]  # Reemplaza con los temas válidos
+ *                 example: WEBDESIGN
  *               publicationDate:
  *                 type: string
  *                 format: date
- *                 description: Date must be in YYYY-MM-DD format.
+ *                 example: "2025-06-01"
  *               imageUrl:
  *                 type: string
  *                 format: binary
@@ -52,45 +61,87 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
  *                 format: binary
  *               SubTitle:
  *                 type: string
+ *                 example: "Latest Trends"
  *               ImageSubTitle:
  *                 type: string
+ *                 example: "Visual Representation"
  *               ImageReference:
  *                 type: string
+ *                 example: "https://example.com/image-reference"
  *               userId:
  *                 type: integer
  *                 nullable: true
+ *               content:
+ *                 type: object
+ *                 properties:
+ *                   content1:
+ *                     type: string
+ *                     example: "Contenido antes de la imagen"
+ *                   content2:
+ *                     type: string
+ *                     example: "Contenido después de la imagen"
+ *                   quote:
+ *                     type: string
+ *                     example: "Quote baje content1"
  *     responses:
  *       201:
  *         description: Blog created successfully.
  *       400:
  *         description: Missing or invalid fields.
  *       500:
- *         description: Server error.
+ *         description: Server error while creating the blog.
  */
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
     const title = formData.get("title")?.toString();
     const resume = formData.get("resume")?.toString();
-    const content = formData.get("content")?.toString();
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
-
     const SubTitle = formData.get("SubTitle")?.toString();
     const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
     const ImageReference = formData.get("ImageReference")?.toString();
 
-    const ContentImageUrlForm = formData.get("ContentImageUrl");
+    const ContentImageUrlForm = formData.get("ContentImageUrl")?.toString();
     const imageUrlForm = formData.get("imageUrl");
-
 
     const userId = formData.get("userId")
       ? parseInt(formData.get("userId")!.toString(), 10)
       : undefined;
 
+    const rawContent = formData.get("content")?.toString();
 
+    // ✅ Validar y parsear el JSON content
+    let content:
+      | {
+          content1: string;
+          content2: string;
+          quote: string;
+        }
+      | undefined;
+
+    try {
+      content = rawContent ? JSON.parse(rawContent) : undefined;
+
+      if (
+        !content ||
+        typeof content.content1 !== "string" ||
+        typeof content.content2 !== "string" ||
+        typeof content.quote !== "string"
+      ) {
+        throw new Error("Invalid content structure");
+      }
+    } catch (error) {
+      return createResponse({
+        success: false,
+        message: "Invalid content format.",
+        errors: ["'content' must be a valid JSON with content1, content2, and quote."],
+        status: 400,
+      });
+    }
+
+    
     if (!(imageUrlForm instanceof File) || !(ContentImageUrlForm instanceof File)) {
       return createResponse({
         success: false,
@@ -99,9 +150,11 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+
     const imageUrl = await createImage(imageUrlForm);
     const ContentImageUrl = await createImage(ContentImageUrlForm);
 
+    
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
       return createResponse({
         success: false,
@@ -130,7 +183,19 @@ export async function POST(request: Request) {
     }
 
     const newBlog = await db.blog.create({
-      data: { title, resume, content, topic: topic as Topic, publicationDate, imageUrl, SubTitle, ImageSubTitle, ContentImageUrl, ImageReference, userId },
+      data: {
+        title,
+        resume,
+        content,
+        topic: topic as Topic,
+        publicationDate,
+        imageUrl,
+        SubTitle,
+        ImageSubTitle,
+        ContentImageUrl,
+        ImageReference,
+        userId,
+      },
     });
 
     return createResponse({
@@ -239,11 +304,11 @@ export async function GET(req: Request) {
  *     summary: Update an existing blog post
  *     description: >
  *       Updates an existing blog post by ID. Fields are optional but at least one must be provided.
- *       
+ *
  *       The `topic` field must be one of the following values:
  *       - WEBDESIGN
  *       - DIGITALMARKETING
- *       
+ *
  *       The `publicationDate` must be in `YYYY-MM-DD` format.
  *     parameters:
  *       - name: id
@@ -279,6 +344,18 @@ export async function GET(req: Request) {
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               SubTitle:
+ *                 type: string
+ *                 example: "Latest Trends"
+ *               ImageSubTitle:
+ *                 type: string
+ *                 example: "Visual Representation"
+ *               ImageReference:
+ *                 type: string
+ *                 example: "https://example.com/image-reference"
+ *               userId:
+ *                 type: integer
+ *                 nullable: true
  *     responses:
  *       200:
  *         description: Blog updated successfully.
@@ -319,9 +396,12 @@ export async function PATCH(request: Request) {
     const ContentImageUrlForm = formData.get("ContentImageUrl");
     const imageUrlForm = formData.get("imageUrl");
 
-    const userId = formData.get("userId")? parseInt(formData.get("userId")!.toString(), 10): undefined;
-    
-    const ContentImageUrl = ContentImageUrlForm instanceof File ? await createImage(ContentImageUrlForm) : undefined;
+    const userId = formData.get("userId")
+      ? parseInt(formData.get("userId")!.toString(), 10)
+      : undefined;
+
+    const ContentImageUrl =
+      ContentImageUrlForm instanceof File ? await createImage(ContentImageUrlForm) : undefined;
     const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
     if (publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
@@ -365,8 +445,6 @@ export async function PATCH(request: Request) {
     if (ContentImageUrl) updatedData.ContentImageUrl = ContentImageUrl;
     if (ImageReference) updatedData.ImageReference = ImageReference;
     if (userId) updatedData.userId = userId;
-
-
 
     if (Object.keys(updatedData).length === 0) {
       return createResponse({
