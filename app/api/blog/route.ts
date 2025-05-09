@@ -344,6 +344,9 @@ export async function GET(req: Request) {
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               ContentImageUrl:
+ *                 type: string
+ *                 format: binary
  *               SubTitle:
  *                 type: string
  *                 example: "Latest Trends"
@@ -366,6 +369,7 @@ export async function GET(req: Request) {
  *       500:
  *         description: Server error while updating the blog.
  */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
