@@ -257,19 +257,23 @@ export const requests = [
   {
     id: "req1",
     requestName: "New Website Design",
-    leadStatus: "New Lead",
     associatedService: "Web Development",
     companyPlan: "Premium Plan",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent quis sodales nibh. Fusce fermentum dapibus arcu, id hendrerit odio consectetur vitae.",
-    chatHistory: [ // Added chat history
+    description: "Client requires a complete redesign of their existing e-commerce website. Focus on modern UI/UX and mobile responsiveness.",
+    leadStatus: "Negotiation",
+    chatHistory: [
       { sender: "client" as const, message: "Can you provide a quote for the website?", timestamp: new Date(2023, 8, 1) },
       { sender: "agent" as const, message: "Certainly! I'll prepare a detailed proposal and send it over by tomorrow.", timestamp: new Date(2023, 8, 1) }
     ],
-    // Add estimates array
-    estimates: [
-      { title: "Initial Proposal", items: sampleEstimateItems.slice(0, 2), status: "pending" as const }, // Example status
-      { title: "Phase 1 Estimate", items: sampleEstimateItems.slice(1, 3), status: "approved" as const },
-    ]
+    // Add estimatedValue for requests
+    estimatedValue: {
+      title: "Initial Project Estimate",
+      items: [
+        { name: "Phase 1: Design & UX", value: 1500 },
+        { name: "Phase 2: Development", value: 3500 },
+        { name: "Phase 3: Testing & Deployment", value: 1000 },
+      ],
+    },
   },
   {
     id: "req2",
