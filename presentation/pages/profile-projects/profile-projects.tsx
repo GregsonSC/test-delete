@@ -10,22 +10,12 @@ import { ProfileProjectCard } from "@/presentation/atoms/profile-project/profile
 import { ProfileProjectDetail } from "@/presentation/atoms/profile-project/profile-project-detail"; // Re-added
 import { RequestCard } from "@/presentation/atoms/profile-project/request/request-card";
 import { RequestDetail } from "@/presentation/atoms/profile-project/request/request-detail";
-import { EstimatedValue } from "@/presentation/atoms/profile-project/request/estimated-value"; // Import EstimatedValue
 
 // Define types
 type Request = typeof requests[0];
 type Project = typeof projects[0]; // Re-added Project type
 // Assuming both have a compatible chatHistory structure
 type ChatMessage = (Request["chatHistory"] | Project["chatHistory"])[0];
-
-// Add EstimatedValue structure to RequestItem if not already globally defined
-interface RequestWithEstimate extends Request {
-  estimatedValue?: {
-    title: string;
-    items: Array<{ name: string; value: number }>;
-  };
-}
-
 
 export function ProfileProjects() {
   // State for active tab ('leads' or 'projects') and selected IDs
@@ -35,9 +25,9 @@ export function ProfileProjects() {
 
   // --- Derived State (Memoized for performance) ---
   // Get the full selected item (request or project) based on ID and active tab
-  const selectedItem: RequestWithEstimate | Project | null = useMemo(() => {
+  const selectedItem: Request | Project | null = useMemo(() => {
     if (activeTab === "leads" && selectedRequestId) {
-      return (requests.find((r) => r.id === selectedRequestId) as RequestWithEstimate) || null;
+      return requests.find((r) => r.id === selectedRequestId) || null;
     } else if (activeTab === "projects" && selectedProjectId) {
       return projects.find((p) => p.id === selectedProjectId) || null;
     }
@@ -70,9 +60,9 @@ export function ProfileProjects() {
   // Update handleTabChange to clear both selections
   const handleTabChange = (tab: "leads" | "projects") => {
     setActiveTab(tab);
+    // Clear selections when changing tabs
     setSelectedRequestId(null);
     setSelectedProjectId(null);
-    setActiveBottomTab("chat"); // Reset bottom tab to chat when main tab changes
   };
 
   // --- Effects ---
@@ -283,60 +273,26 @@ export function ProfileProjects() {
                 )}
                 style={{ boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" }}
               >
-                {/* Tabs for Chat and Estimate */}
-                <div className="flex mb-4 flex-shrink-0">
-                  <button
-                    className={cn(
-                      "px-6 py-0 rounded-full mr-2 text-base font-bold md:text-lg",
-                      activeBottomTab === "chat"
-                        ? "bg-[#99CC33] text-white"
-                        : "bg-transparent text-[#739926] border border-[#99CC33]"
-                    )}
-                    onClick={() => setActiveBottomTab("chat")}
-                  >
+                {/* Título del Chat */}
+                <div className="mb-4 flex-shrink-0">
+                  <div className="px-6 py-0 rounded-full bg-[#99CC33] text-white text-center font-bold text-lg w-24 inline-block">
                     Chat
-                  </button>
-                  {/* Show Estimate tab only for leads with an estimate */}
-                  {activeTab === "leads" && selectedItem && 'estimatedValue' in selectedItem && selectedItem.estimatedValue && (
-                    <button
-                      className={cn(
-                        "px-6 py-0 rounded-full text-base font-bold md:text-lg",
-                        activeBottomTab === "estimate"
-                          ? "bg-[#99CC33] text-white"
-                          : "bg-transparent text-[#739926] border border-[#99CC33]"
-                      )}
-                      onClick={() => setActiveBottomTab("estimate")}
-                    >
-                      Estimate
-                    </button>
-                  )}
+                  </div>
                 </div>
-
-                {/* Content for Chat or Estimate */}
-                <div className="flex-1 min-h-0 overflow-y-auto" style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}>
-                   <style jsx>{` div::-webkit-scrollbar { display: none; } `}</style>
+                {/* Área de Mensajes del Chat (Scrollable) */}
+             
+                
+                  {/* Placeholder or Chat Messages */}
                   {!selectedItem ? (
                     <div className="flex items-center justify-center h-full text-gray-400">
-                      {activeTab === 'leads' ? 'Select a request to see details.' : 'Select a project to see details.'}
+                      {/* Update placeholder based on active tab */}
+                      {activeTab === 'leads' ? 'Select a request to see the chat.' : 'Select a project to see the chat.'}
                     </div>
-                  ) : activeBottomTab === "chat" ? (
-                    <ProfileChat messages={currentChatHistory} />
-                  ) : activeBottomTab === "estimate" && activeTab === "leads" && selectedItem && 'estimatedValue' in selectedItem && selectedItem.estimatedValue ? (
-                    <EstimatedValue
-                      title={selectedItem.estimatedValue.title}
-                      items={selectedItem.estimatedValue.items}
-                      displayMode="full" // Or "summary" based on your needs
-                      // Add onAccept/onDecline handlers if needed, e.g.:
-                      // onAccept={() => console.log("Estimate accepted for:", selectedItem.requestName)}
-                      // onDecline={(reason) => console.log("Estimate declined for:", selectedItem.requestName, "Reason:", reason)}
-                    />
                   ) : (
-                     // Fallback if estimate tab is selected but no estimate data (should be rare due to button logic)
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                      No estimate available for this item.
-                    </div>
+                    <ProfileChat messages={currentChatHistory} />
                   )}
-                </div>
+              
+
               </div>
             </div> {/* Fin Columna Derecha */}
           </div> {/* Fin Grid */}
