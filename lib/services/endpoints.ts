@@ -43,6 +43,14 @@ export const endpoints = {
     updateCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to update a specific study case by ID (PATCH)
     DeleteCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to delete a specific study case by ID (DELETE)
   },
+
+  //ServiceArea endpoints
+  servicearea: {
+    getServiceAreas: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to get all service areas (GET)
+    getServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
+    createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
+    updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
+  },
 };
 
 // Header configurations
