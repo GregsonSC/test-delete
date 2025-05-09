@@ -1,16 +1,15 @@
 import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
+
+
 /**
  * @swagger
- * tags:
- *   - name: Service
- *     description: "Work performed by the company in which it specializes, aimed at fulfilling client requests. Currently, there are two available services: Web Design and Development, and Digital Marketing."
- * /api/service:
+ * /api/tag:
  *   post:
  *     tags:
- *       - Service
- *     summary: Create a new Service
- *     description: Creates a new service with name, description, and active fields.
+ *       - Tag
+ *     summary: Create a new tag
+ *     description: Create a new tag with a name.
  *     requestBody:
  *       required: true
  *       content:
@@ -19,18 +18,13 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *             type: object
  *             required:
  *               - name
- *               - description
- *               - active
  *             properties:
  *               name:
  *                 type: string
- *               description:
- *                 type: string
- *               active:
- *                 type: boolean
+ *                 description: Name of the tag.
  *     responses:
  *       201:
- *         description: Service created successfully.
+ *         description: Tag created successfully.
  *       400:
  *         description: Missing or invalid fields.
  *       500:
@@ -40,9 +34,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, active } = data;
+    const { name } = data;
 
-    if (!name || !description || !active) {
+    if (!name) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -51,51 +45,38 @@ export async function POST(request: Request) {
       });
     }
 
-    if (typeof active !== "boolean") {
-      return createResponse({
-        success: false,
-        message: "Invalid field type.",
-        errors: ["'active' must be a boolean."],
-        status: 400,
-      });
-    }
-
-    const newService = await db.service.create({ data });
-
+    const newTag = await db.tag.create({ data });
     return createResponse({
       success: true,
-      data: newService,
-      message: "Service created successfully.",
+      data: newTag,
+      message: "Tag created successfully.",
       status: 201,
     });
   } catch (error) {
-    return handleError(error, "POST Service");
+    return handleError(error, "POST Tag");
   }
 }
 /**
- * @route GET /api/service
- * @desc Obtener uno o todos los servicios
  * @swagger
- * /api/service:
+ * /api/tag:
  *   get:
  *     tags:
- *       - Service
- *     summary: Get one or all Services
- *     description: Retrieve all services or a specific one by ID.
+ *       - Tag
+ *     summary: Retrieve tags
+ *     description: Retrieve a list of all tags, or a specific tag by ID.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: false
  *         schema:
  *           type: integer
- *         description: ID of the service to retrieve.
+ *         description: ID of the tag to retrieve (optional).
  *     responses:
  *       200:
- *         description: Service(s) retrieved successfully.
+ *         description: Tags retrieved successfully.
  *       400:
  *         description: Invalid ID.
  *       404:
- *         description: Service not found.
+ *         description: Tag not found.
  *       500:
  *         description: Server error.
  */
@@ -106,60 +87,59 @@ export async function GET(req: Request) {
     const requestId = searchParams.get("id");
 
     if (!requestId) {
-      const services = await db.service.findMany();
+      const tags = await db.tag.findMany();
       return createResponse({
         success: true,
-        data: services,
-        message: "Services retrieved successfully.",
+        data: tags,
+        message: "Tags retrieved successfully.",
         status: 200,
       });
     }
+
     const id = Number(requestId);
     if (isNaN(id)) {
       return createResponse({
         success: false,
         message: "Invalid ID.",
-        errors: ["The id must be a valid number."],
+        errors: ["The ID must be a valid number."],
         status: 400,
       });
     }
-    const service = await db.service.findUnique({ where: { id } });
+    const tag = await db.tag.findUnique({ where: { id } });
 
-    if (!service) {
+    if (!tag) {
       return createResponse({
         success: false,
-        message: "Service not found.",
-        errors: ["No service exists with the given ID."],
+        message: "Tag not found.",
+        errors: ["No Tag exists with the given ID."],
         status: 404,
       });
     }
     return createResponse({
       success: true,
-      data: service,
-      message: "Service retrieved successfully.",
+      data: tag,
+      message: "Tag retrieved successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "GET Service");
+    return handleError(error, "GET Tag");
   }
 }
 /**
- * @route PATCH /api/service
- * @desc Actualizar un servicio existente
  * @swagger
- * /api/service:
+ * /api/tag:
  *   patch:
  *     tags:
- *       - Service
- *     summary: Update a Service
- *     description: Update one or more fields of a service by ID.
+ *       - Tag
+ *     summary: Update a tag
+ *     description: Update one or more fields of a tag by ID.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
- *         description: ID of the service to update.
+ *         required: true
+ *         description: ID of the tag to update.
  *     requestBody:
  *       required: true
  *       content:
@@ -169,17 +149,14 @@ export async function GET(req: Request) {
  *             properties:
  *               name:
  *                 type: string
- *               description:
- *                 type: string
- *               active:
- *                 type: boolean
+ *                 description: Name of the tag.
  *     responses:
  *       200:
- *         description: Service updated successfully.
+ *         description: Tag updated successfully.
  *       400:
- *         description: Invalid input or ID.
+ *         description: Invalid ID or missing update data.
  *       404:
- *         description: Service not found.
+ *         description: Tag not found.
  *       500:
  *         description: Server error.
  */
@@ -208,61 +185,53 @@ export async function PATCH(request: Request) {
         status: 400,
       });
     }
-    if (data.active) {
-      if (typeof data.active !== "boolean") {
-        return createResponse({
-          success: false,
-          message: "Invalid field type.",
-          errors: ["'active' must be a boolean."],
-          status: 400,
-        });
-      }
-    }
-    const service = await db.service.findUnique({ where: { id } });
-    if (!service) {
+    const tag = await db.tag.findUnique({ where: { id } });
+
+    if (!tag) {
       return createResponse({
         success: false,
-        message: "Service not found.",
-        errors: ["No service exists with the given ID."],
+        message: "Tag not found.",
+        errors: ["No Tag exists with the given ID."],
         status: 404,
       });
     }
-    const updateService = await db.service.update({
+    const updateTag = await db.tag.update({
       where: { id },
       data: { ...data },
     });
+
     return createResponse({
       success: true,
-      data: updateService,
-      message: "Service updated successfully.",
+      data: updateTag,
+      message: "Tag updated successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH Service");
+    return handleError(error, "PATCH Tag");
   }
 }
 /**
- * @route DELETE /api/service
- * @desc Eliminar un servicio
  * @swagger
- * /api/service:
+ * /api/tag:
  *   delete:
  *     tags:
- *       - Service
- *     summary: Delete a Service
- *     description: Delete a service by its ID.
+ *       - Tag
+ *     summary: Delete a tag
+ *     description: Delete a tag by its ID.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
- *         description: ID of the service to delete.
+ *         required: true
+ *         description: ID of the tag to delete.
  *     responses:
  *       200:
- *         description: Service deleted successfully.
+ *         description: Tag deleted successfully.
  *       400:
  *         description: Invalid ID.
+ *       404:
+ *         description: Tag not found.
  *       500:
  *         description: Server error.
  */
@@ -277,18 +246,19 @@ export async function DELETE(req: Request) {
       return createResponse({
         success: false,
         message: "Invalid ID.",
-        errors: ["The id must be a valid number."],
+        errors: ["The ID must be a valid number."],
         status: 400,
       });
     }
-    await db.service.delete({ where: { id } });
 
+    await db.tag.delete({ where: { id } });
+    
     return createResponse({
       success: true,
-      message: "Service deleted successfully.",
+      message: "Tag deleted successfully.",
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "DELETE service");
+    return handleError(error, "DELETE Tag");
   }
 }

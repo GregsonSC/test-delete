@@ -2,15 +2,12 @@ import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 /**
  * @swagger
- *  tags:
- *   - name: Benefit
- *     description: Reasons why users should choose the services of each service area. Each area has a list of benefits that are dynamically rendered on its dedicated page.
  * /api/benefit:
  *   post:
  *     tags:
  *       - Benefit
- *     summary: Create a new Benefit
- *     description: Creates a new benefit with the title, description, and serviceAreaId fields.
+ *     summary: Create a new benefit
+ *     description: Creates a new benefit linked to a specific service area.
  *     requestBody:
  *       required: true
  *       content:
@@ -20,28 +17,33 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *             required:
  *               - title
  *               - description
+ *               - serviceAreaId
  *             properties:
  *               title:
  *                 type: string
+ *                 example: Free Health Checkups
  *               description:
  *                 type: string
+ *                 example: Monthly health checkups available at local clinics.
  *               serviceAreaId:
  *                 type: integer
+ *                 example: 3
  *     responses:
  *       201:
  *         description: Benefit created successfully.
  *       400:
- *         description: Missing or invalid fields.
+ *         description: Missing one or more required fields.
  *       500:
  *         description: Server error.
  */
+
 
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     const { title, description, serviceAreaId } = data;
 
-    if (!title || !description) {
+    if (!title || !description ||! serviceAreaId) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -133,23 +135,23 @@ export async function GET(req: Request) {
     return handleError(error, "GET Benefit");
   }
 }
+
 /**
- * @route PATCH /api/benefit
- * @desc Actualizar un beneficio existente
  * @swagger
  * /api/benefit:
  *   patch:
  *     tags:
  *       - Benefit
- *     summary: Update a Benefit
- *     description: Update one or more fields of a benefit by ID.
+ *     summary: Update an existing benefit
+ *     description: Updates the fields of a benefit by its ID.
  *     parameters:
- *       - in: query
- *         name: id
+ *       - name: id
+ *         in: query
+ *         description: ID of the benefit to update
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID of the benefit to update.
+ *           example: 5
  *     requestBody:
  *       required: true
  *       content:
@@ -159,15 +161,18 @@ export async function GET(req: Request) {
  *             properties:
  *               title:
  *                 type: string
+ *                 example: Updated Benefit Title
  *               description:
  *                 type: string
+ *                 example: Updated benefit description.
  *               serviceAreaId:
  *                 type: integer
+ *                 example: 2
  *     responses:
  *       200:
  *         description: Benefit updated successfully.
  *       400:
- *         description: Invalid input or ID.
+ *         description: Invalid ID or no update data provided.
  *       404:
  *         description: Benefit not found.
  *       500:

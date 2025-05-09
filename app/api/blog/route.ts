@@ -4,17 +4,26 @@ import { createImage } from "../cloudinary/upload/route";
 import { Topic } from "@prisma/client";
 
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
+
 /**
  * @swagger
  * tags:
  *   - name: Blog
- *     description: News or posts related to software development and digital marketing topics published by the company.
+ *     description: Endpoint for managing blog posts, including creating new posts with various attributes.
  * /api/blog:
  *   post:
  *     tags:
  *       - Blog
- *     summary: Create a new Blog
- *     description: Create a new Blog with the provided data.
+ *     summary: Create a new blog post
+ *     description: >
+ *       Create a new blog post with required fields and valid topic.
+ *       The `content` field must be a valid JSON object with the following structure:
+ *       {
+ *         "content1": "Contenido antes de la imagen",
+ *         "content2": "Contenido después de la imagen",
+ *         "quote": "Quote baje content1"
+ *       }
+ *       Images must be uploaded as multipart/form-data files.
  *     requestBody:
  *       required: true
  *       content:
@@ -24,81 +33,63 @@ const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
  *             required:
  *               - title
  *               - resume
- *               - content
  *               - topic
  *               - publicationDate
  *               - imageUrl
+ *               - ContentImageUrl
+ *               - content  # Campo JSON requerido
  *             properties:
  *               title:
  *                 type: string
- *                 description: "Title of the blog."
+ *                 example: "New Web Design Trends"
  *               resume:
  *                 type: string
- *                 description: "Short summary of the blog."
- *               content:
- *                 type: string
- *                 description: "Full content of the blog."
+ *                 example: "A brief overview of design patterns in 2025."
  *               topic:
  *                 type: string
- *                 description: "Topic of the blog. Must be one of: WEBDESIGN, DIGITALMARKETING, GRAPHICDESIGN."
+ *                 enum: [WEBDESIGN, DIGITALMARKETING]  # Reemplaza con los temas válidos
+ *                 example: WEBDESIGN
  *               publicationDate:
  *                 type: string
  *                 format: date
- *                 description: "Publication date of the blog in YYYY-MM-DD format."
+ *                 example: "2025-06-01"
  *               imageUrl:
  *                 type: string
- *                 description: "URL of the blog's image."
+ *                 format: binary
+ *               ContentImageUrl:
+ *                 type: string
+ *                 format: binary
+ *               SubTitle:
+ *                 type: string
+ *                 example: "Latest Trends"
+ *               ImageSubTitle:
+ *                 type: string
+ *                 example: "Visual Representation"
+ *               ImageReference:
+ *                 type: string
+ *                 example: "https://example.com/image-reference"
+ *               userId:
+ *                 type: integer
+ *                 nullable: true
+ *               content:
+ *                 type: object
+ *                 properties:
+ *                   content1:
+ *                     type: string
+ *                     example: "Contenido antes de la imagen"
+ *                   content2:
+ *                     type: string
+ *                     example: "Contenido después de la imagen"
+ *                   quote:
+ *                     type: string
+ *                     example: "Quote baje content1"
  *     responses:
  *       201:
  *         description: Blog created successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   description: "The created blog object."
- *                 message:
- *                   type: string
- *                   example: Blog created successfully.
  *       400:
- *         description: Bad request, missing or invalid fields.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: All fields are required.
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
+ *         description: Missing or invalid fields.
  *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: Error creating blog
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
+ *         description: Server error while creating the blog.
  */
 export async function POST(request: Request) {
   try {
@@ -106,12 +97,52 @@ export async function POST(request: Request) {
 
     const title = formData.get("title")?.toString();
     const resume = formData.get("resume")?.toString();
-    const content = formData.get("content")?.toString();
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
+    const SubTitle = formData.get("SubTitle")?.toString();
+    const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
+    const ImageReference = formData.get("ImageReference")?.toString();
 
+    const ContentImageUrlForm = formData.get("ContentImageUrl")?.toString();
     const imageUrlForm = formData.get("imageUrl");
-    if (!(imageUrlForm instanceof File)) {
+
+    const userId = formData.get("userId")
+      ? parseInt(formData.get("userId")!.toString(), 10)
+      : undefined;
+
+    const rawContent = formData.get("content")?.toString();
+
+    // ✅ Validar y parsear el JSON content
+    let content:
+      | {
+          content1: string;
+          content2: string;
+          quote: string;
+        }
+      | undefined;
+
+    try {
+      content = rawContent ? JSON.parse(rawContent) : undefined;
+
+      if (
+        !content ||
+        typeof content.content1 !== "string" ||
+        typeof content.content2 !== "string" ||
+        typeof content.quote !== "string"
+      ) {
+        throw new Error("Invalid content structure");
+      }
+    } catch (error) {
+      return createResponse({
+        success: false,
+        message: "Invalid content format.",
+        errors: ["'content' must be a valid JSON with content1, content2, and quote."],
+        status: 400,
+      });
+    }
+
+    
+    if (!(imageUrlForm instanceof File) || !(ContentImageUrlForm instanceof File)) {
       return createResponse({
         success: false,
         message: "The image must be valid file.",
@@ -119,8 +150,11 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-    const imageUrl = await createImage(imageUrlForm);
 
+    const imageUrl = await createImage(imageUrlForm);
+    const ContentImageUrl = await createImage(ContentImageUrlForm);
+
+    
     if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
       return createResponse({
         success: false,
@@ -149,7 +183,19 @@ export async function POST(request: Request) {
     }
 
     const newBlog = await db.blog.create({
-      data: { title, resume, content, topic: topic as Topic, publicationDate, imageUrl },
+      data: {
+        title,
+        resume,
+        content,
+        topic: topic as Topic,
+        publicationDate,
+        imageUrl,
+        SubTitle,
+        ImageSubTitle,
+        ContentImageUrl,
+        ImageReference,
+        userId,
+      },
     });
 
     return createResponse({
@@ -249,24 +295,28 @@ export async function GET(req: Request) {
     return handleError(error, "GET Blog");
   }
 }
-
 /**
- * @route PATCH /api/blog
- * @desc Actualizar un blog existente
  * @swagger
  * /api/blog:
  *   patch:
  *     tags:
  *       - Blog
- *     summary: Update a blog
- *     description: Updates a blog using the provided fields. Only sends updated fields.
+ *     summary: Update an existing blog post
+ *     description: >
+ *       Updates an existing blog post by ID. Fields are optional but at least one must be provided.
+ *
+ *       The `topic` field must be one of the following values:
+ *       - WEBDESIGN
+ *       - DIGITALMARKETING
+ *
+ *       The `publicationDate` must be in `YYYY-MM-DD` format.
  *     parameters:
- *       - in: query
- *         name: id
+ *       - name: id
+ *         in: query
+ *         required: true
  *         schema:
  *           type: integer
- *         required: true
- *         description: "ID of the blog to update."
+ *         description: ID of the blog post to update
  *     requestBody:
  *       required: true
  *       content:
@@ -276,28 +326,48 @@ export async function GET(req: Request) {
  *             properties:
  *               title:
  *                 type: string
+ *                 example: "Updated Web Design Trends"
  *               resume:
  *                 type: string
+ *                 example: "A brief update on design patterns in 2025."
  *               content:
  *                 type: string
+ *                 example: "In this update, we revise the 2024 design assumptions..."
  *               topic:
  *                 type: string
- *                 description: "Must be one of: WEBDESIGN, DIGITALMARKETING, GRAPHICDESIGN."
+ *                 enum: [WEBDESIGN, DIGITALMARKETING]
+ *                 example: DIGITALMARKETING
  *               publicationDate:
  *                 type: string
  *                 format: date
+ *                 example: "2025-06-01"
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               ContentImageUrl:
+ *                 type: string
+ *                 format: binary
+ *               SubTitle:
+ *                 type: string
+ *                 example: "Latest Trends"
+ *               ImageSubTitle:
+ *                 type: string
+ *                 example: "Visual Representation"
+ *               ImageReference:
+ *                 type: string
+ *                 example: "https://example.com/image-reference"
+ *               userId:
+ *                 type: integer
+ *                 nullable: true
  *     responses:
  *       200:
  *         description: Blog updated successfully.
  *       400:
- *         description: Invalid input or no data to update.
+ *         description: Validation error or no data provided.
  *       404:
  *         description: Blog not found.
  *       500:
- *         description: Server error.
+ *         description: Server error while updating the blog.
  */
 
 export async function PATCH(request: Request) {
@@ -323,10 +393,21 @@ export async function PATCH(request: Request) {
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
 
+    const SubTitle = formData.get("SubTitle")?.toString();
+    const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
+    const ImageReference = formData.get("ImageReference")?.toString();
+
+    const ContentImageUrlForm = formData.get("ContentImageUrl");
     const imageUrlForm = formData.get("imageUrl");
+
+    const userId = formData.get("userId")
+      ? parseInt(formData.get("userId")!.toString(), 10)
+      : undefined;
+
+    const ContentImageUrl =
+      ContentImageUrlForm instanceof File ? await createImage(ContentImageUrlForm) : undefined;
     const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
-    // Validaciones
     if (publicationDate && !/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)) {
       return createResponse({
         success: false,
@@ -362,6 +443,12 @@ export async function PATCH(request: Request) {
     if (topic) updatedData.topic = topic as Topic;
     if (publicationDate) updatedData.publicationDate = publicationDate;
     if (imageUrl) updatedData.imageUrl = imageUrl;
+
+    if (SubTitle) updatedData.SubTitle = SubTitle;
+    if (ImageSubTitle) updatedData.ImageSubTitle = ImageSubTitle;
+    if (ContentImageUrl) updatedData.ContentImageUrl = ContentImageUrl;
+    if (ImageReference) updatedData.ImageReference = ImageReference;
+    if (userId) updatedData.userId = userId;
 
     if (Object.keys(updatedData).length === 0) {
       return createResponse({

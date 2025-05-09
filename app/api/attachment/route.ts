@@ -7,19 +7,19 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
 
 /**
  * @swagger
- * tags:
- *   - name: Attachment
- *     description: Digital resource that must be stored in the project's file database, as it can be an image, a document, a video, among others. Several tables are related to this one since they need to have associated resources, such as an Activity, a Ticket, among others.
  * /api/attachment:
  *   post:
  *     tags:
  *       - Attachment
- *     summary: Create a new Attachment
- *     description: Creates a new attachment with name, description, type, and url fields.
+ *     summary: Create a new attachment
+ *     description: >
+ *       Creates a new attachment associated with an activity, ticket, product, and project update.  
+ *       The `type` must be one of: "IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS".  
+ *       A valid file must be provided in the `url` field.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -27,6 +27,10 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *               - description
  *               - type
  *               - url
+ *               - activityId
+ *               - ticketId
+ *               - productId
+ *               - projectupdate_id
  *             properties:
  *               name:
  *                 type: string
@@ -34,12 +38,19 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *                 type: string
  *               type:
  *                 type: string
- *                 enum: [IMAGE, DOCUMENT, URL, VIDEO, OTHERS]
+ *                 description: Type of attachment
+ *                 example: IMAGE
  *               url:
  *                 type: string
+ *                 format: binary
+ *                 description: File to upload
  *               activityId:
  *                 type: integer
  *               ticketId:
+ *                 type: integer
+ *               productId:
+ *                 type: integer
+ *               projectupdate_id:
  *                 type: integer
  *     responses:
  *       201:
@@ -50,6 +61,7 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *         description: Server error.
  */
 
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -57,6 +69,19 @@ export async function POST(request: Request) {
     const name = formData.get("name")?.toString();
     const description = formData.get("description")?.toString();
     const type = formData.get("type")?.toString();
+
+    const activityId = formData.get("activityId")
+      ? parseInt(formData.get("activityId")!.toString(), 10)
+      : undefined;
+    const ticketId = formData.get("ticketId")
+      ? parseInt(formData.get("ticketId")!.toString(), 10)
+      : undefined;
+    const productId = formData.get("productId")
+      ? parseInt(formData.get("productId")!.toString(), 10)
+      : undefined;
+    const projectupdate_id = formData.get("projectupdate_id")
+      ? parseInt(formData.get("projectupdate_id")!.toString(), 10)
+      : undefined;
 
     const urlForm = formData.get("url");
 
@@ -70,17 +95,8 @@ export async function POST(request: Request) {
     }
     const url = await createImage(urlForm);
 
-    const activityId = formData.get("activityId")
-      ? parseInt(formData.get("activityId")!.toString(), 10)
-      : undefined;
-    const ticketId = formData.get("ticketId")
-      ? parseInt(formData.get("ticketId")!.toString(), 10)
-      : undefined;
-    const productId = formData.get("productId")
-      ? parseInt(formData.get("productId")!.toString(), 10)
-      : undefined;
-
-    if (!name || !description || !type || !url || !activityId || !ticketId) {
+    if (!name || !description || !type || !url || !activityId || !ticketId||!productId||!projectupdate_id
+    ) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -106,6 +122,7 @@ export async function POST(request: Request) {
         activityId,
         ticketId,
         productId,
+        projectupdate_id
       },
     });
 
@@ -191,27 +208,29 @@ export async function GET(req: Request) {
     return handleError(error, "GET Attachment");
   }
 }
+
 /**
- * @route PATCH /api/attachment
- * @desc Actualizar un archivo adjunto existente
  * @swagger
  * /api/attachment:
  *   patch:
  *     tags:
  *       - Attachment
- *     summary: Update an Attachment
- *     description: Update one or more fields of an attachment by ID.
+ *     summary: Update an existing attachment
+ *     description: >
+ *       Updates fields of an existing attachment.  
+ *       The `type` must be one of: "IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS".  
+ *       At least one field must be provided. The file in `url` is optional and replaces the existing file if provided.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
- *         description: ID of the attachment to update.
+ *         required: true
+ *         description: ID of the attachment to update
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -221,18 +240,25 @@ export async function GET(req: Request) {
  *                 type: string
  *               type:
  *                 type: string
- *                 enum: [IMAGE, DOCUMENT, URL, VIDEO, OTHERS]
+ *                 description: Type of attachment
+ *                 example: DOCUMENT
  *               url:
  *                 type: string
+ *                 format: binary
+ *                 description: Optional file to replace the existing one
  *               activityId:
  *                 type: integer
  *               ticketId:
+ *                 type: integer
+ *               productId:
+ *                 type: integer
+ *               projectupdate_id:
  *                 type: integer
  *     responses:
  *       200:
  *         description: Attachment updated successfully.
  *       400:
- *         description: Invalid input or ID.
+ *         description: Invalid ID or no data provided for update.
  *       404:
  *         description: Attachment not found.
  *       500:
@@ -257,7 +283,18 @@ export async function PATCH(request: Request) {
     const name = formData.get("name")?.toString();
     const description = formData.get("description")?.toString();
     const type = formData.get("type")?.toString();
-
+    const activityId = formData.get("activityId")
+      ? parseInt(formData.get("activityId")!.toString(), 10)
+      : undefined;
+    const ticketId = formData.get("ticketId")
+      ? parseInt(formData.get("ticketId")!.toString(), 10)
+      : undefined;
+    const productId = formData.get("productId")
+      ? parseInt(formData.get("productId")!.toString(), 10)
+      : undefined;
+    const projectupdate_id = formData.get("projectupdate_id")
+      ? parseInt(formData.get("projectupdate_id")!.toString(), 10)
+      : undefined;
     const urlForm = formData.get("url");
     const url = urlForm instanceof File ? await createImage(urlForm) : undefined;
 
@@ -287,6 +324,11 @@ export async function PATCH(request: Request) {
     if (description) updatedData.description = description;
     if (type) updatedData.type = type as TypeAttachment;
     if (url) updatedData.url = url;
+
+    if (activityId) updatedData.activityId = activityId;
+    if (ticketId) updatedData.ticketId = ticketId;
+    if (productId) updatedData.productId = productId;
+    if (projectupdate_id) updatedData.projectupdate_id = projectupdate_id;
 
     if (Object.keys(updatedData).length === 0) {
       return createResponse({
