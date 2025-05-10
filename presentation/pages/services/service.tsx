@@ -48,38 +48,41 @@ export function ServicePage() {
   const { serviceAreas } = serviceAreaViewModel;
   const getServiceArea = serviceAreaViewModel.getServiceArea;
   const ValidCounty = validCounty
-  const ServiceAreas = [...serviceAreas]
   
   // Estado para controlar si los datos están cargados
   const [isLoading, setIsLoading] = useState(true);
   
-  // Ejecutar después del montaje para simular la carga de datos
-  useEffect(() => {
-    // Simulamos un tiempo de carga
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  console.log("contentTest", ServiceAreas);
-
   const params = useParams<{ service: string[] }>()
   console.log(params);
 
   const [county, city, serviceKey] = params.service ?? []
 
   //Relacionar serviceKey con un id
-  const serviceID = serviceKey === "marketing" ? 2 : 1
+  const serviceID = serviceKey === "marketing" ? 2 : serviceKey === "websites" ? 1 : 0
   console.log("serviceID", serviceID);
 
   //Relacionar county con el correspondiente PORQUE EN LA URL NO ESTA EN MAYUSCULA AAAAAAAAH
   const countyID = county === "miami-dade" ? "MIAMI_DATE" : county === "broward" ? "BROWARD" : county === "palm-beach" ? "WEST_PALM_BEACH" : "";
   console.log("countyID", countyID);
 
+  // Ejecutar después del montaje para simular la carga de datos y validar parámetros
+  useEffect(() => {
+    // Asegurarse de que serviceAreas tenga datos
+    if (serviceAreas.length === 0) {
+      console.log("Waiting for service areas data to load...");
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    } else {
+      console.log("ServiceAreas loaded:", serviceAreas);
+      setIsLoading(false);
+    }
+  }, [serviceAreas]);
+
   //Buscar el serviceArea que haga match a partir de los parametros de la URL
-  const serviceArea = ServiceAreas.find(item => item.county === countyID && item.service_id === serviceID);
+  const serviceArea = serviceAreas.find(item => item.county === countyID && item.service_id === serviceID);
 
   // En lugar de usar getServiceArea, usamos directamente la información que ya tenemos
   // IdtoSearch ya contiene el área de servicio que necesitamos
@@ -91,19 +94,27 @@ export function ServicePage() {
 
   // Useeffect para verificar la validez de los datos después de cargar
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && serviceAreas.length > 0) {
       // Después de cargar, verificamos si los datos son válidos
       const isValidCounty = countyID && ValidCounty.includes(countyID);
       const isValidService = serviceID === 1 || serviceID === 2;
       const serviceAreaExists = !!serviceArea;
       const contentExists = !!content;
       
+      console.log("Validation check:", { 
+        isValidCounty, 
+        isValidService, 
+        serviceAreaExists, 
+        contentExists,
+        serviceAreas: serviceAreas.length
+      });
+      
       // Si algo no es válido, redirigimos a notFound
       if (!isValidCounty || !isValidService || !serviceAreaExists || !contentExists) {
         notFound();
       }
     }
-  }, [isLoading, countyID, serviceID, serviceArea, content]);
+  }, [isLoading, countyID, serviceID, serviceArea, content, serviceAreas]);
 
   // Si no hay datos, usar valores predeterminados en lugar de redirigir
   const title = serviceArea?.MainTitle || "Servicio no disponible";
