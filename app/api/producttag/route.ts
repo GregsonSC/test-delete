@@ -71,24 +71,3 @@ export async function POST(request: Request) {
     return handleError(error, "POST ProductTag");
   }
 }
-/*
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const requestId = searchParams.get("id");
-
-    if (!requestId) {
-      const benefits = await db.benefit.findMany();
-      return createResponse({
-        success: true,
-        data: benefits,
-        message: "Benefits retrieved successfully.",
-        status: 200,
-      });
-    }
-
-  } catch (error) {
-    return handleError(error, "GET ProductTag");
-  }
-}
-*/
