@@ -3,15 +3,7 @@
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { useParams } from "next/navigation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
-import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
-import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardTitle, CardContent} from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,49 +13,62 @@ import { validCounty } from "./ServiceAreaViewmodel";
 import { ServiceAreaViewModel } from "./ServiceAreaViewmodel";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ReviewSummary } from "@/presentation/organisms/review-summary/review-summary";
 
-const reviewItems = [
-  {
-    profilePicture: "/fotos-prueba/joe.jpg",
-    name: "Sarah Johnson",
-    rating: 5.0,
-    review: "Review",
-  },
-  {
-    profilePicture: "/fotos-prueba/joe.jpg",
-    name: "Michael Chen",
-    rating: 5.0,
-    review: "Review",
-  },
-  {
-    profilePicture: "/fotos-prueba/joe.jpg",
-    name: "Emily Rodriguez",
-    rating: 5.0,
-    review: "Review",
-  }
-];
 
 export function ServicePage() {
-  const serviceAreaViewModel = ServiceAreaViewModel();
-  const { serviceAreas } = serviceAreaViewModel;
-  const getServiceArea = serviceAreaViewModel.getServiceArea;
+  const { serviceAreas, getServiceArea } = ServiceAreaViewModel();
   const ValidCounty = validCounty
-  
-  // Estado para controlar si los datos están cargados
+  const [idToSearch, setIdToSearch] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  
   const params = useParams<{ service: string[] }>()
-  console.log(params);
-
-  const [county, city, serviceKey] = params.service ?? []
-
-  //Relacionar serviceKey con un id
+  const [county, city, serviceKey] = params.service ?? [] //Te retorna un array con los params del url
   const serviceID = serviceKey === "marketing" ? 2 : serviceKey === "websites" ? 1 : 0
-  console.log("serviceID", serviceID);
-
-  //Relacionar county con el correspondiente PORQUE EN LA URL NO ESTA EN MAYUSCULA AAAAAAAAH
   const countyID = county === "miami-dade" ? "MIAMI_DATE" : county === "broward" ? "BROWARD" : county === "palm-beach" ? "WEST_PALM_BEACH" : "";
-  console.log("countyID", countyID);
+  {/* SWITCH CASE relacionando los params del URL con un id
+
+    Importante: se prevee que cada ServiceArea tenga un ID unico*/}
+  // switch (county) {
+  //   case "miami-dade":
+  //     switch (serviceKey) {
+  //       case "websites":
+  //         idToSearch = "1"
+  //         break;
+  //       case "marketing":
+  //         idToSearch = "2"
+  //         break;
+  //     }
+  //     break;
+  //   case "broward":
+  //     switch (serviceKey) {
+  //       case "websites":
+  //         idToSearch = "3"
+  //         break;
+  //       case "marketing":
+  //         idToSearch = "4"
+  //         break;
+  //     }
+  //     break;
+  //   case "west-palm-beach":
+  //     switch (serviceKey) {
+  //       case "websites":
+  //         idToSearch = "5"
+  //         break;
+  //       case "marketing":
+  //         idToSearch = "6"
+  //         break;
+  //     }
+  //     break;
+  //   default:
+  //     idToSearch = " "
+  //     break;
+  // }
+
+
+  let title = ""
+  let description = ""
+  let subtitle = ""
+  let items: any[] = []
 
   // Ejecutar después del montaje para simular la carga de datos y validar parámetros
   useEffect(() => {
@@ -73,54 +78,68 @@ export function ServicePage() {
       const timer = setTimeout(() => {
         setIsLoading(false);
       }, 1500);
-      
+
+      getAllServiceAreas()
       return () => clearTimeout(timer);
     } else {
       console.log("ServiceAreas loaded:", serviceAreas);
+      //Buscar el serviceArea que haga match a partir de los parametros de la URL
+      const serviceArea = serviceAreas.find(item => item.county === countyID && item.service_id === serviceID);
+
+
+      // Si no hay datos, usar valores predeterminados en lugar de redirigir
+      title = serviceArea?.MainTitle || "Servicio no disponible";
+      description = serviceArea?.description || "Información no disponible";
+      subtitle = serviceArea?.SubTitle || "Servicios no disponibles";
+      items = content?.cardItems || [];
       setIsLoading(false);
     }
+
   }, [serviceAreas]);
 
-  //Buscar el serviceArea que haga match a partir de los parametros de la URL
-  const serviceArea = serviceAreas.find(item => item.county === countyID && item.service_id === serviceID);
 
   // En lugar de usar getServiceArea, usamos directamente la información que ya tenemos
   // IdtoSearch ya contiene el área de servicio que necesitamos
-  console.log("serviceArea", serviceArea);
 
   const countyConfig = serviceContent[county]
   const validCity = countyConfig?.cities.includes(city)
   const content = validCity ? countyConfig.services[serviceKey] : undefined
 
   // Useeffect para verificar la validez de los datos después de cargar
-  useEffect(() => {
-    if (!isLoading && serviceAreas.length > 0) {
-      // Después de cargar, verificamos si los datos son válidos
-      const isValidCounty = countyID && ValidCounty.includes(countyID);
-      const isValidService = serviceID === 1 || serviceID === 2;
-      const serviceAreaExists = !!serviceArea;
-      const contentExists = !!content;
-      
-      console.log("Validation check:", { 
-        isValidCounty, 
-        isValidService, 
-        serviceAreaExists, 
-        contentExists,
-        serviceAreas: serviceAreas.length
-      });
-      
-      // Si algo no es válido, redirigimos a notFound
-      if (!isValidCounty || !isValidService || !serviceAreaExists || !contentExists) {
-        notFound();
-      }
-    }
-  }, [isLoading, countyID, serviceID, serviceArea, content, serviceAreas]);
+  // useEffect(() => {
+  //   if (!isLoading && serviceAreas.length > 0) {
+  //     // Después de cargar, verificamos si los datos son válidos
+  //     const isValidCounty = countyID && ValidCounty.includes(countyID);
+  //     const isValidService = serviceID === 1 || serviceID === 2;
+  //     const serviceAreaExists = !!serviceArea;
+  //     const contentExists = !!content;
 
-  // Si no hay datos, usar valores predeterminados en lugar de redirigir
-  const title = serviceArea?.MainTitle || "Servicio no disponible";
-  const description = serviceArea?.description || "Información no disponible";
-  const subtitle = serviceArea?.SubTitle || "Servicios no disponibles";
-  const items = content?.cardItems || [];
+  //     console.log("Validation check:", {
+  //       isValidCounty,
+  //       isValidService,
+  //       serviceAreaExists,
+  //       contentExists,
+  //       serviceAreas: serviceAreas.length
+  //     });
+
+  //     // Si algo no es válido, redirigimos a notFound
+  //     if (!isValidCounty || !isValidService || !serviceAreaExists || !contentExists) {
+  //       notFound();
+  //     }
+
+  //     getAllServiceAreas()
+  //   }
+  // }, [isLoading, countyID, serviceID, serviceArea, content, serviceAreas]);
+
+
+
+  const getAllServiceAreas = async () => {
+
+    await getServiceArea(idToSearch)
+
+    // debugger
+
+  }
 
   return (
     <MainLayout>
@@ -135,7 +154,7 @@ export function ServicePage() {
                   <>
                     {/* Skeleton para el título usando ShadCN */}
                     <Skeleton className="h-14 lg:h-20 w-3/4 mx-auto lg:mx-0 rounded-md" />
-                    
+
                     {/* Skeleton para la descripción usando ShadCN */}
                     <div className="space-y-2">
                       <Skeleton className="h-4 w-full rounded-md" />
@@ -143,7 +162,7 @@ export function ServicePage() {
                       <Skeleton className="h-4 w-3/4 rounded-md" />
                       <Skeleton className="h-4 w-5/6 rounded-md" />
                     </div>
-                    
+
                     {/* Skeleton para el botón usando ShadCN */}
                     <Skeleton className="h-14 w-72 mx-auto lg:mx-0 rounded-full" />
                   </>
@@ -176,7 +195,7 @@ export function ServicePage() {
                 <>
                   {/* Skeleton para el subtítulo usando ShadCN */}
                   <Skeleton className="h-10 w-1/2 mx-auto lg:mx-0 mb-8 rounded-md" />
-                  
+
                   {/* Skeletons para las tarjetas usando ShadCN */}
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3 p-4 rounded-md">
@@ -236,24 +255,7 @@ export function ServicePage() {
                     See the results of dozens of businesses that have trusted Senavia and seen positive returns. We offer a unique experience where you are our #1 priority.
                   </p>
                 </div>
-
-                {/* Google Reviews Summary */}
-                <div className="flex justify-center mb-12">
-                  <GoogleReviewCard rating={5.0} totalReviews={25} />
-                </div>
-
-                {/* Individual Reviews Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {reviewItems.map((review, index) => (
-                    <ReviewCardUser
-                      key={index}
-                      profilePicture={review.profilePicture}
-                      name={review.name}
-                      rating={review.rating}
-                      review={review.review}
-                    />
-                  ))}
-                </div>
+                <ReviewSummary />
               </div>
             </div>
           </div>

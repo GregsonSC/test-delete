@@ -25,6 +25,9 @@ export const ServiceAreaViewModel = () => {
 
     const getServiceArea = async (id: string) => {
         const { response, status, errorLogs } = await fetchData(endpoints.servicearea.getServiceArea(id), "get");
+
+        debugger
+
         if (status === 200) {
             if (response) { setServiceAreas(response as unknown as ServiceArea[]) }
         }
@@ -35,4 +38,5 @@ export const ServiceAreaViewModel = () => {
 };
 
 export default ServiceAreaViewModel
+// constantes moverlo alla
 export { validCounty }
