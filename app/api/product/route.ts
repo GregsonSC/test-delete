@@ -172,18 +172,24 @@ export async function GET(request: Request) {
     const offset = Number(searchParams.get("offset")) || 0;
     const productsPerPage = 2;
 
+    // Get All
     if (!requestId) {
+      
       const [products, totalProducts] = await Promise.all([
+        //Promise products
         db.product.findMany({
           skip: offset,
           take: productsPerPage,
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            url: true,
+          include: {
+            ProductTag: {
+              include: {
+                tag: true,
+              },
+            },
           },
         }),
+
+        //Promise totalProducts
         db.product.count(),
       ]);
 
@@ -200,6 +206,7 @@ export async function GET(request: Request) {
       });
     }
 
+    // Get By ID
     const id = Number(requestId);
     if (isNaN(id)) {
       return NextResponse.json(
@@ -213,7 +220,12 @@ export async function GET(request: Request) {
       );
     }
 
-    const product = await db.product.findUnique({ where: { id }});
+    const product = await db.product.findUnique({
+      where: { id },
+      include: {
+        ProductTag: { include: { tag: true } },
+      },
+    });
 
     if (!product) {
       return NextResponse.json(
