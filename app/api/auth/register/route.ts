@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
-import { verifyToken, hashPassword, authMiddleware } from "@/middleware/Secure-middleware";
+import { verifyToken, hashPassword, authMiddleware } from "@/middleware/SecureJWT-middleware";
 /**
  * @swagger
  * /api/auth/register:

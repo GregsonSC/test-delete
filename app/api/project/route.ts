@@ -4,8 +4,10 @@ import db from "@/lib/prisma";
 import { CurrentPhase } from "@prisma/client";
 import { createImage } from "../cloudinary/upload/route";
 
-import { authMiddleware } from "@/middleware/Secure-middleware";
-import { NextRequest, NextResponse } from "next/server";
+
+import { authMiddleware } from "@/middleware/SecureJWT-middleware";
+import { NextRequest } from "next/server";
+
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 /**
@@ -336,6 +338,7 @@ export async function PATCH(request: Request) {
       });
     }
 
+
     const project = await db.project.findUnique({ where: { id } });
     if (!project) {
       return createResponse({
@@ -346,7 +349,10 @@ export async function PATCH(request: Request) {
       });
     }
 
+
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+
     if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
       return createResponse({
         success: false,

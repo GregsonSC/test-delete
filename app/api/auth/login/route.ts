@@ -4,6 +4,7 @@ import argon2 from "argon2";
 import { signToken } from "@/lib/jwt";
 import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
 import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
+import { checkBlocked } from "@/middleware/BlockedIP"; 
 /**
  * @swagger
  * /api/auth/login:
@@ -45,13 +46,17 @@ import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
  *                   type: string
  *                   example: "Login successful"
  *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       token:
- *                         type: string
- *                         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     email:
+ *                       type: string
+ *                       example: "usuario@ejemplo.com"
+ *                     name:
+ *                       type: string
+ *                       example: "Nombre del Usuario"
  *                 errors:
  *                   type: array
  *                   items:
@@ -80,6 +85,29 @@ import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
  *                   items:
  *                     type: string
  *                   example: ["Credentials mismatch"]
+ *       423:
+ *         description: Demasiados intentos de inicio de sesión (Usuario bloqueado)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Too many failed attempts. Temporarily blocked."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Blocked by security policy"]
  *       429:
  *         description: Demasiados intentos de inicio de sesión (Rate limit excedido)
  *         content:
@@ -109,22 +137,32 @@ import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
 const limiter = loginRateLimit(3, 60 * 1000); // 3 intentos cada 60 segundos
 
 export async function POST(request: NextRequest) {
-  // Extraer IP
-  let ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
+  const { email, password } = await request.json();
 
-  // Valida la IP y en caso de ser privada o inválida, intenta usar 'x-real-ip'
-  if (!isValidIP(ip) || isPrivateIP(ip)) {
-    ip = request.headers.get("x-real-ip") || "unknown";
-  }
-  // Si aún no es válida, marca la IP como desconocida
-  if (!isValidIP(ip)) {
-    ip = "unknown";
+  const { blocked, ip } = await checkBlocked(request, email);
+
+  if (blocked) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Too many failed attempts. Temporarily blocked.",
+        errors: ["Blocked by security policy"],
+        data: [],
+      },
+      { status: 423 }
+    );
   }
 
-  // Rate limiting basado en IP
   const limitCheck = limiter(ip);
-
   if (!limitCheck.allowed) {
+    await db.loginAttempt.create({
+      data: {
+        ip,
+        email,
+        success: false,
+      },
+    });
+
     return NextResponse.json(
       {
         success: false,
@@ -136,11 +174,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { email, password } = await request.json();
-
   const user = await db.user.findUnique({ where: { email } });
+  const passwordValid = user && (await argon2.verify(user.password, password));
+  const success = !!passwordValid;
 
-  if (!user || !(await argon2.verify(user.password, password))) {
+  await db.loginAttempt.create({
+    data: {
+      ip,
+      email,
+      success,
+    },
+  });
+
+  if (!success) {
     return NextResponse.json(
       {
         success: false,
@@ -152,10 +198,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Generar token
-  const token = signToken({ id: user.id, email: user.email ,name: user.name});
+  const token = signToken({ id: user.id, email: user.email, name: user.name });
 
-  // Crear respuesta con cookie
   const response = NextResponse.json({
     success: true,
     message: "Login successful",
@@ -172,7 +216,7 @@ export async function POST(request: NextRequest) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",
-    maxAge: 60 * 60 * 24, // 1 día
+    maxAge: 60 * 60 * 24,
   });
 
   return response;

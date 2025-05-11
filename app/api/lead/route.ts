@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
-import { authMiddleware } from "@/middleware/Secure-middleware";
+import { authMiddleware } from "@/middleware/SecureJWT-middleware";
 
 /**
  * @swagger
@@ -37,6 +37,10 @@ import { authMiddleware } from "@/middleware/Secure-middleware";
  *                 type: string
  *                 description: Name of the lead.
  *                 example: Lead Name
+ *               description:
+ *                 type: string
+ *                 description: Detailed description of the lead.
+ *                 example: This lead is interested in our premium services.
  *               state:
  *                 type: string
  *                 description: State of the lead (required), SEND, PROCESSING, ESTIMATING OR FINISHED.

@@ -229,3 +229,16 @@ Código	Cuándo usarlo						          De quién es la culpa
 400		  El cliente envió algo incorrecto	Cliente
 404		  El recurso no fue encontrado		  Cliente
 500		  Algo falló dentro del servidor		Servidor
+
+
+# Rate-Limiting
+
+- api/utils/login-rate-limit.ts
+
+El Rate Limiting (limitación de tasa) es una técnica utilizada para controlar la cantidad de solicitudes que un cliente puede realizar a un servidor en un período de tiempo determinado. Su propósito principal es proteger la API contra abusos, como ataques de fuerza bruta, scraping excesivo o tráfico malicioso, y mejorar la estabilidad y rendimiento del sistema.
+Si se supera el límite, el servidor responderá con un código de estado HTTP 429 Too Many Requests.
+
+windowMs: Duración del intervalo en milisegundos.
+
+Implementacion del rate limiting en 
+- api/auth/login/route.ts
