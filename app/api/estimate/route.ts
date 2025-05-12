@@ -77,6 +77,16 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+    // Validate that the Lead exists
+    const lead = await db.lead.findUnique({ where: { id: lead_id } });
+    if (!lead) {
+      return createResponse({ success: false, message: "Lead not found.", status: 400 });
+    }
+    // Validate that the Plan exists
+    const plan = await db.plan.findUnique({ where: { id: plan_id } });
+    if (!plan) {
+      return createResponse({ success: false, message: "Plan not found.", status: 400 });
+    }
 
     if (!validState.includes(state)) {
       return createResponse({
@@ -272,15 +282,20 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const estimate = await db.estimate.findUnique({ where: { id } });
-
-    if (!estimate) {
-      return createResponse({
-        success: false,
-        message: "Estimate not found.",
-        errors: ["No estimate exists with the given ID."],
-        status: 404,
-      });
+    // Validate that the Lead exists
+    if (data.lead_id) {
+      const lead = await db.lead.findUnique({ where: { id: data.lead_id } });
+      if (!lead) {
+        return createResponse({ success: false, message: "Lead not found.", status: 400 });
+      }
+    }
+    
+    // Validate that the Plan exists
+    if (data.plan_id) {
+      const plan = await db.plan.findUnique({ where: { id: data.plan_id } });
+      if (!plan) {
+        return createResponse({ success: false, message: "Plan not found.", status: 400 });
+      }
     }
 
     const updateEstimate = await db.estimate.update({
