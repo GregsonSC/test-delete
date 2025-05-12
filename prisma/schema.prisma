@@ -536,3 +536,9 @@ model LoginAttempt {
   success     Boolean
   attemptedAt DateTime @default(now())
 }
+
+model Clause {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+}
