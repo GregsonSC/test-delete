@@ -63,6 +63,10 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                 type: integer
  *                 description: ID of the associated service.
  *                 example: 2
+ *               workTeamId:
+ *                 type: integer
+ *                 description: ID of the associated work team.
+ *                 example: 5
  *     responses:
  *       201:
  *         description: Lead created successfully.
@@ -131,6 +135,7 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                   items:
  *                     type: string
  */
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
@@ -207,6 +212,60 @@ export async function POST(request: NextRequest) {
  *                   items:
  *                     type: object
  *                     description: The lead object(s).
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       clientName:
+ *                         type: string
+ *                         example: "Jane Doe"
+ *                       clientEmail:
+ *                         type: string
+ *                         example: "jane.doe@example.com"
+ *                       clientPhone:
+ *                         type: string
+ *                         example: "+123456789"
+ *                       name:
+ *                         type: string
+ *                         example: "Lead Name"
+ *                       description:   # Valor agregado
+ *                         type: string
+ *                         example: "Description of the lead"
+ *                       state:
+ *                         type: string
+ *                         example: "New"
+ *                       startDate:
+ *                         type: string
+ *                         format: date
+ *                         example: "2023-01-01"
+ *                       endDate:
+ *                         type: string
+ *                         format: date
+ *                         example: "2023-12-31"
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "User Name"
+ *                       service:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Service Name"
+ *                       WorkTeam:
+ *                         type: string
+ *                         example: "Team A"
+ *                       WorkTeamId:
+ *                         type: integer
+ *                         example: 2
  *                 message:
  *                   type: string
  *                   example: Leads fetched successfully
@@ -278,6 +337,8 @@ export async function POST(request: NextRequest) {
  *                   items:
  *                     type: string
  */
+
+
 export async function GET(request: NextRequest) {
   // Validar el token antes de continuar
   const auth = authMiddleware(request);
@@ -295,11 +356,13 @@ export async function GET(request: NextRequest) {
           clientEmail: true,
           clientPhone: true,
           name: true,
+          description:true,
           state: true,
           startDate: true,
           endDate: true,
           user: true,
           service: true,
+          WorkTeam:true
         },
       });
 
@@ -405,6 +468,10 @@ export async function GET(request: NextRequest) {
  *                 type: string
  *                 description: Updated name of the lead.
  *                 example: Updated Lead Name
+ *               description:   # Valor agregado
+ *                 type: string
+ *                 description: Updated description of the lead.
+ *                 example: "This is an updated description for the lead."
  *               state:
  *                 type: string
  *                 description: Updated state of the lead.
@@ -427,6 +494,10 @@ export async function GET(request: NextRequest) {
  *                 type: integer
  *                 description: Updated service ID.
  *                 example: 3
+ *               workTeamId:
+ *                 type: integer
+ *                 description: Updated work team ID.
+ *                 example: 4
  *     responses:
  *       200:
  *         description: Lead updated successfully.
