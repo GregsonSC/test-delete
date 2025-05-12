@@ -21,6 +21,7 @@ model User {
   password     String
   phone        String
   imageUrl     String
+  address      String           
   role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
   roleId       Int //Dato para hacer la relacion
   leads        Lead[] // Relación Uno a Muchos con Lead
@@ -208,6 +209,8 @@ model Lead {
   user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   serviceId   Int?
   service     Service?   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  //workTeamId  Int?
+  //WorkTeam    WorkTeam?  @relation(fields: [workTeamId], references: [id])
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   Estimate    Estimate[]
@@ -452,6 +455,7 @@ model WorkTeam {
   description  String
   state        StateWorkTeam
   area         AreaWorkTeam
+  //leads        Lead[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   UserWorkTeam UserWorkTeam[]
