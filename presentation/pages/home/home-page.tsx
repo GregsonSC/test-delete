@@ -85,9 +85,6 @@ export function HomePage() {
           />
         </div>
       </section>
-
-
-
       {/* --- PARTNERS LOGOS SECTION --- */}
       <section className="w-full bg-white py-8 lg:h-[150px]">
         <div className="container mx-auto h-full flex items-center justify-center">
@@ -121,8 +118,6 @@ export function HomePage() {
         </div>
       </section>
       {/* --- END PARTNERS LOGOS SECTION --- */}
-
-
       {/* --- HERO VIDEO SECTION --- */}
       <section className="min-h-screen relative flex flex-col justify-center items-center">
         <video
@@ -155,7 +150,6 @@ export function HomePage() {
         </div>
       </section>
       {/* --- END HERO VIDEO SECTION --- */}
-
       {/* Second Section */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
@@ -202,11 +196,6 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-
-
-
-
       {/* Portfolio Section */}
       <section className=" px-4 md:px-6 mx-auto relative">
         <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
@@ -277,24 +266,15 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-
-
-
       {ContactInfo(1)}
-
       <ScheduleFreeConsultation />
-
       {/* Fourth Section - Blog/Resources */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
-
         <LatestNews />
-
       </section>
-
     </MainLayout>
   );
 }

@@ -7,6 +7,7 @@ export const ServiceAreaViewModel = () => {
     const { fetchData } = useFetch();
     const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
 
+    // ! Toca cambiar el viewmodel cuando se reciba los datos del backend para ver si la respuesta es igual a la de mockapi o no
     const getServiceArea = async (id: string) => {
         const { response, status, errorLogs } = await fetchData(endpoints.servicearea.getServiceArea(id), "get");
         if (status === 200) {

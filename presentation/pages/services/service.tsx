@@ -29,7 +29,8 @@ export function ServicePage() {
   type County = 'miami-dade' | 'broward' | 'west-palm-beach';
   type ServiceKey = 'websites' | 'marketing';
   const idToSearch = (ID_MAP[county as County]?.[serviceKey as ServiceKey]) ?? '0';
-  
+
+  // ! Se usa mockApi para obtener los datos de las areas de servicio
   useEffect(() => {
     const loadData = async () => {
       try {

@@ -11,7 +11,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-card-image";
 import { useState, useEffect } from "react";
-import {BlogViewModel} from "@/presentation/pages/blog/BlogViewModel";
+import { BlogViewModel } from "@/presentation/pages/blog/BlogViewModel";
 import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
 import { StudyCaseViewModel } from "./StudyCaseViewModel";
 
@@ -35,23 +35,23 @@ export interface StudyCaseItemInterface {
 export interface NewsItem {
   id: string;
   title: string;
-  content: string;  image?:string;
+  content: string; image?: string;
   date?: string;
- 
- tag?: string;
+
+  tag?: string;
 }
 
 
 export function LatestNews() {
 
-    const { posts } = BlogViewModel();
-    const {StudyCases} = StudyCaseViewModel();
-    const [loading, setLoading] = useState(true);
+  const { posts } = BlogViewModel();
+  const { StudyCases } = StudyCaseViewModel();
+  const [loading, setLoading] = useState(true);
 
-    // Get the 6 most recent posts
-    const recentPosts = [...posts].slice(-6);
-    
-    const blogItems: blogItemInterface[] = recentPosts.map((post) => ({
+  // Get the 6 most recent posts
+  const recentPosts = [...posts].slice(-6);
+
+  const blogItems: blogItemInterface[] = recentPosts.map((post) => ({
     id: String(post.id),
     title: post.title,
     content: post.content,
@@ -60,23 +60,23 @@ export function LatestNews() {
     tag: post.topic,
   }));
 
-    // Last 6 items
-    const shuffledCases = [...StudyCases].slice(-6);
-    
-    const caseItems: StudyCaseItemInterface[] = shuffledCases.map((caseItem) => ({
-      id: String(caseItem.id),
-      title: caseItem.title,
-      content: caseItem.resume,
-      image: caseItem.videoUrl
-    }));
+  // Last 6 items
+  const shuffledCases = [...StudyCases].slice(-6);
+
+  const caseItems: StudyCaseItemInterface[] = shuffledCases.map((caseItem) => ({
+    id: String(caseItem.id),
+    title: caseItem.title,
+    content: caseItem.resume,
+    image: caseItem.videoUrl
+  }));
 
 
 
-    useEffect(() => {
-        if (posts && posts.length > 0) {
-          setLoading(false);
-        }
-      }, [posts]);
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      setLoading(false);
+    }
+  }, [posts]);
 
   const [activeTab, setActiveTab] = React.useState("blog");
 
@@ -100,8 +100,7 @@ export function LatestNews() {
     itemsToDisplay = caseItems;
     displayType = "cases";
   }
-  // ! CH004 [ADD] Endpoint para blog y estudio de casos 
-  // LISTOOOO pero toca cambiar un poco la logica de los viewmodel cuando este la base de datos a usar porque cambia un poco
+  // ! Cambiar el viewmodel de blogs porque usa mockapi
   return (
     <div className="w-full py-12 text-white">
       <div className="mx-auto max-w-[1400px] px-4">
@@ -120,8 +119,8 @@ export function LatestNews() {
               <TabsList className="p-0 overflow-hidden rounded-full flex w-[280px] h-[42px]">
                 <TabsTrigger
                   value="blog"
-                  className="text-[16px] md:text-[18px] font-[700] rounded-l-full rounded-r-none px-6 py-2 w-1/2 
-                  data-[state=active]:bg-white data-[state=active]:text-[#739926] 
+                  className="text-[16px] md:text-[18px] font-[700] rounded-l-full rounded-r-none px-6 py-2 w-1/2
+                  data-[state=active]:bg-white data-[state=active]:text-[#739926]
                   data-[state=inactive]:bg-[#739926] data-[state=inactive]:text-[#D3E8A9]
                   transition-all duration-300 ease-in-out
                   hover:brightness-110 hover:shadow-md"
@@ -130,8 +129,8 @@ export function LatestNews() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="cases"
-                  className="text-[16px] md:text-[18px] font-[700] rounded-r-full rounded-l-none px-6 py-2 w-1/2 
-                  data-[state=active]:bg-white data-[state=active]:text-[#739926] 
+                  className="text-[16px] md:text-[18px] font-[700] rounded-r-full rounded-l-none px-6 py-2 w-1/2
+                  data-[state=active]:bg-white data-[state=active]:text-[#739926]
                   data-[state=inactive]:bg-[#739926] data-[state=inactive]:text-[#D3E8A9]
                   transition-all duration-300 ease-in-out
                   hover:brightness-110 hover:shadow-md"
@@ -168,8 +167,8 @@ export function LatestNews() {
                 {itemsToDisplay.map((item) => (
                   <CarouselItem key={item.id} className={`${displayType === "blog" ? "basis-full lg:basis-1/2 xl:basis-1/3" : "basis-full sm:basis-full md:basis-full"} flex justify-center px-0 sm:px-2`}>
                     <div className={`relative w-full h-full flex justify-center ${displayType === "blog"
-                        ? "max-w-[319px]"
-                        : "max-w-[319px] md:max-w-[600px]"
+                      ? "max-w-[319px]"
+                      : "max-w-[319px] md:max-w-[600px]"
                       }`}>
                       {displayType === 'blog' ? (
                         loading ? (
@@ -179,12 +178,12 @@ export function LatestNews() {
                             image={"/images/portfolio/portafolioTestImg.webp"}
                             title={item.title}
                             content={item.content}
-                            date={(item as blogItemInterface).date.slice(0,10)}
+                            date={(item as blogItemInterface).date.slice(0, 10)}
                             tag={(item as blogItemInterface).tag === "WEBDESIGN" ? "Web Development" : (item as blogItemInterface).tag === "DIGITALMARKETING" ? "Marketing" : "Marketing"}
                             href={`/blog/${item.id}`}
                           />
                         )
-                        
+
                       ) : (
                         <div className="w-full h-full ml-5 sm:ml-0 bg-[#1A1A1A] rounded-lg overflow-hidden flex flex-col border-2 border-[#8ECF0A] shadow-[0_0_15px_rgba(142,207,10,0.5)]">
                           <div className="p-3 sm:p-4 md:p-6 bg-[#1A1A1A] text-center">
@@ -192,11 +191,7 @@ export function LatestNews() {
                             <p className="text-xs sm:text-sm text-white/80">{item.content}</p>
                           </div>
                           <div className="flex-grow flex items-center justify-center" style={{ maxHeight: "336px", height: "auto" }}>
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                            />
+                            <iframe src={item.image} title={item.title} className="w-full h-full object-cover" />
                           </div>
                         </div>
                       )}
