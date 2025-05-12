@@ -1,7 +1,7 @@
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
 const validServiceAssociated = [
-  " NORMALUSERS",
+  "NORMALUSERS",
   "ADMINUSERS",
   "LEADS",
   "ESTIMATES",
@@ -10,7 +10,7 @@ const validServiceAssociated = [
   "PRODUCTS",
   "SERVICEAREAS",
 ];
-const validAction = [" GET", "CREATE", "UPDATE", "DELETE"];
+const validAction = ["GET", "CREATE", "UPDATE", "DELETE"];
 /** 
  * @swagger
  * tags:

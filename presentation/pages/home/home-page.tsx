@@ -1,20 +1,44 @@
+"use client"; // Add "use client" because PortfolioViewModel uses hooks
+
 import Link from "next/link";
+import React, { useMemo } from "react"; // Import useMemo
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
-import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
+import { PortfolioCarousel, PortfolioItem } from "@/presentation/organisms/carousel/portfolio-carousel"; // Import PortfolioItem type
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { LatestNews } from "@/presentation/molecules/news/latest-news";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
-import { blogItems, caseItems, portfolioItems, reviewItems } from "@/lib/constants2";
-
+import { blogItems, caseItems, reviewItems } from "@/lib/constants2"; // Removed portfolioItems from here
+import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel"; // Import the ViewModel
 
 
 export function HomePage() {
+  // Fetch portfolio items using the ViewModel
+  const { portfolioItems: fetchedPortfolioItems, loading, error } = PortfolioViewModel();
+
+  // Hardcoded tags
+  const defaultTags = ["Tag1", "Tag2", "Tag3"];
+
+  // Memoize the portfolio items with added tags
+  const carouselPortfolioItems: PortfolioItem[] = useMemo(() => {
+    if (loading || error || !fetchedPortfolioItems) {
+      return []; // Return empty array for loading/error states, skeleton will show
+    }
+    return fetchedPortfolioItems.map(item => ({
+      ...item,
+      // Ensure imageUrl and href are correctly mapped if names differ
+      // For example, if your API returns 'image' and 'url':
+      imageUrl: item.image, // Adjust if API field name is different
+      href: item.url,           // Adjust if API field name is different
+      tags: defaultTags,
+    }));
+  }, [fetchedPortfolioItems, loading, error, defaultTags]);
+
   return (
     <MainLayout>
       {/* First Section - Hero */}
@@ -146,7 +170,7 @@ export function HomePage() {
               Digital Services That Will Lead You To Online Success
             </Heading>
 
-          {/* ! CH005 [URL] Agregar urls para navegar donde se requiere */}
+            {/* ! CH005 [URL] Agregar urls para navegar donde se requiere */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
@@ -205,7 +229,9 @@ export function HomePage() {
           </p>
           <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
             {/* ! CH002: obtener datos del backend para agregar la data del carousel, img, tags, title, description, href  */}
-            <PortfolioCarousel items={portfolioItems} />
+            {/* Pass the processed items to the carousel */}
+            {/* The carousel will show a skeleton if carouselPortfolioItems is empty (due to loading, error, or no data) */}
+            <PortfolioCarousel items={carouselPortfolioItems} />
           </div>
         </div>
       </section>

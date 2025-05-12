@@ -19,6 +19,7 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { useUser } from "@/context/UserContext";
+import AuthViewModel from "@/presentation/pages/auth/AuthViewModel"; // Import AuthViewModel
 
 interface NavItem {
   label: string;
@@ -192,11 +193,9 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
   const [areaDropdowns, setAreaDropdowns] = useState<Record<string, boolean>>({});
-  // Remove local isLogged and userName
-  // const [isLogged, setIsLogged] = useState(false);
-  // const userName = "Name"; // This would come from your auth system
 
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
+  const { logout: authLogout, loading: authLoading } = AuthViewModel(); // <-- Instantiate AuthViewModel and get logout function
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -218,28 +217,20 @@ export function Navbar() {
     }));
   };
 
-  // Function to handle login
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    // Optionally, setUser with user data if you have it
-  };
-
   // Function to handle logout
-  const handleLogout = () => { //cambiarlo por endpoint
-    setIsLoggedIn(false);
-    setUser(null);
+  const handleLogout = async () => {
+    const result = await authLogout(); // Call logout from AuthViewModel
 
-    // Limpiar todas las cookies
-    if (typeof document !== "undefined") {
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date(0).toUTCString() + ";path=/");
-      });
+    if (result.success) {
+      setUser(null);
+      setIsLoggedIn(false);
+      // No need to manually clear cookies here if the backend handles HttpOnly cookie removal
+      window.location.href = "/login"; // Redirect to login
+    } else {
+      // Handle logout failure (e.g., show a notification)
+      console.error("Logout failed:", result.message);
+      alert(`Logout failed: ${result.message}`); // Simple alert, consider a better notification system
     }
-
-    // Redirigir a login
-    window.location.href = "/login";
   };
 
 

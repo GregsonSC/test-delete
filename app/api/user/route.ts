@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 import { verifyToken, hashPassword, authMiddleware } from "@/middleware/SecureJWT-middleware";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
+import { createImage } from "../cloudinary/upload/route";
 /**
  * @swagger
  * /api/user:
@@ -201,40 +203,42 @@ export async function GET(request: NextRequest) {
  *   patch:
  *     tags:
  *       - User
- *     summary: Actualizar un usuario
- *     description: Actualiza la información de un usuario específico por ID. No se permite modificar el correo electrónico.
- *     security:
- *       - BearerAuth: []
+ *     summary: Update a user
+ *     description: Updates a user's information by ID. Accepts name, phone, password, image, and roleId. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
- *         description: ID del usuario a actualizar.
  *         schema:
  *           type: integer
+ *         required: true
+ *         description: The ID of the user to update.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: El correo electrónico del usuario (no se puede modificar).
- *               password:
- *                 type: string
- *                 description: Nueva contraseña del usuario (opcional).
  *               name:
  *                 type: string
- *                 description: Nombre del usuario (opcional).
+ *                 example: John Doe
  *               phone:
  *                 type: string
- *                 description: Teléfono del usuario (opcional).
+ *                 example: "+123456789"
+ *               password:
+ *                 type: string
+ *                 example: "newPassword123"
+ *               imageUrl:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile image of the user (optional).
+ *               roleId:
+ *                 type: integer
+ *                 example: 2
+ *                 description: The ID of the user's role.
  *     responses:
  *       200:
- *         description: Usuario actualizado exitosamente
+ *         description: User updated successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -243,6 +247,9 @@ export async function GET(request: NextRequest) {
  *                 success:
  *                   type: boolean
  *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "User updated successfully"
  *                 data:
  *                   type: array
  *                   items:
@@ -250,106 +257,41 @@ export async function GET(request: NextRequest) {
  *                     properties:
  *                       id:
  *                         type: integer
+ *                         example: 1
  *                       name:
  *                         type: string
- *                       email:
- *                         type: string
- *                         format: email
+ *                         example: "John Doe"
  *                       phone:
  *                         type: string
+ *                         example: "+123456789"
  *                       imageUrl:
  *                         type: string
+ *                         example: "https://cloudinary.com/path/to/image.jpg"
  *                       role:
  *                         type: object
  *                         properties:
  *                           id:
  *                             type: integer
+ *                             example: 2
  *                           name:
  *                             type: string
- *                 message:
- *                   type: string
- *                   example: "User  updated successfully"
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
- *                     example: []
+ *                             example: "Admin"
  *       400:
- *         description: Solicitud incorrecta
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "No data provided"
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
- *                     example: ["Missing request body"]
+ *         description: Invalid ID or no data provided.
  *       404:
- *         description: Usuario no encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "User  not found"
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
- *                     example: ["User  does not exist"]
+ *         description: User not found.
  *       500:
- *         description: Error del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 message:
- *                   type: string
- *                   example: "Error updating user"
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
- *                     example: ["Unknown error"]
+ *         description: Server error while updating user.
  */
+
 export async function PATCH(request: NextRequest) {
-  //  Validar el token primero
+  // Validar el token primero
   const auth = authMiddleware(request);
   if (auth) return auth;
 
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
-    const data = await request.json();
-
-    if (!data) {
-      return NextResponse.json(
-        {
-          success: false,
-          data: [],
-          message: "No data provided",
-          errors: ["Missing request body"],
-        },
-        { status: 400 }
-      );
-    }
 
     const id = Number(requestId);
     if (isNaN(id) || !requestId) {
@@ -381,49 +323,68 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    if (data.email && data.email !== user.email) {
-      return NextResponse.json(
-        {
+    const form = await request.formData();
+    const name = form.get("name")?.toString() || undefined;
+    const phone = form.get("phone")?.toString() || undefined;
+    const password = form.get("password")?.toString();
+    const imageFile = form.get("imageUrl");
+    const roleIdRaw = form.get("roleId")?.toString();
+    const roleId = roleIdRaw ? parseInt(roleIdRaw) : undefined;
+
+    if (roleId) {
+      if (roleIdRaw && isNaN(roleId)) {
+        return createResponse({
           success: false,
-          data: [],
-          message: "Email cannot be modified",
-          errors: ["Email change is not allowed"],
-        },
-        { status: 400 }
-      );
+          message: "Invalid roleId",
+          errors: ["roleId must be an integer"],
+          status: 400,
+        });
+      }
     }
 
-    if (data.password) {
-      data.password = await hashPassword(data.password);
-    }
+    const updatedData: any = {};
 
-    delete data.email; // Por seguridad
+    if (name) updatedData.name = name;
+    if (phone) updatedData.phone = phone;
+    if (roleId !== undefined) updatedData.roleId = roleId;
+    if (password) updatedData.password = await hashPassword(password);
+    if (imageFile && imageFile instanceof File) {
+      const imageUrl = await createImage(imageFile);
+      if (!imageUrl) {
+        return createResponse({
+          success: false,
+          message: "The image was not uploaded to cloudinary",
+          errors: ["Cloudinary error."],
+          status: 400,
+        });
+      }
+      updatedData.imageUrl = imageUrl;
+    }
 
     const updatedUser = await db.user.update({
       where: { id },
-      data,
+      data: updatedData,
       include: { role: true },
     });
 
-    return NextResponse.json({
+    return createResponse({
       success: true,
-      data: [updatedUser],
       message: "User updated successfully",
-      errors: [],
+      data: [updatedUser],
+      status: 200,
     });
+
   } catch (error) {
     console.error("Error updating user:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        data: [],
-        message: "Error updating user",
-        errors: [error instanceof Error ? error.message : "Unknown error"],
-      },
-      { status: 500 }
-    );
+    return createResponse({
+      success: false,
+      message: "Error updating user",
+      errors: [error instanceof Error ? error.message : "Unknown error"],
+      status: 500,
+    });
   }
 }
+
 /**
  * @swagger
  * /api/user:

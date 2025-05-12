@@ -105,6 +105,7 @@ const AuthViewModel = () => {
         true // withCredentials
       );
       if (status === 200) {
+        console.log("Logout Response:", response);
         return {
           success: true,
           message: response?.message || "Logged out successfully"

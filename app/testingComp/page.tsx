@@ -9,10 +9,59 @@ import { Button } from "@/presentation/atoms/button/button";
 import { toast } from "sonner";
 import { DefaultToast } from "@/presentation/atoms/toast/default/default-toast";
 import { DefaultSucess } from "@/presentation/atoms/toast/sucess/default-sucess";
+import { EstimatedValue } from "@/presentation/atoms/profile-project/request/estimated-value";
+import { Invoice } from "@/presentation/atoms/profile-project/request/invoice";
 
 export default function TestingComp() {
   const promise = () =>
     new Promise((resolve) => setTimeout(() => resolve({ name: "Sonner" }), 2000));
+
+  // Sample data for EstimatedValue
+  const sampleEstimates = [
+    {
+      title: "Website Development Project",
+      items: [
+        { name: "UI/UX Design", value: 1500 },
+        { name: "Frontend Development", value: 2500 },
+        { name: "Backend Integration", value: 3000 },
+        { name: "Testing & Deployment", value: 1000 }
+      ]
+    },
+    {
+      title: "Mobile App Development",
+      items: [
+        { name: "UI/UX Design", value: 2000 },
+        { name: "Frontend Development", value: 3500 },
+        { name: "Backend Integration", value: 2800 },
+        { name: "Testing & Deployment", value: 1200 }
+      ]
+    }
+  ];
+
+  // Sample data for Invoice
+  const sampleInvoices = [
+    {
+      title: "Website Development Invoice",
+      invoiceNumber: "INV-2023-001",
+      dueDate: "2023-12-15",
+      items: [
+        { name: "UI/UX Design", value: 1500 },
+        { name: "Frontend Development", value: 2500 },
+        { name: "Backend Integration", value: 3000 },
+        { name: "Testing & Deployment", value: 1000 }
+      ]
+    },
+    {
+      title: "Mobile App Maintenance",
+      invoiceNumber: "INV-2023-002",
+      dueDate: "2023-12-30",
+      items: [
+        { name: "Bug Fixes", value: 800 },
+        { name: "Feature Updates", value: 1200 },
+        { name: "Performance Optimization", value: 1500 }
+      ]
+    }
+  ];
 
   return (
     <div className="w-screen h-screen flex-row items-center">
@@ -28,7 +77,8 @@ export default function TestingComp() {
         <HoverCardImage
           image="/fotos-prueba/joe.jpg"
           title="Default Image"
-          content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquam risus nec elit luctus, sed vehicula magna suscipit. Donec et sem a"
+          content="Lorem :;V
+          ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquam risus nec elit luctus, sed vehicula magna suscipit. Donec et sem a"
           date="2023-01-01"
           tag="DefaultTag"
           href="/"
@@ -48,13 +98,13 @@ export default function TestingComp() {
           <Button variant="outline" onClick={() => DefaultToast.normal("add toast")}>
             Normal
           </Button>
-          <Button variant="outline" onClick={() => DefaultToast.title("add toast","esta tiene titulo")}>
+          <Button variant="outline" onClick={() => DefaultToast.title("add toast", "esta tiene titulo")}>
             Normal titulo
           </Button>
           <Button variant="outline" onClick={() => DefaultToast.normalStart("add toast")}>
             Normal estrella
           </Button>
-          <Button variant="outline" onClick={() => DefaultToast.titleStart("add toast","estrella")}>
+          <Button variant="outline" onClick={() => DefaultToast.titleStart("add toast", "estrella")}>
             Titulo estrella
           </Button>
           <Button variant="outline" onClick={() => DefaultSucess()}>
@@ -104,7 +154,37 @@ export default function TestingComp() {
           </Button>
         </CardContent>
       </Card>
-  
+
+      {/* EstimatedValue Component */}
+      <Card className="w-full p-6 mt-8 bg-white">
+        <CardHeader>
+          <CardTitle className="text-[#0B1A33]">Estimated Value Component</CardTitle>
+          <CardDescription>Multiple estimate cards with accept/decline functionality</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EstimatedValue
+            estimates={sampleEstimates}
+            currencySymbol="$"
+            onAccept={(index) => toast.success(`Estimate #${index + 1} accepted!`)}
+            onDecline={(index, reason) => toast.error(`Estimate #${index + 1} declined: ${reason || "No reason provided"}`)}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Invoice Component */}
+      <Card className="w-full p-6 mt-8 bg-white">
+        <CardHeader>
+          <CardTitle className="text-[#0B1A33]">Invoice Component</CardTitle>
+          <CardDescription>Multiple invoice cards with payment functionality</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Invoice
+            invoices={sampleInvoices}
+            currencySymbol="$"
+            onGoToPayment={(index) => toast.success(`Redirecting to payment for Invoice #${sampleInvoices[index].invoiceNumber}`)}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

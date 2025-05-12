@@ -46,13 +46,17 @@ import { checkBlocked } from "@/middleware/BlockedIP";
  *                   type: string
  *                   example: "Login successful"
  *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       token:
- *                         type: string
- *                         example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     email:
+ *                       type: string
+ *                       example: "usuario@ejemplo.com"
+ *                     name:
+ *                       type: string
+ *                       example: "Nombre del Usuario"
  *                 errors:
  *                   type: array
  *                   items:
@@ -81,6 +85,29 @@ import { checkBlocked } from "@/middleware/BlockedIP";
  *                   items:
  *                     type: string
  *                   example: ["Credentials mismatch"]
+ *       423:
+ *         description: Demasiados intentos de inicio de sesión (Usuario bloqueado)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Too many failed attempts. Temporarily blocked."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: []
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Blocked by security policy"]
  *       429:
  *         description: Demasiados intentos de inicio de sesión (Rate limit excedido)
  *         content:

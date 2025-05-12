@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import db from "@/lib/prisma";
 import { verifyToken, hashPassword, authMiddleware } from "@/middleware/SecureJWT-middleware";
+import { createImage } from "../../cloudinary/upload/route";
+import { createResponse, handleError } from "@/app/api/utils/handlers";
 /**
  * @swagger
  * /api/auth/register:
@@ -8,11 +10,11 @@ import { verifyToken, hashPassword, authMiddleware } from "@/middleware/SecureJW
  *     tags:
  *       - Register
  *     summary: Crear un nuevo usuario
- *     description: Crea un usuario con los datos enviados en el body.
+ *     description: Crea un usuario con los datos enviados en el formulario, incluyendo una imagen de perfil.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -20,6 +22,7 @@ import { verifyToken, hashPassword, authMiddleware } from "@/middleware/SecureJW
  *               - password
  *               - name
  *               - roleId
+ *               - imageUrl
  *             properties:
  *               email:
  *                 type: string
@@ -30,27 +33,60 @@ import { verifyToken, hashPassword, authMiddleware } from "@/middleware/SecureJW
  *                 type: string
  *               phone:
  *                 type: string
+ *                 nullable: true
  *               imageUrl:
  *                 type: string
+ *                 format: binary
  *               roleId:
  *                 type: integer
- *                 description: ID del rol del usuario (por ejemplo, 1 para 'admin', 2 para 'user', etc.)
+ *                 description: ID del rol del usuario (1 = Admin, 2 = Usuario, etc.)
  *     responses:
  *       201:
- *         description: Usuario creado exitosamente
+ *         description: Usuario creado exitosamente.
  *       400:
- *         description: El correo electrónico ya está registrado
+ *         description: Solicitud inválida. Verifique los campos enviados.
  *       500:
- *         description: Error del servidor
+ *         description: Error interno del servidor.
  */
+
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
+    const form = await request.formData();
 
-    const userFound = await db.user.findUnique({
-      where: { email: data.email },
-    });
+    const email = form.get("email")?.toString();
+    const password = form.get("password")?.toString();
+    const name = form.get("name")?.toString();
+    const phone = form.get("phone")?.toString() || null;
+    const roleIdRaw = form.get("roleId")?.toString();
+    const imageFile = form.get("imageUrl");
 
+    if (!email || !password || !name || !phone || !roleIdRaw || !imageFile) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Missing required fields",
+          errors: ["email, password, name and roleId are required"],
+        },
+        { status: 400 }
+      );
+    }
+
+    const roleId = parseInt(roleIdRaw);
+
+    if (isNaN(roleId)) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Invalid roleId",
+          errors: ["roleId must be an integer"],
+        },
+        { status: 400 }
+      );
+    }
+
+    const userFound = await db.user.findUnique({ where: { email } });
     if (userFound) {
       return NextResponse.json(
         {
@@ -63,10 +99,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    data.password = await hashPassword(data.password);
+    const hashedPassword = await hashPassword(password);
+
+    if (!(imageFile instanceof File)) {
+      return createResponse({
+        success: false,
+        message: "The image must be valid file.",
+        errors: ["Must be uploaded as file."],
+        status: 400,
+      });
+    }
+    const imageUrl = await createImage(imageFile);
+    
+    if (!imageUrl) {
+      return createResponse({
+        success: false,
+        message: "The image was not uploaded to cloudinary",
+        errors: ["Error cloudinary."],
+        status: 400,
+      });
+    }
 
     const newUser = await db.user.create({
-      data,
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        phone,
+        imageUrl,
+        roleId,
+      },
       include: { role: true },
     });
 

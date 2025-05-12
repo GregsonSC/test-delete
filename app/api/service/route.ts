@@ -4,7 +4,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  * @swagger
  * tags:
  *   - name: Service
- *     description: Work performed by the company in which it specializes, aimed at fulfilling client requests. Currently, there are two available services: Web Design and Development, and Digital Marketing.
+ *     description: "Work performed by the company in which it specializes, aimed at fulfilling client requests. Currently, there are two available services: Web Design and Development, and Digital Marketing."
  * /api/service:
  *   post:
  *     tags:
@@ -36,6 +36,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *       500:
  *         description: Server error.
  */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
