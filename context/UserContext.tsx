@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 import { decodeJwt } from "jose";
 import { UserData } from "@/components/interface/modules/Auth";
