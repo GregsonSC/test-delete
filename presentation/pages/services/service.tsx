@@ -7,7 +7,6 @@ import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {serviceContentCards } from "@/components/const/service";
 import { notFound } from "next/navigation";
 import { ServiceAreaViewModel } from "./ServiceAreaViewmodel";
 import { useEffect, useState } from "react";
@@ -16,7 +15,6 @@ import { ReviewSummary } from "@/presentation/organisms/review-summary/review-su
 
 
 export function ServicePage() {
-  const cardInfo = serviceContentCards
   const { serviceAreas, getServiceArea } = ServiceAreaViewModel();
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams<{ service: string[] }>()
@@ -56,10 +54,10 @@ export function ServicePage() {
         {/* first section */}
         <section>
           <div className="overflow-hidden relative">
-            <Image 
-              src={serviceAreas[0]?.heroImageUrl} 
-              alt="hero" 
-              width={840} 
+            <Image
+              src={serviceAreas[0]?.heroImageUrl}
+              alt="hero"
+              width={840}
               height={679}
               className="hidden lg:block rounded-md absolute top-28 right-0 w-[840px] h-[679px] object-cover opacity-50 z-0"
             />
@@ -126,7 +124,7 @@ export function ServicePage() {
                 <>
                   <h1 className="font-bold text-4xl mb-5 lg:text-5xl lg:text-start">{serviceAreas[0]?.SubTitle}</h1>
                   <div>
-                    {cardInfo.marketing.cardItems.map((card, i) => (
+                    {serviceAreas[0].service.map((card, i) => (
                       <Card
                         key={i}
                         className="relative border border-white text-start items-center justify-center bg-white/5 mb-3 pt-3"
