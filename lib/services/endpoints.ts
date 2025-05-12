@@ -37,7 +37,7 @@ export const endpoints = {
   },
 
   // Test endpoint for checking API connectivity
-  
+  test: `${API}/health-check`,
   //StudyCase endpoints 
   studycase: {
     getCases: `${API}/studycase`, // Endpoint to get all study cases (GET)

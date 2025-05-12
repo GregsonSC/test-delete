@@ -78,12 +78,6 @@ export function LatestNews() {
         }
       }, [posts]);
 
-    console.log("Posts", posts);
-    console.log("Blog Items", blogItems);
-    console.log("Study Cases", StudyCases);
-    console.log("Case Items",caseItems);
-
-
   const [activeTab, setActiveTab] = React.useState("blog");
 
   // Determine if we should show tabs (both arrays have items)
