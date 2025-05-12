@@ -4,7 +4,7 @@ import { useState } from 'react';
 // ! CH002: Discover Our Process cambie el texto de Lorem y contenido en los 4 procesos
 const ExpandingColumns = () => {
   const [expandedIndex, setExpandedIndex] = useState(0);
-  const images:string [] = ["images/expanding-columns/request.jpg","images/expanding-columns/estimated.jpg","images/expanding-columns/invoices.jpg","images/expanding-columns/proyect.jpg"]
+  const images:string [] = ["images/expanding-columns/request.webp","images/expanding-columns/estimated.webp","images/expanding-columns/invoices.webp","images/expanding-columns/proyect.webp"]
   return (
     <section className="bg-[#020b13] text-white py-16 px-4">
       <div className="max-w-6xl mx-auto">

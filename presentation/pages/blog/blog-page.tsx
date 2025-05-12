@@ -75,7 +75,7 @@ export function BlogPage() {
                     content={post.content}
                     // tag={post.tag}
                     tag={index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"}
-                    date={post.publicationDate}
+                    date={post.publicationDate.slice(0, 10)}
                     // image={post.imageUrl || "fotos-prueba/webdevelpment.png"}
                     image={"/images/portfolio/portafolioTestImg.webp"}
                     href="/"

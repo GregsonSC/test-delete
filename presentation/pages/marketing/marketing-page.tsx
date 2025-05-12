@@ -59,7 +59,7 @@ export function MarketingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon1.png"
+                icon="/images/marketing/icon1.webp"
                 title="Advertising & Paid Marketing"
                 content="With our innovative ideas, we'll boost your business visibility on paid marketing platforms such as Google Ads & Facebook ads. Our targeted advertising campaigns are fully designed to attract your ideal customers who are actively seeking your products or services."
                 link="/services/advertising"
@@ -67,7 +67,7 @@ export function MarketingPage() {
 
               {/* Second Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon2.png"
+                icon="/images/marketing/icon2.webp"
                 title="Social Media Management"
                 content="Using proven strategies and engaging content across all social media platforms, Senavia Corp will help your company build a strong online presence by promoting your brand, products, and services."
                 link="/services/social-media"
@@ -76,7 +76,7 @@ export function MarketingPage() {
               {/* Third Card - Wrapped in a div for positioning */}
               <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
                 <HoverCardWGC
-                  icon="/images/marketing/icon3.png"
+                  icon="/images/marketing/icon3.webp"
                   title="SEO & Local Business Positioning"
                   content="Based on your niche market, our SEO specialists will implement optimization strategies using the most profitable keywords for your business. This approach will make your website climb the search engine ranks and steal the spotlight at the top of the search results."
                   link="/services/seo"

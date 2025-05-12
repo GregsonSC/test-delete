@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Axios, { AxiosResponse } from "axios";
+import { create } from "domain";
+import { DeleteIcon } from "lucide-react";
 import { toast } from "sonner";
 
 // API Base URLs
@@ -19,10 +21,10 @@ export const endpoints = {
     submit: `${API}/contact`,
   },
   blog: {
-    getPosts: `${API}/blog`,
-    createPost: `${API}/blog`,
-    updatePost: (id: string) => `${API}/blog?id=${id}`,
-    deletePost: (id: string) => `${API}/blog?id=${id}`,
+    getPosts: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    createPost: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    updatePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
+    deletePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
   },
   // Add authentication endpoints
   auth: {
@@ -35,7 +37,23 @@ export const endpoints = {
   },
 
   // Test endpoint for checking API connectivity
-  test: `${API}/health-check`,
+  
+  //StudyCase endpoints 
+  studycase: {
+    getCases: `${API}/studycase`, // Endpoint to get all study cases (GET)
+    getCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to get a specific study case by ID (GET)
+    createCase: `${API}/studycase`, // Endpoint to create a new study case (POST)
+    updateCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to update a specific study case by ID (PATCH)
+    DeleteCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to delete a specific study case by ID (DELETE)
+  },
+
+  //ServiceArea endpoints
+  servicearea: {
+    getServiceAreas: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to get all service areas (GET)
+    getServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
+    createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
+    updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
+  },
 };
 
 // Header configurations

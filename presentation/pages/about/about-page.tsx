@@ -4,13 +4,12 @@ import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedu
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import Image from "next/image";
 
 export function AboutPage() { 
   return (
     <MainLayout >
       {/*TITULO*/}
-      <section className="lg:bg-[url('/fondos/AboutUs.png')] lg:bg-cover lg:bg-no-repeat">
+      <section className="lg:bg-[url('/fondos/AboutUs.webp')] lg:bg-cover lg:bg-no-repeat">
         <section className="relative overflow-hidden text-center justify-center" >
             <div className="flex-row">
               <video
@@ -79,7 +78,7 @@ export function AboutPage() {
         <section className="text-center lg:mt-56 mt-14 md:mt-32">
           <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold mb-5">Locations</h1>
           <div className="mx-8">
-            <img alt="world-map" src="images/about-us/world-map.png" className="mx-auto"/>
+            <img alt="world-map" src="images/about-us/world-map.webp" className="mx-auto"/>
           </div>
         </section>
 
@@ -97,7 +96,7 @@ export function AboutPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3  gap-8  justify-items-center">
                       {/* First Card */}
                       <HoverCardWGC
-                        icon="/images/marketing/icon1.png"
+                        icon="/images/marketing/icon1.webp"
                         title="Web Design & Development"
                         content="Engaging and powerful web design that converts visitors into new clients and more sales."
                         link="/websites"
@@ -109,7 +108,7 @@ export function AboutPage() {
         
                       {/* Second Card */}
                       <HoverCardWGC
-                        icon="/images/marketing/icon2.png"
+                        icon="/images/marketing/icon2.webp"
                         title="Generate Traffic, Leads & Sales"
                         content="Drive more leads with a tailored marketing strategy designed exclusively for your business."
                         link="/marketing"
@@ -122,7 +121,7 @@ export function AboutPage() {
       
                       {/* Third Card - Wrapped in a div for positioning */}
                       <HoverCardWGC
-                        icon="/images/marketing/icon3.png"
+                        icon="/images/marketing/icon3.webp"
                         title="Create your Professional Brand"
                         content="We build a unique visual identity that leaves lasting impression on your brand."
                         link="/marketing"
