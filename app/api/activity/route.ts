@@ -85,6 +85,11 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+ // Validate that the Phase exists
+    const phase= await db.phase.findUnique({ where: { id: phase_id } });
+    if (!phase) {
+      return createResponse({ success: false, message: "Phase not found.", status: 400 });
+    }
 
     if (!validState.includes(state)) {
       return createResponse({
