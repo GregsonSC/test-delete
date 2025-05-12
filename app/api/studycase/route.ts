@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     const title = formData.get("title")?.toString();
     const resume = formData.get("resume")?.toString();
-    const videoUrl = formData.get("resume")?.toString();
+    const videoUrl = formData.get("videoUrl")?.toString();
 
     if (!title || !resume || !videoUrl) {
       return createResponse({
