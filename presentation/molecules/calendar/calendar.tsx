@@ -11,11 +11,17 @@ export function Calendar_molecule({
     selectedDate,
     onDateChange,
 }: CalendarMoleculeProps) {
+    // Function to disable weekends (Saturday = 6, Sunday = 0)
+    const isWeekend = (date: Date) => {
+        const day = date.getDay();
+        return day === 0 || day === 6;
+    };
     return (
         <Calendar
             mode="single"
             selected={selectedDate}
             onSelect={onDateChange}
+            disabled={isWeekend}
             className="text-black rounded-sm border border-[#E4E4E7]"
             classNames={{
                 day_today: "bg-[#04081E] text-white",

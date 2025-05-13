@@ -47,14 +47,14 @@ const formSchema = z.object({
     .min(1, { message: "Enter a valid number" })
     .max(15, { message: "Enter a valid number" }),
   email: z
-  .string()
-  .email({ message: "Please enter a valid email address." }),
+    .string()
+    .email({ message: "Please enter a valid email address." }),
   service: z
-  .string()
-  .nonempty({message: "Please select a service."}),
+    .string()
+    .nonempty({ message: "Please select a service." }),
   about: z
-  .string()
-  .nonempty({message: "Please tell us about your project."}),
+    .string()
+    .nonempty({ message: "Please tell us about your project." }),
   timezone: z.string().nonempty({ message: "Timezone is required" }),
   date: z.date({ required_error: "Date is required" }),
   timeRange: z.string().nonempty({ message: "Time range is required" }),
@@ -90,7 +90,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
   }, []);
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [hourSelection, setHourSelection] = useState< { timezone: string; hour: string } | null >(null);
+  const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
   const router = useRouter();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -230,7 +230,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                               value={field.value}
                             >
                               <SelectTrigger className="text-[#636A9C] bg-[#EBEDF2] border-0 mb-5 rounded-sm placeholder-[#636A9C] py-6 pl-10 md:py-0 text-lg md:text-sm md:pl-10 md:mb-1">
-                                <SelectValue placeholder="Select a service"/>
+                                <SelectValue placeholder="Select a service" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
@@ -246,14 +246,14 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
-                            <ConciergeBell color="#636A9C" className="absolute inset-y-3 md:inset-y-2 left-2"/>
+                            <ConciergeBell color="#636A9C" className="absolute inset-y-3 md:inset-y-2 left-2" />
                           </div>
                         </FormControl>
                       </FormItem>
                     )}
                   />
-                  
-                  <FormField 
+
+                  <FormField
                     name="about"
                     control={form.control}
                     render={({ field }) => (
@@ -269,14 +269,14 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                               id="about"
                               className="w-[96%] m-auto flex rounded-sm bg-white text-[#636A9C] py-2 px-8 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto"
                               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                              placeholder="Describe your project..."  
+                              placeholder="Describe your project..."
                             />
                           </FormControl>
                         </div>
                       </FormItem>
                     )}
                   />
-                  
+
 
                   {Object.keys(form.formState.errors).length > 0 && (
                     <div className="mt-4 text-red-600">

@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -19,7 +17,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { schedules } from "@/components/const/schedules";
+import { schedules } from "@/lib/constants2";
 import { ChevronLeft } from "lucide-react";
 
 interface HourSelection {
