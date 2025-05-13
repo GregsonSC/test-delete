@@ -76,8 +76,13 @@ model Estimate {
   Project       Project[]
   costs         Cost[]
   comments      Comment[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+
+  deadLineToPay      String
+  invoiceDateCreated String
+  invoiceReference   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Blog {
@@ -274,19 +279,28 @@ enum PhaseState {
 }
 
 model Activity {
-  id               Int            @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   name             String
   description      String
   expectedDuration String
   startDate        String
   endDate          String
   phase_id         Int?
-  phase            Phase?         @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  phase            Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
   state            StateActivity
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  UserActivity     UserActivity[]
-  Attachment       Attachment[]
+  priority         Priority
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  UserActivity UserActivity[]
+  Attachment   Attachment[]
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
 
 enum StateActivity {
