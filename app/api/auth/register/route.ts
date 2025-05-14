@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
         phone,
         imageUrl,
         roleId,
+        address
       },
       include: { role: true },
     });

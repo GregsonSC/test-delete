@@ -33,6 +33,10 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                 type: string
  *                 description: Phone number of the client.
  *                 example: "+123456789"
+ *               clientAddress:
+ *                 type: string
+ *                 description: Address of the client.
+ *                 example: 123 Main St, Springfield
  *               name:
  *                 type: string
  *                 description: Name of the lead.
@@ -135,7 +139,6 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                   items:
  *                     type: string
  */
-
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
@@ -225,10 +228,13 @@ export async function POST(request: NextRequest) {
  *                       clientPhone:
  *                         type: string
  *                         example: "+123456789"
+ *                       clientAddress:
+ *                         type: string
+ *                         example: "456 Elm Street, Springfield"
  *                       name:
  *                         type: string
  *                         example: "Lead Name"
- *                       description:   # Valor agregado
+ *                       description:
  *                         type: string
  *                         example: "Description of the lead"
  *                       state:
@@ -339,6 +345,7 @@ export async function POST(request: NextRequest) {
  */
 
 
+
 export async function GET(request: NextRequest) {
   // Validar el token antes de continuar
   const auth = authMiddleware(request);
@@ -362,7 +369,8 @@ export async function GET(request: NextRequest) {
           endDate: true,
           user: true,
           service: true,
-          WorkTeam:true
+          WorkTeam:true,
+          clientAddress:true
         },
       });
 
@@ -464,11 +472,15 @@ export async function GET(request: NextRequest) {
  *                 type: string
  *                 description: Updated phone number of the client.
  *                 example: "+987654321"
+ *               clientAddress:
+ *                 type: string
+ *                 description: Updated address of the client.
+ *                 example: "456 Elm Street, Springfield"
  *               name:
  *                 type: string
  *                 description: Updated name of the lead.
  *                 example: Updated Lead Name
- *               description:   # Valor agregado
+ *               description:
  *                 type: string
  *                 description: Updated description of the lead.
  *                 example: "This is an updated description for the lead."
@@ -584,6 +596,7 @@ export async function GET(request: NextRequest) {
  *                   items:
  *                     type: string
  */
+
 
 export async function PATCH(request: Request) {
   try {
