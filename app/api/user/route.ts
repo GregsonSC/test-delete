@@ -47,6 +47,8 @@ import { createImage } from "../cloudinary/upload/route";
  *                         type: string
  *                       imageUrl:
  *                         type: string
+ *                       address:  # Valor agregado
+ *                         type: string
  *                       role:
  *                         type: object
  *                         properties:
@@ -92,12 +94,12 @@ import { createImage } from "../cloudinary/upload/route";
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "User not found"
+ *                   example: "User  not found"
  *                 errors:
  *                   type: array
  *                   items:
  *                     type: string
- *                     example: ["User does not exist"]
+ *                     example: ["User  does not exist"]
  *       500:
  *         description: Error del servidor
  *         content:
@@ -136,6 +138,7 @@ export async function GET(request: NextRequest) {
           email: true,
           phone: true,
           imageUrl: true,
+          address:true,
           role: true,
         },
       });
@@ -232,6 +235,9 @@ export async function GET(request: NextRequest) {
  *                 type: string
  *                 format: binary
  *                 description: Profile image of the user (optional).
+ *               address:  # Valor agregado
+ *                 type: string
+ *                 example: "123 Main St, Anytown, USA"
  *               roleId:
  *                 type: integer
  *                 example: 2
@@ -249,7 +255,7 @@ export async function GET(request: NextRequest) {
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "User updated successfully"
+ *                   example: "User  updated successfully"
  *                 data:
  *                   type: array
  *                   items:
@@ -267,6 +273,9 @@ export async function GET(request: NextRequest) {
  *                       imageUrl:
  *                         type: string
  *                         example: "https://cloudinary.com/path/to/image.jpg"
+ *                       address:  # Valor agregado
+ *                         type: string
+ *                         example: "123 Main St, Anytown, USA"
  *                       role:
  *                         type: object
  *                         properties:
@@ -283,7 +292,6 @@ export async function GET(request: NextRequest) {
  *       500:
  *         description: Server error while updating user.
  */
-
 export async function PATCH(request: NextRequest) {
   // Validar el token primero
   const auth = authMiddleware(request);
@@ -373,7 +381,6 @@ export async function PATCH(request: NextRequest) {
       data: [updatedUser],
       status: 200,
     });
-
   } catch (error) {
     console.error("Error updating user:", error);
     return createResponse({
