@@ -22,7 +22,6 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - password
  *               - name
  *               - roleId
- *               - imageUrl
  *               - address
  *             properties:
  *               email:
