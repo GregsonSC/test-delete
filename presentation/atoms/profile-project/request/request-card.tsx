@@ -19,10 +19,11 @@ export function RequestCard({ requestName, leadStatus, className, isSelected }: 
       <div
         className={cn(
           "flex items-center justify-between px-6 py-3 rounded-md w-full h-full transition-colors duration-200",
-          isSelected ? "bg-[#10132a]/80" : "bg-white/20"
+          !isSelected && "group-hover:bg-[#524f7d] cursor-pointer",
+          isSelected ? "bg-[#10132a]/80" : "bg-[#403e5d]"
         )}
       >
-        <span className="text-[#23244a] font-semibold text-[18px]">{requestName}</span>
+        <span className="text-white font-semibold text-[18px]">{requestName}</span>
         <span className="px-4 py-1 bg-[#0B0E1C] text-white text-sm rounded-full font-medium shadow-sm">
           {leadStatus}
         </span>

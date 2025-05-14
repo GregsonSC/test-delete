@@ -66,7 +66,8 @@ export function RegisterPage() {
       email,
       password,
       phone,
-      imageUrl: "",
+
+      address: "asdasdasd", // TODO: ADD ADRESS IN UI
       roleId: 1, // TODO: Review this roleId for the user
     };
 

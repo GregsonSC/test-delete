@@ -6,9 +6,10 @@ interface AuthUser {
   name: string;
   email: string;
   password?: string; // Password might be optional depending on context (e.g., fetching user data vs. registering)
-  phone?: string;    // Phone might be optional
+  phone?: string; // Phone might be optional
   imageUrl?: string; // Image URL might be optional
-  roleId: number;   // Assuming roleId is always required
+  roleId: number; // Assuming roleId is always required
+  address?: string; // Address might be optional
   // You might want to add other fields like id, createdAt, updatedAt if they exist in your user model
   // id?: string | number;
   // createdAt?: string; // Or Date
