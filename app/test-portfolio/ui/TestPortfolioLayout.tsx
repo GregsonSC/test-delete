@@ -8,15 +8,33 @@ import ProjectList from "./ProjectList";
 import { ProfileChat } from "../../../presentation/atoms/chat/profile-chat";
 import { useChatManager } from "../hooks/useChatManager";
 
-// Placeholder components para los espacios internos
+// Updated Placeholder for dark background
 const Placeholder = ({ label }: { label: string }) => (
-  <div className="flex items-center justify-center h-full w-full text-gray-400 text-lg font-semibold border-2 border-dashed border-gray-300 rounded-lg">
+  <div className="flex items-center justify-center h-full w-full text-gray-400 text-lg font-semibold border-2 border-dashed border-gray-700 rounded-lg">
     {label}
   </div>
 );
 
 const REQUEST_TABS = ["Requests", "Projects"];
 const CHAT_TABS = ["Chat", "Estimated value", "Invoices"];
+
+// Helper function defined at module scope
+function getChatEntityDetails(
+  requestTab: string,
+  selectedRequest: string | null,
+  selectedProject: string | null
+): {
+  currentEntityId: string | undefined;
+  currentEntityType: "project" | "request" | undefined;
+} {
+  if (requestTab === "Requests" && selectedRequest) {
+    return { currentEntityId: selectedRequest, currentEntityType: "request" };
+  }
+  if (requestTab === "Projects" && selectedProject) {
+    return { currentEntityId: selectedProject, currentEntityType: "project" };
+  }
+  return { currentEntityId: undefined, currentEntityType: undefined };
+}
 
 export default function TestPortfolioLayout() {
   const [requestTab, setRequestTab] = useState<(typeof REQUEST_TABS)[number]>(REQUEST_TABS[0]);
@@ -41,21 +59,12 @@ export default function TestPortfolioLayout() {
     }
   }, [selectedRequest, selectedProject, clearChatState]);
 
-  // Determine current entity for ProfileChat (compact version)
-  const isRequestMode = requestTab === "Requests" && selectedRequest;
-  const isProjectMode = requestTab === "Projects" && selectedProject;
-
-  const currentEntityId: string | undefined = isRequestMode
-    ? selectedRequest! // selectedRequest is non-null if isRequestMode is true
-    : isProjectMode
-      ? selectedProject! // selectedProject is non-null if isProjectMode is true
-      : undefined;
-
-  const currentEntityType: "project" | "request" | undefined = isRequestMode
-    ? "request"
-    : isProjectMode
-      ? "project"
-      : undefined;
+  // Use the module-level helper function
+  const { currentEntityId, currentEntityType } = getChatEntityDetails(
+    requestTab,
+    selectedRequest,
+    selectedProject
+  );
 
   const chatComponentInstance = (
     <ProfileChat
@@ -76,23 +85,22 @@ export default function TestPortfolioLayout() {
   const getChatTabs = (tab: string) => (tab === "Projects" ? [CHAT_TABS[0]] : CHAT_TABS);
 
   return (
-    <div className="w-full bg-[#f6f8fa] p-4 flex flex-col gap-4 min-h-[calc(100vh-64px)] h-[calc(100vh-64px)]">
-      {/* Desktop/Tablet Layout */}
+    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 min-h-[calc(100vh-64px)] h-[calc(100vh-64px)] text-gray-200">
+      {/* Desktop/Tablet Layout - grid background is now transparent, allowing parent bg to show */}
       <div className="hidden md:grid grid-cols-3 gap-4 w-full h-full min-h-0">
-        {/* Sidebar */}
-        <div className="col-span-1 bg-white rounded-xl shadow p-4 flex flex-col gap-4 h-full min-h-0">
-          <div className="flex gap-2 mb-2">
+        {/* Sidebar - card background changed */}
+        <div className="col-span-1 bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4 h-full min-h-0">
+          <div className="flex gap-2">
             {REQUEST_TABS.map((tab) => (
               <button
                 key={tab}
-                className={`px-3 py-1 rounded-full font-semibold transition-colors ${
+                className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
                   requestTab === tab
-                    ? "bg-[#eaf7d6] text-[#7bb12b]"
-                    : "bg-[#f6f8fa] text-gray-500 border border-[#eaf7d6]"
+                    ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                    : "bg-transparent text-[#99CC33] border-[#99CC33]"
                 }`}
                 onClick={() => {
                   setRequestTab(tab);
-                  // When switching main tabs, clear specific selections to ensure clean state
                   setSelectedRequest(null);
                   setSelectedProject(null);
                 }}
@@ -117,18 +125,20 @@ export default function TestPortfolioLayout() {
         </div>
         {/* Main Content */}
         <div className="col-span-2 flex flex-col gap-4 h-full min-h-0">
-          <div className="bg-white rounded-xl shadow p-4 flex flex-col gap-4">
+          {/* Top Section - card background changed */}
+          <div className="bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4">
             <Placeholder label={getMainDetailsLabel(requestTab)} />
           </div>
-          <div className="bg-white rounded-xl shadow p-4 flex-1 flex flex-col gap-4 min-h-0 h-0">
+          {/* Bottom Section - card background changed */}
+          <div className="bg-[#13103A] rounded-xl shadow p-4 flex-1 flex flex-col gap-4 min-h-0 h-0">
             <div className="flex gap-2 mb-2">
               {getChatTabs(requestTab).map((tab) => (
                 <button
                   key={tab}
-                  className={`px-3 py-1 rounded-full font-semibold transition-colors ${
+                  className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
                     chatTab === tab
-                      ? "bg-[#eaf7d6] text-[#7bb12b]"
-                      : "bg-[#f6f8fa] text-gray-500 border border-[#eaf7d6]"
+                      ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                      : "bg-transparent text-[#99CC33] border-[#99CC33]"
                   }`}
                   onClick={() => setChatTab(tab)}
                 >
@@ -159,8 +169,8 @@ export default function TestPortfolioLayout() {
           </div>
         </div>
       </div>
-      {/* Mobile Layout */}
-      <div className="md:hidden flex flex-col gap-4 w-full h-screen min-h-0 bg-black flex-1">
+      {/* Mobile Layout - background is now transparent, allowing parent bg to show */}
+      <div className="md:hidden flex flex-col gap-4 w-full h-screen min-h-0 flex-1 mt-[70px] lg:mt-0">
         <MobilePortfolioLayout
           selectedRequest={selectedRequest}
           setSelectedRequest={setSelectedRequest}
