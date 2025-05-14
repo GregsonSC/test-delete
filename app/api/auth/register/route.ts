@@ -23,6 +23,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - name
  *               - roleId
  *               - imageUrl
+ *               - address
  *             properties:
  *               email:
  *                 type: string
@@ -40,6 +41,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               roleId:
  *                 type: integer
  *                 description: ID del rol del usuario (1 = Admin, 2 = Usuario, etc.)
+ *               address:
+ *                 type: string
+ *                 description: Dirección del usuario.
  *     responses:
  *       201:
  *         description: Usuario creado exitosamente.
@@ -59,14 +63,15 @@ export async function POST(request: NextRequest) {
     const phone = form.get("phone")?.toString() || null;
     const roleIdRaw = form.get("roleId")?.toString();
     const imageFile = form.get("imageUrl");
+    const address = form.get("address")?.toString();
 
-    if (!email || !password || !name || !phone || !roleIdRaw || !imageFile) {
+    if (!email || !password || !name || !phone || !roleIdRaw || !address) {
       return NextResponse.json(
         {
           success: false,
           data: [],
           message: "Missing required fields",
-          errors: ["email, password, name and roleId are required"],
+          errors: ["email, password, name, roleId and address are required"],
         },
         { status: 400 }
       );
@@ -110,7 +115,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const imageUrl = await createImage(imageFile);
-    
+
     if (!imageUrl) {
       return createResponse({
         success: false,
@@ -128,6 +133,7 @@ export async function POST(request: NextRequest) {
         phone,
         imageUrl,
         roleId,
+        address,
       },
       include: { role: true },
     });

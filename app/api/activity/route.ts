@@ -2,6 +2,7 @@ import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"];
+const validPriotity = ["LOW", "NORMAL", "HIGH", "URGENT"];
 /**
  * @swagger
  * tags:
@@ -13,7 +14,7 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *     tags:
  *       - Activity
  *     summary: Create a new Activity
- *     description: Creates a new activity with all required fields and a valid state.
+ *     description: Creates a new activity with all required fields, a valid state, and a priority level.
  *     requestBody:
  *       required: true
  *       content:
@@ -27,14 +28,18 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *               - startDate
  *               - endDate
  *               - state
+ *               - priority
  *               - phase_id
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Implement Authentication Flow
  *               description:
  *                 type: string
+ *                 example: Develop and test login, logout, and session persistence.
  *               expectedDuration:
  *                 type: string
+ *                 example: 5 days
  *               startDate:
  *                 type: string
  *                 format: date
@@ -47,14 +52,25 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *                 type: string
  *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
  *                 description: >
- *                   Current status of the activity. Possible values are:
+ *                   Current status of the activity:
  *                   - **PENDING**: Activity has not yet been assigned.
  *                   - **ASSIGNED**: Activity has been assigned to a user.
  *                   - **INPROCESS**: Activity is currently in progress.
- *                   - **REVIEWING**: Activity has been completed and is under review.
- *                   - **FINISHED**: Activity has been reviewed and marked as complete.
+ *                   - **REVIEWING**: Activity is under evaluation after submission.
+ *                   - **FINISHED**: Activity is complete and approved.
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, NORMAL, HIGH, URGENT]
+ *                 description: >
+ *                   Priority level of the activity:
+ *                   - **LOW**: Not urgent or critical.
+ *                   - **NORMAL**: Regular priority.
+ *                   - **HIGH**: Important and should be prioritized.
+ *                   - **URGENT**: Needs immediate attention.
+ *                 example: NORMAL
  *               phase_id:
  *                 type: integer
+ *                 example: 4
  *     responses:
  *       201:
  *         description: Activity created successfully.
@@ -63,11 +79,11 @@ const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"]
  *       500:
  *         description: Server error.
  */
-
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, state, phase_id } = data;
+    const { name, description, expectedDuration, startDate, endDate, state, phase_id, priority } =
+      data;
 
     if (
       !name ||
@@ -76,7 +92,8 @@ export async function POST(request: Request) {
       !startDate ||
       !endDate ||
       !state ||
-      !phase_id
+      !phase_id ||
+      !priority
     ) {
       return createResponse({
         success: false,
@@ -85,12 +102,25 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+    // Validate that the Phase exists
+    const phase = await db.phase.findUnique({ where: { id: phase_id } });
+    if (!phase) {
+      return createResponse({ success: false, message: "Phase not found.", status: 400 });
+    }
 
     if (!validState.includes(state)) {
       return createResponse({
         success: false,
         message: "Invalid state.",
         errors: [`State must be one of: ${validState.join(", ")}`],
+        status: 400,
+      });
+    }
+    if (!validPriotity.includes(priority)) {
+      return createResponse({
+        success: false,
+        message: "Invalid priority.",
+        errors: [`Priority must be one of: ${validPriotity.join(", ")}`],
         status: 400,
       });
     }
@@ -190,8 +220,6 @@ export async function GET(req: Request) {
   }
 }
 /**
- * @route PATCH /api/activity
- * @desc Actualizar una actividad existente
  * @swagger
  * /api/activity:
  *   patch:
@@ -215,31 +243,44 @@ export async function GET(req: Request) {
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Update UI components
  *               description:
  *                 type: string
+ *                 example: Refactor and polish user interface for mobile compatibility.
  *               expectedDuration:
  *                 type: string
+ *                 example: 3 days
  *               startDate:
  *                 type: string
  *                 format: date
- *                 example: 2025-05-01
+ *                 example: 2025-05-10
  *               endDate:
  *                 type: string
  *                 format: date
- *                 example: 2025-06-01
+ *                 example: 2025-05-15
  *               state:
  *                 type: string
  *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
  *                 description: >
- *                   Current status of the activity. Possible values are:
- *                   - **PENDING**: Activity has not yet been assigned.
- *                   - **ASSIGNED**: Activity has been assigned to a user.
- *                   - **INPROCESS**: Activity is currently in progress.
- *                   - **REVIEWING**: Activity has been completed and is under review.
- *                   - **FINISHED**: Activity has been reviewed and marked as complete.
+ *                   Current status of the activity:
+ *                   - **PENDING**: Not yet assigned.
+ *                   - **ASSIGNED**: Assigned to a user.
+ *                   - **INPROCESS**: Work is in progress.
+ *                   - **REVIEWING**: Under review after submission.
+ *                   - **FINISHED**: Marked as completed and approved.
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, NORMAL, HIGH, URGENT]
+ *                 description: >
+ *                   Priority level of the activity:
+ *                   - **LOW**: Not urgent.
+ *                   - **NORMAL**: Standard importance.
+ *                   - **HIGH**: Requires prioritization.
+ *                   - **URGENT**: Critical and immediate.
+ *                 example: HIGH
  *               phase_id:
  *                 type: integer
- *                 example: 3
+ *                 example: 2
  *                 description: ID of the phase this activity belongs to.
  *     responses:
  *       200:
@@ -251,6 +292,7 @@ export async function GET(req: Request) {
  *       500:
  *         description: Server error.
  */
+
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -285,6 +327,16 @@ export async function PATCH(request: Request) {
           success: false,
           message: "Invalid state.",
           errors: [`State must be one of: ${validState.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
+    if (data.priority) {
+      if (!validPriotity.includes(data.priority)) {
+        return createResponse({
+          success: false,
+          message: "Invalid priority.",
+          errors: [`Priority must be one of: ${validPriotity.join(", ")}`],
           status: 400,
         });
       }

@@ -80,13 +80,17 @@ export async function POST(request: Request) {
     const startDate = formData.get("startDate")?.toString();
     const endDate = formData.get("endDate")?.toString();
     const currentPhase = formData.get("currentPhase")?.toString();
-
-    const estimateIdStr = formData.get("estimate_id")?.toString();
-    const estimate_id = estimateIdStr ? parseInt(estimateIdStr, 10) : undefined;
+    const estimate_id = formData.get("estimate_id") ? parseInt(formData.get("estimate_id")!.toString(), 10) : undefined;
 
     const imagePreviewFile = formData.get("imagePreviewUrl");
-    const imagePreviewUrl =
-      imagePreviewFile instanceof File ? await createImage(imagePreviewFile) : undefined;
+    const imagePreviewUrl = imagePreviewFile instanceof File ? await createImage(imagePreviewFile) : undefined;
+ 
+    // Validate that the Estimate exists
+    const estimate = await db.estimate.findUnique({ where: { id: estimate_id } });
+    if (!estimate) {
+      return createResponse({ success: false, message: "Estimate not found.", status: 400 });
+    }
+
 
     if (
       !name ||
@@ -95,8 +99,8 @@ export async function POST(request: Request) {
       !startDate ||
       !endDate ||
       !currentPhase ||
-      !imagePreviewUrl 
-      ||!estimate_id
+      !imagePreviewUrl
+      || !estimate_id
     ) {
       return createResponse({
         success: false,
@@ -319,7 +323,15 @@ export async function PATCH(request: Request) {
     const estimate_id = formData.get("estimate_id")
       ? parseInt(formData.get("estimate_id")!.toString(), 10)
       : undefined;
+    
+   // Validate that the Estimate exists
+    if (estimate_id) {
+      const estimate = await db.estimate.findUnique({ where: { id: estimate_id } });
+      if (!estimate) {
+        return createResponse({ success: false, message: "Estimate not found.", status: 400 });
+      }
 
+    }
     if (
       !name &&
       !description &&

@@ -13,7 +13,7 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *     tags:
  *       - Estimate
  *     summary: Create a new estimate
- *     description: Register a new estimate including estimated time, detailed description, current state, total monetary value, and its associated lead and plan.
+ *     description: Register a new estimate including estimated time, detailed description, current state, total monetary value, payment deadline, invoice metadata, and its associated lead and plan.
  *     requestBody:
  *       required: true
  *       content:
@@ -27,6 +27,9 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *               - totalValue
  *               - lead_id
  *               - plan_id
+ *               - deadLineToPay
+ *               - invoiceDateCreated
+ *               - invoiceReference
  *             properties:
  *               estimatedTime:
  *                 type: integer
@@ -56,6 +59,17 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *               plan_id:
  *                 type: integer
  *                 example: 1
+ *               deadLineToPay:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-06-30"
+ *               invoiceDateCreated:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-05-12"
+ *               invoiceReference:
+ *                 type: string
+ *                 example: "INV-2025-0456"
  *     responses:
  *       201:
  *         description: Estimate created successfully.
@@ -64,18 +78,29 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *       500:
  *         description: Server error.
  */
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { estimatedTime, description, state, lead_id, plan_id, totalValue } = data;
+    const { estimatedTime, description, state, lead_id, plan_id, totalValue, deadLineToPay, invoiceDateCreated,invoiceReference } = data;
 
-    if (!estimatedTime || !description || !state || !totalValue || !lead_id || !plan_id) {
+    if (!estimatedTime || !description || !state || !totalValue || !lead_id || !plan_id|| ! deadLineToPay|| ! invoiceDateCreated|| !invoiceReference) {
       return createResponse({
         success: false,
         message: "All fields are required.",
         errors: ["Missing one or more required fields."],
         status: 400,
       });
+    }
+    // Validate that the Lead exists
+    const lead = await db.lead.findUnique({ where: { id: lead_id } });
+    if (!lead) {
+      return createResponse({ success: false, message: "Lead not found.", status: 400 });
+    }
+    // Validate that the Plan exists
+    const plan = await db.plan.findUnique({ where: { id: plan_id } });
+    if (!plan) {
+      return createResponse({ success: false, message: "Plan not found.", status: 400 });
     }
 
     if (!validState.includes(state)) {
@@ -199,7 +224,7 @@ export async function GET(req: NextRequest) {
  *     tags:
  *       - Estimate
  *     summary: Update an estimate
- *     description: Update fields of an estimate by ID.
+ *     description: Update one or more fields of an estimate by its ID.
  *     parameters:
  *       - in: query
  *         name: id
@@ -216,15 +241,36 @@ export async function GET(req: NextRequest) {
  *             properties:
  *               estimatedTime:
  *                 type: integer
+ *                 example: 45
  *               description:
  *                 type: string
+ *                 example: Updated estimate for second sprint
  *               state:
  *                 type: string
  *                 enum: [CREATED, PROCESSING, INREVIEW, REJECTED, ACCEPTED, INVOICE, PAID]
+ *                 description: >
+ *                   New state of the estimate.
  *               totalValue:
  *                 type: number
+ *                 format: float
+ *                 example: 20000.75
  *               lead_id:
  *                 type: integer
+ *                 example: 3
+ *               plan_id:
+ *                 type: integer
+ *                 example: 2
+ *               deadLineToPay:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-07-15"
+ *               invoiceDateCreated:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-05-10"
+ *               invoiceReference:
+ *                 type: string
+ *                 example: "INV-2025-0499"
  *     responses:
  *       200:
  *         description: Estimate updated successfully.
@@ -272,15 +318,20 @@ export async function PATCH(request: Request) {
       }
     }
 
-    const estimate = await db.estimate.findUnique({ where: { id } });
-
-    if (!estimate) {
-      return createResponse({
-        success: false,
-        message: "Estimate not found.",
-        errors: ["No estimate exists with the given ID."],
-        status: 404,
-      });
+    // Validate that the Lead exists
+    if (data.lead_id) {
+      const lead = await db.lead.findUnique({ where: { id: data.lead_id } });
+      if (!lead) {
+        return createResponse({ success: false, message: "Lead not found.", status: 400 });
+      }
+    }
+    
+    // Validate that the Plan exists
+    if (data.plan_id) {
+      const plan = await db.plan.findUnique({ where: { id: data.plan_id } });
+      if (!plan) {
+        return createResponse({ success: false, message: "Plan not found.", status: 400 });
+      }
     }
 
     const updateEstimate = await db.estimate.update({
@@ -295,7 +346,7 @@ export async function PATCH(request: Request) {
       status: 200,
     });
   } catch (error) {
-    return handleError(error, "PATCH estimate");
+    return handleError(error, "PATCH Estimate");
   }
 }
 
