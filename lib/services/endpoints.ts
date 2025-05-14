@@ -54,6 +54,10 @@ export const endpoints = {
     createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
     updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
   },
+
+  newsletter: {
+    CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook-test/b82dfac6-6194-4177-ba5f-b485c6cad955`,
+  }
 };
 
 // Header configurations
