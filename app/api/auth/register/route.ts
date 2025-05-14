@@ -53,7 +53,6 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *         description: Error interno del servidor.
  */
 
-
 export async function POST(request: NextRequest) {
   try {
     const form = await request.formData();
@@ -66,13 +65,13 @@ export async function POST(request: NextRequest) {
     const imageFile = form.get("imageUrl");
     const address = form.get("address")?.toString();
 
-    if (!email || !password || !name || !phone || !roleIdRaw || !imageFile || !address) {
+    if (!email || !password || !name || !phone || !roleIdRaw || !address) {
       return NextResponse.json(
         {
           success: false,
           data: [],
           message: "Missing required fields",
-          errors: ["email, password, name, roleId, imageUrl, and address are required"],
+          errors: ["email, password, name, roleId and address are required"],
         },
         { status: 400 }
       );
@@ -116,7 +115,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const imageUrl = await createImage(imageFile);
-    
+
     if (!imageUrl) {
       return createResponse({
         success: false,
@@ -134,7 +133,7 @@ export async function POST(request: NextRequest) {
         phone,
         imageUrl,
         roleId,
-        address
+        address,
       },
       include: { role: true },
     });

@@ -20,7 +20,7 @@ model User {
   email        String           @unique
   password     String
   phone        String
-  imageUrl     String
+  imageUrl     String?
   address      String
   role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
   roleId       Int //Dato para hacer la relacion
