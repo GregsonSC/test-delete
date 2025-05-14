@@ -41,37 +41,71 @@ export function ProfileChat({
   // isTyping for bot response simulation can remain local if it's just visual feedback post-send
   const [isBotTypingIndicator, setIsBotTypingIndicator] = useState(false);
 
+  // Internal state to track entity changes for immediate loading feedback
+  const [internalLastLoadedEntityId, setInternalLastLoadedEntityId] = useState<string | undefined>(
+    undefined
+  );
+  const [internalLastLoadedEntityType, setInternalLastLoadedEntityType] = useState<
+    "project" | "request" | undefined
+  >(undefined);
+  const [isWaitingForParentLoad, setIsWaitingForParentLoad] = useState(false);
+
   // Effect to request history load when entityId/Type changes
   useEffect(() => {
     if (entityId && entityType) {
+      if (entityId !== internalLastLoadedEntityId || entityType !== internalLastLoadedEntityType) {
+        // Entity has changed from what this instance was last told to load/display
+        setIsWaitingForParentLoad(true); // Show loading feedback immediately
+      }
       onRequestHistoryLoad(entityId, entityType);
+      setInternalLastLoadedEntityId(entityId);
+      setInternalLastLoadedEntityType(entityType);
+    } else {
+      // No entity selected, clear internal tracking and waiting state
+      setIsWaitingForParentLoad(false);
+      setInternalLastLoadedEntityId(undefined);
+      setInternalLastLoadedEntityType(undefined);
     }
-    // If entityId or entityType becomes undefined (e.g. no selection),
-    // the parent (TestPortfolioLayout) is responsible for clearing messages via its own effect and clearChatState.
-  }, [entityId, entityType, onRequestHistoryLoad]);
+  }, [
+    entityId,
+    entityType,
+    onRequestHistoryLoad,
+    internalLastLoadedEntityId,
+    internalLastLoadedEntityType,
+  ]);
+
+  // Reset isWaitingForParentLoad when the parent indicates loading has finished
+  useEffect(() => {
+    if (!isLoadingHistory) {
+      setIsWaitingForParentLoad(false);
+    }
+  }, [isLoadingHistory]);
 
   // Auto-scroll to bottom when messages change or loading state changes
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messagesToDisplay, isLoadingHistory]);
+  }, [messagesToDisplay, isLoadingHistory, isWaitingForParentLoad]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoadingHistory) return; // Only check parent's loading flag
+    if (!input.trim() || isLoadingHistory || isWaitingForParentLoad) return;
 
     onSendMessageRequest(input, entityId, entityType);
     setInput("");
+    // Simulate bot typing indicator immediately after user sends a message, parent will handle actual bot message
+    // This is a simplification; in a real app, bot typing might be controlled by backend events.
     if (entityId) {
       // Only show bot typing if we are in an active chat
       setIsBotTypingIndicator(true);
-      setTimeout(() => setIsBotTypingIndicator(false), 1000);
+      setTimeout(() => setIsBotTypingIndicator(false), 1000); // Match typical bot response delay
     }
   };
 
   // Display messages passed from parent
   const messages = messagesToDisplay;
+  const showLoadingIndicator = isLoadingHistory || isWaitingForParentLoad;
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -100,13 +134,13 @@ export function ProfileChat({
           }
         `}</style>
 
-        {isLoadingHistory && (
+        {showLoadingIndicator && (
           <div className="flex justify-center items-center h-full">
             <div className="text-gray-500">Loading chat history...</div>
           </div>
         )}
 
-        {!isLoadingHistory && messages.length === 0 && entityId && (
+        {!showLoadingIndicator && messages.length === 0 && entityId && (
           <div className="flex justify-center items-center h-full">
             <div className="text-gray-400">
               No chat history for this item. Start the conversation!
@@ -114,35 +148,35 @@ export function ProfileChat({
           </div>
         )}
 
-        {!isLoadingHistory && messages.length === 0 && !entityId && (
+        {!showLoadingIndicator && messages.length === 0 && !entityId && (
           <div className="flex justify-center items-center h-full">
             <div className="text-gray-400">Select an item to view chat.</div>
           </div>
         )}
 
-        {!isLoadingHistory &&
+        {!showLoadingIndicator &&
           messages.map((message) => (
             <div
               key={message.id}
-              className={`flex mr-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex mr-2 ${message.role === "user" ? "justify-end items-end" : "justify-start items-start"}`}
             >
               {message.role === "assistant" && (
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-300 to-blue-300 mr-4 flex-shrink-0 flex items-center justify-center text-xs">
                   AI
                 </div>
               )}
-              <div className="relative max-w-[80%]">
+              <div className="relative max-w-[80%] flex flex-col">
                 <div
-                  className={`px-4 py-3 rounded-lg ${
+                  className={`px-4 py-2 rounded-md text-[14px] font-medium shadow-sm transition-colors duration-200 self-end ${
                     message.role === "user"
-                      ? "bg-[#8ECF0A] text-white"
-                      : "bg-[#D9ECC7] text-gray-800"
+                      ? "bg-[#04081E] text-white self-end"
+                      : "bg-[#739926] text-white self-start"
                   }`}
                 >
                   {message.content}
                 </div>
                 {message.role === "assistant" && (
-                  <div className="absolute left-[-8px] top-4 w-4 h-4 bg-[#D9ECC7] transform rotate-45"></div>
+                  <div className="absolute left-[-8px] top-1/2 -translate-y-1/2 w-4 h-4 bg-[#739926] transform rotate-45"></div>
                 )}
               </div>
               {message.role === "user" && (
@@ -153,7 +187,7 @@ export function ProfileChat({
             </div>
           ))}
 
-        {isBotTypingIndicator && !isLoadingHistory && (
+        {isBotTypingIndicator && !showLoadingIndicator && (
           <div className="flex items-center space-x-2 text-gray-400 ml-14">
             <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
             <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-75"></div>
@@ -163,30 +197,30 @@ export function ProfileChat({
       </div>
 
       <form onSubmit={handleSubmit} className="flex-shrink-0 w-full mt-2">
-        <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="flex items-center bg-white/10 border border-[#739926] rounded-md overflow-hidden">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={
-              isLoadingHistory
+              showLoadingIndicator
                 ? "Loading..."
                 : entityId
                   ? "Write your message..."
                   : "Select an item to chat"
             }
-            className="flex-1 bg-transparent text-gray-800 placeholder:text-gray-400 px-4 py-3 focus:outline-none"
+            className="flex-1 bg-transparent text-white placeholder:text-gray-300 px-4 py-2 focus:outline-none text-[14px] h-8"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
-            disabled={isLoadingHistory || !entityId}
+            disabled={showLoadingIndicator || !entityId}
           />
           <button
             type="submit"
-            className="p-2 rounded-full mr-1 text-white bg-[#abd45a] hover:bg-[#99cc33] disabled:opacity-50"
+            className="p-2 rounded-full mr-1 text-black bg-[#99CC33] hover:bg-[#8ECF0A] disabled:opacity-50 transition-colors"
             aria-label="Send message"
-            disabled={isLoadingHistory || !entityId || !input.trim()}
+            disabled={showLoadingIndicator || !entityId || !input.trim()}
           >
             <ArrowRight size={20} />
           </button>

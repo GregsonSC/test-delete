@@ -16,19 +16,19 @@ const testimonials = [
     quote:
       "Senavia transformed our online presence. Their team was professional, creative, and delivered beyond our expectations.",
     author: "Sarah Johnson",
-    company: "Fashion Boutique Owner"
+    company: "Fashion Boutique Owner",
   },
   {
     quote:
       "The ROI from our marketing campaign was incredible. Senavia truly understands how to generate qualified leads that convert.",
     author: "Michael Chen",
-    company: "SaaS Startup Founder"
+    company: "SaaS Startup Founder",
   },
   {
     quote:
       "Working with Senavia on our rebrand was a game-changer. They captured our vision perfectly and translated it into a stunning brand identity.",
     author: "Jessica Martinez",
-    company: "Marketing Director"
+    company: "Marketing Director",
   },
 ];
 
@@ -38,7 +38,7 @@ export function RegisterPage() {
 
   // Add state for password visibility
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // State for form inputs
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -71,7 +71,7 @@ export function RegisterPage() {
     };
 
     // Create a promise for the registration process
-    const registerPromise = register(userData).then(result => {
+    const registerPromise = register(userData).then((result) => {
       if (result && result.success) {
         // Clear form on success
         setName("");
@@ -83,7 +83,7 @@ export function RegisterPage() {
           name: "",
           phone: "",
           email: "",
-          password: ""
+          password: "",
         });
         return result; // Return successful result
       } else {
@@ -91,7 +91,7 @@ export function RegisterPage() {
         throw new Error(result?.message || "Registration failed");
       }
     });
-    
+
     // Use toast.promise to handle all states
     toast.promise(registerPromise, {
       loading: "Creating your account...",
@@ -109,63 +109,70 @@ export function RegisterPage() {
     name: "",
     phone: "",
     email: "",
-    password: ""
+    password: "",
   });
-  
+
   // Add focus state tracking
   const [focusedField, setFocusedField] = useState("");
 
   // Handle input validation on change
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
     const value = e.target.value;
-    
+
     // Update the field value
-    if (field === 'name') setName(value);
-    if (field === 'phone') setPhone(value);
-    if (field === 'email') setEmail(value);
-    if (field === 'password') setPassword(value);
-    
+    if (field === "name") setName(value);
+    if (field === "phone") setPhone(value);
+    if (field === "email") setEmail(value);
+    if (field === "password") setPassword(value);
+
     // Validate the field
-    if (value === '') {
+    if (value === "") {
       // Empty field - neutral state
-      setValidations(prev => ({ ...prev, [field]: "" }));
+      setValidations((prev) => ({ ...prev, [field]: "" }));
     } else if (e.target.checkValidity()) {
       // Valid input
-      setValidations(prev => ({ ...prev, [field]: "valid" }));
+      setValidations((prev) => ({ ...prev, [field]: "valid" }));
     } else {
       // Invalid input
-      setValidations(prev => ({ ...prev, [field]: "invalid" }));
+      setValidations((prev) => ({ ...prev, [field]: "invalid" }));
     }
   };
 
   // Get border style based on validation and focus state
   const getBorderStyle = (field: string) => {
     // When field is focused and empty, show green border
-    if (focusedField === field && 
-        (field === 'name' ? name === '' : 
-         field === 'phone' ? phone === '' : 
-         field === 'email' ? email === '' : 
-         field === 'password' ? password === '' : false)) {
+    if (
+      focusedField === field &&
+      (field === "name"
+        ? name === ""
+        : field === "phone"
+          ? phone === ""
+          : field === "email"
+            ? email === ""
+            : field === "password"
+              ? password === ""
+              : false)
+    ) {
       return "border-[#99cc33] border-2";
     }
-    
+
     // When field is focused and has invalid content, show red border
     if (focusedField === field && validations[field as keyof typeof validations] === "invalid") {
       return "border-red-500 border-2";
     }
-    
+
     // When field is focused and has valid content, show green border
     if (focusedField === field) {
       return "border-[#99cc33] border-2";
     }
-    
+
     // When field is not focused but has content
     if (validations[field as keyof typeof validations] === "valid") {
       return "border-[#99cc33] border-2";
     } else if (validations[field as keyof typeof validations] === "invalid") {
       return "border-red-500 border-2";
     }
-    
+
     // Default state
     return "border-input";
   };
@@ -182,18 +189,14 @@ export function RegisterPage() {
           <div className="absolute inset-0 flex flex-col items-center justify-center z-20 p-12">
             <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-3xl font-semibold text-white">
-                  Success Stories
-                </h2>
+                <h2 className="text-3xl font-semibold text-white">Success Stories</h2>
                 <div className="w-12 h-1 bg-primary"></div>
               </div>
               <div className="space-y-2">
                 <p className="text-white italic text-2xl mb-5">
                   "{testimonials[activeIndex].quote}"
                 </p>
-                <h4 className="font-semibold text-xl">
-                  {testimonials[activeIndex].author}
-                </h4>
+                <h4 className="font-semibold text-xl">{testimonials[activeIndex].author}</h4>
                 <p className="text-xl">{testimonials[activeIndex].company}</p>
               </div>
               <div className="flex space-x-2">
@@ -217,14 +220,11 @@ export function RegisterPage() {
           <div className="max-w-md w-full">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold mb-2">Welcome</h1>
-              <p className="text-lg text-[#D3E8A9]">
-                Fill the requested information to continue
-              </p>
+              <p className="text-lg text-[#D3E8A9]">Fill the requested information to continue</p>
             </div>
 
-            <form onSubmit={handleSubmit} >
+            <form onSubmit={handleSubmit}>
               <div className="flex flex-col items-center justify-center mb-9">
-
                 <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
                     <CircleUser color="#A2ABE7" />
@@ -233,11 +233,11 @@ export function RegisterPage() {
                     id="full-name"
                     type="text"
                     placeholder="Full Name"
-                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('name')} outline-none`}
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle("name")} outline-none`}
                     value={name}
-                    onChange={(e) => handleInputChange(e, 'name')}
-                    onFocus={() => setFocusedField('name')}
-                    onBlur={() => setFocusedField('')}
+                    onChange={(e) => handleInputChange(e, "name")}
+                    onFocus={() => setFocusedField("name")}
+                    onBlur={() => setFocusedField("")}
                     required
                     minLength={3}
                   />
@@ -251,11 +251,11 @@ export function RegisterPage() {
                     id="phone"
                     type="tel"
                     placeholder="Phone Number"
-                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('phone')} outline-none`}
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle("phone")} outline-none`}
                     value={phone}
-                    onChange={(e) => handleInputChange(e, 'phone')}
-                    onFocus={() => setFocusedField('phone')}
-                    onBlur={() => setFocusedField('')}
+                    onChange={(e) => handleInputChange(e, "phone")}
+                    onFocus={() => setFocusedField("phone")}
+                    onBlur={() => setFocusedField("")}
                     onKeyPress={(e) => {
                       // Allow only numbers and prevent default for other characters
                       const isNumber = /[0-9]/.test(e.key);
@@ -276,11 +276,11 @@ export function RegisterPage() {
                     id="email"
                     type="email"
                     placeholder="Email"
-                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('email')} outline-none`}
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle("email")} outline-none`}
                     value={email}
-                    onChange={(e) => handleInputChange(e, 'email')}
-                    onFocus={() => setFocusedField('email')}
-                    onBlur={() => setFocusedField('')}
+                    onChange={(e) => handleInputChange(e, "email")}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField("")}
                     required
                   />
                 </div>
@@ -293,11 +293,11 @@ export function RegisterPage() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
-                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle('password')} outline-none`}
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle("password")} outline-none`}
                     value={password}
-                    onChange={(e) => handleInputChange(e, 'password')}
-                    onFocus={() => setFocusedField('password')}
-                    onBlur={() => setFocusedField('')}
+                    onChange={(e) => handleInputChange(e, "password")}
+                    onFocus={() => setFocusedField("password")}
+                    onBlur={() => setFocusedField("")}
                     required
                     minLength={8}
                   />
@@ -326,16 +326,12 @@ export function RegisterPage() {
               </div>
 
               <div className="px-16">
-                <Button 
+                <Button
                   type="submit"
                   className="font-bold text-lg w-full bg-primary text-secondary rounded-full mb-3 transition-all duration-200 hover:bg-primary/90 hover:text-white hover:shadow-[0_0_15px_3px_rgba(255,255,255,0.75)] disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
-                  {loading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    "Register"
-                  )}
+                  {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Register"}
                 </Button>
               </div>
 
