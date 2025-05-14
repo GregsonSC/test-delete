@@ -67,7 +67,7 @@ export function RegisterPage() {
       password,
       phone,
       imageUrl: "",
-      roleId: 1,
+      roleId: 1, // TODO: Review this roleId for the user
     };
 
     // Create a promise for the registration process
