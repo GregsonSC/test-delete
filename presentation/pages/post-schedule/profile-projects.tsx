@@ -21,10 +21,10 @@ export function PostSchedule() {
         month: "2-digit",
         day: "2-digit"
       });
-      
+
       DefaultToast.title(
         "Your request has been received!",
-        `Hello ${storedData.name}, your meeting is booked for ${formattedDate} between ${storedData.timeRange} in ${storedData.timezone} timezone. We will contact you soon to confirm the details. Thank you for choosing us!`
+        `Hello ${storedData.name}, your meeting is booked for ${formattedDate} between ${storedData.timeRange} in utc-5 timezone. We will contact you soon to confirm the details. Thank you for choosing us!`
       );
       console.log("Información guardada en sessionStorage:", storedData);
       console.log("timeStart:", storedData.timeStart);
@@ -58,7 +58,7 @@ export function PostSchedule() {
               <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-7 top-1/2 transform -translate-y-8"/>
               <CardTitle className="text-xl">Check Your E-mail</CardTitle>
               <CardContent className="p-0 font-medium">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt. 
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt.
               </CardContent>
             </Card>
 
@@ -68,7 +68,7 @@ export function PostSchedule() {
               <Image src="/images/post-schedule/Frame 22.png" alt="correct-badge" width={58} height={58} className="absolute left-7 top-24 transform -translate-y-8"/>
               <CardTitle className="text-xl pl-28">Create An Account</CardTitle>
               <CardContent className="p-0 pl-28 font-medium">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt. 
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt.
               </CardContent>
               <CardFooter className="mt-10  place-content-center items-center flex gap-5 lg:pl-20">
                 <Button className="rounded-full text-[#050A2B] font-bold md:text-2xl">Go to register</Button>

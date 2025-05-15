@@ -75,7 +75,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Obtener timeStart y timeFinish formateados correctamente
     const { timeStart, timeFinish } = GetHoursViewModel(values.date.toISOString(), values.timeRange);
-    
+
     // Guardar toda la información en sessionStorage
     const contactData = {
       name: values.name,
@@ -89,9 +89,9 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
       timeStart: timeStart,
       timeFinish: timeFinish,
     };
-    
+
     sessionStorage.setItem("contactData", JSON.stringify(contactData));
-    
+
     // Opcionalmente, enviar los datos al API
     try {
       // Crear el objeto con el formato esperado por la API
@@ -104,10 +104,10 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
         timeStart: timeStart,
         timeFinish: timeFinish
       };
-      
+
       // Enviar al API utilizando el ViewModel
       const result = await createCalendarEvent(eventData);
-      
+
       if (result.success) {
         // Continuar con la navegación solo si el envío fue exitoso
         router.push("/post-schedule");
@@ -300,7 +300,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                 </form>
               </Form>
             )}
-            <div className="mt-5">
+            <div className="">
               <Planner
                 onDateSelected={(date: Date) => {
                   setSelectedDate(date);

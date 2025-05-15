@@ -33,31 +33,31 @@ export const portfolioItems = [
         description: "Brief description of project 1.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-1", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 2",
         description: "Brief description of project 2.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-2", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 3",
         description: "Brief description of project 3.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-3", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 4",
         description: "Brief description of project 4.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-4", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 5",
         description: "Brief description of project 5.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-5", // Replace with actual link
-      },
+    },
 ];
 
 // Review items data
@@ -165,40 +165,22 @@ export const caseItems: NewsItem[] = [
 ];
 
 export const schedules = [
-    "9:00am - 9:15am",
-    "9:15am - 9:30am",
-    "9:30am - 9:45am",
-    "9:45am - 10:00am",
-    "10:00am - 10:15am",
-    "10:15am - 10:30am",
-    "10:30am - 10:45am",
-    "10:45am - 11:00am",
-    "11:00am - 11:15am",
-    "11:15am - 11:30am",
-    "11:30am - 11:45am",
-    "11:45am - 12:00pm",
-    "12:00pm - 12:15pm",
-    "12:15pm - 12:30pm",
-    "12:30pm - 12:45pm",
-    "12:45pm - 1:00pm",
-    "1:00pm - 1:15pm",
-    "1:15pm - 1:30pm",
-    "1:30pm - 1:45pm",
-    "1:45pm - 2:00pm",
-    "2:00pm - 2:15pm",
-    "2:15pm - 2:30pm",
-    "2:30pm - 2:45pm",
-    "2:45pm - 3:00pm",
-    "3:00pm - 3:15pm",
-    "3:15pm - 3:30pm",
-    "3:30pm - 3:45pm",
-    "3:45pm - 4:00pm",
-    "4:00pm - 4:15pm",
-    "4:15pm - 4:30pm",
-    "4:30pm - 4:45pm",
-    "4:45pm - 5:00pm",
-    "5:00pm - 5:15pm",
-    "5:15pm - 5:30pm",
-    "5:30pm - 5:45pm",
-    "5:45pm - 6:00pm"
+    "9:00am - 9:30am",
+    "9:30am - 10:00am",
+    "10:00am - 10:30am",
+    "10:30am - 11:00am",
+    "11:00am - 11:30am",
+    "11:30am - 12:00pm",
+    "12:00pm - 12:30pm",
+    "12:30pm - 1:00pm",
+    "1:00pm - 1:30pm",
+    "1:30pm - 2:00pm",
+    "2:00pm - 2:30pm",
+    "2:30pm - 3:00pm",
+    "3:00pm - 3:30pm",
+    "3:30pm - 4:00pm",
+    "4:00pm - 4:30pm",
+    "4:30pm - 5:00pm",
+    "5:00pm - 5:30pm",
+    "5:30pm - 6:00pm"
 ];

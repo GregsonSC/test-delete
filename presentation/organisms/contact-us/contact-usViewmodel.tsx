@@ -35,6 +35,11 @@ export const ContactUsViewModel = () => {
                 toast.error("Error scheduling your appointment");
                 return { success: false, message: "Error scheduling appointment" };
             }
+        }
+        if (status === 409){
+            setSubmissionStatus("error");
+            toast.error("The selected time is already booked");
+            return { success: false, message: "The selected time is already booked" };
         } else {
             console.error("HTTP error:", status, errorLogs);
             setSubmissionStatus("error");
