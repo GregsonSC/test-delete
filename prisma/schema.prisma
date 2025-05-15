@@ -576,9 +576,9 @@ model Contract {
   recipientName     String
   recipientSignDate String
   userId            Int
-  user              User             @relation(fields: [userId], references: [id])
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   leadId            Int
-  lead              Lead             @relation(fields: [leadId], references: [id])
+  lead              Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
   clauses           ContractClause[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt

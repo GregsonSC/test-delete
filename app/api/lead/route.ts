@@ -155,7 +155,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newLead = await db.lead.create({ data, include: { user: true, service: true } });
+    const newLead = await db.lead.create({
+      data,
+      include: { user: true, service: true, WorkTeam: true },
+    });
 
     return NextResponse.json(
       {
@@ -344,8 +347,6 @@ export async function POST(request: NextRequest) {
  *                     type: string
  */
 
-
-
 export async function GET(request: NextRequest) {
   // Validar el token antes de continuar
   const auth = authMiddleware(request);
@@ -363,14 +364,14 @@ export async function GET(request: NextRequest) {
           clientEmail: true,
           clientPhone: true,
           name: true,
-          description:true,
+          description: true,
           state: true,
           startDate: true,
           endDate: true,
           user: true,
           service: true,
-          WorkTeam:true,
-          clientAddress:true
+          WorkTeam: true,
+          clientAddress: true,
         },
       });
 
@@ -596,7 +597,6 @@ export async function GET(request: NextRequest) {
  *                   items:
  *                     type: string
  */
-
 
 export async function PATCH(request: Request) {
   try {
