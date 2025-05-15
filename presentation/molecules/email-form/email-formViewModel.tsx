@@ -7,8 +7,8 @@ export const NewsletterViewModel = () => {
     const { fetchData } = useFetch();
     const [subscriptionStatus, setSubscriptionStatus] = useState<string>("");
 
-    const subscribeToNewsletter = async (email: string) => {
-        const payload = { email: email };
+    const subscribeToNewsletter = async (Newsletter: string) => {
+        const payload = { email: Newsletter };
         const { response, status, errorLogs } = await fetchData(
             endpoints.newsletter.CreateNewsletter,
             "post",

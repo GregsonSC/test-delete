@@ -198,4 +198,7 @@ export const schedules = [
     "4:30pm - 4:45pm",
     "4:45pm - 5:00pm",
     "5:00pm - 5:15pm",
+    "5:15pm - 5:30pm",
+    "5:30pm - 5:45pm",
+    "5:45pm - 6:00pm"
 ];

@@ -38,7 +38,7 @@ export const endpoints = {
 
   // Test endpoint for checking API connectivity
   test: `${API}/health-check`,
-  //StudyCase endpoints 
+  //StudyCase endpoints
   studycase: {
     getCases: `${API}/studycase`, // Endpoint to get all study cases (GET)
     getCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to get a specific study case by ID (GET)
@@ -57,7 +57,11 @@ export const endpoints = {
 
   newsletter: {
     CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook-test/b82dfac6-6194-4177-ba5f-b485c6cad955`,
-  }
+  },
+
+  contact_us:{
+    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook-test/4e962737-09f2-461d-9f4b-5264f424ea39`,
+  },
 };
 
 // Header configurations
@@ -170,7 +174,7 @@ export const useFetch = () => {
 
 export default endpoints;
 
-/* 
+/*
 
 const { fetchData } = useFetch();
 

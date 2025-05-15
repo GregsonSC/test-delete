@@ -27,6 +27,8 @@ export function PostSchedule() {
         `Hello ${storedData.name}, your meeting is booked for ${formattedDate} between ${storedData.timeRange} in ${storedData.timezone} timezone. We will contact you soon to confirm the details. Thank you for choosing us!`
       );
       console.log("Información guardada en sessionStorage:", storedData);
+      console.log("timeStart:", storedData.timeStart);
+      console.log("timeFinish:", storedData.timeFinish);
     }, []),
 
     <MainLayout>

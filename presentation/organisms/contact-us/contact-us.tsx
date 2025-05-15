@@ -1,39 +1,17 @@
 "use client"
-import React from "react";
-import { useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/presentation/atoms/button/button";
-import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText } from "lucide-react";
-import { Planner } from "@/presentation/organisms/planner/planner";
-import { Label } from "@/components/ui/label"
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/presentation/atoms/button/button";
+import { Planner } from "@/presentation/organisms/planner/planner";
+import { ContactUsViewModel, GetHoursViewModel } from "./contact-usViewmodel";
 
 const userName = "Name";
 
@@ -66,6 +44,11 @@ interface ContactUsProps {
 
 // !CH010 [ADD] funcionamiento del endpoint del calendario para citas
 export function ContactUs({ isLoggedIn }: ContactUsProps) {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
+  const router = useRouter();
+  const { createCalendarEvent } = ContactUsViewModel();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,33 +72,60 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
     }
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
-  const router = useRouter();
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    sessionStorage.setItem(
-      "contactData",
-      JSON.stringify({
+    // Obtener timeStart y timeFinish formateados correctamente
+    const { timeStart, timeFinish } = GetHoursViewModel(values.date.toISOString(), values.timeRange);
+    
+    // Guardar toda la información en sessionStorage
+    const contactData = {
+      name: values.name,
+      phone: values.phone,
+      email: values.email,
+      service: values.service,
+      about: values.about,
+      timezone: values.timezone,
+      date: values.date.toISOString(),
+      timeRange: values.timeRange,
+      timeStart: timeStart,
+      timeFinish: timeFinish,
+    };
+    
+    sessionStorage.setItem("contactData", JSON.stringify(contactData));
+    
+    // Opcionalmente, enviar los datos al API
+    try {
+      // Crear el objeto con el formato esperado por la API
+      const eventData = {
         name: values.name,
         phone: values.phone,
         email: values.email,
         service: values.service,
         about: values.about,
-        timezone: values.timezone,
-        date: values.date.toISOString(),
-        timeRange: values.timeRange,
-      })
-    );
-    router.push("/post-schedule");
-    form.reset();
+        timeStart: timeStart,
+        timeFinish: timeFinish
+      };
+      
+      // Enviar al API utilizando el ViewModel
+      const result = await createCalendarEvent(eventData);
+      
+      if (result.success) {
+        // Continuar con la navegación solo si el envío fue exitoso
+        router.push("/post-schedule");
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Error al enviar datos al API:", error);
+      // Navegar de todos modos ya que los datos se guardaron en sessionStorage
+      router.push("/post-schedule");
+      form.reset();
+    }
   }
 
   return (
     <Card className="bg-white w-full border-0 flex flex-col items-center justify-center md:w-[778px] md:justify-start md:items-start md:pt-14 md:pb-12">
       <CardHeader>
         <CardTitle className="text-[#0A1248] font-bold text-5xl text-wrap ml-10 mb-2">
-          Let’s <span className="block md:inline">Connect</span>
+          Let's <span className="block md:inline">Connect</span>
         </CardTitle>
         <CardDescription className="text-[#0A1248] font-normal text-base ml-10 mr-5 text-wrap">
           We are here to help you grow and achieve your business goals!
