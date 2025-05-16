@@ -47,7 +47,7 @@ import { createImage } from "../cloudinary/upload/route";
  *                         type: string
  *                       imageUrl:
  *                         type: string
- *                       address:  # Valor agregado
+ *                       address:  
  *                         type: string
  *                       role:
  *                         type: object
@@ -207,7 +207,7 @@ export async function GET(request: NextRequest) {
  *     tags:
  *       - User
  *     summary: Update a user
- *     description: Updates a user's information by ID. Accepts name, phone, password, image, and roleId. At least one field must be provided.
+ *     description: Updates a user's information by ID. Accepts name, phone, password, image, address, and roleId. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
@@ -234,8 +234,8 @@ export async function GET(request: NextRequest) {
  *               imageUrl:
  *                 type: string
  *                 format: binary
- *                 description: Profile image of the user (optional).
- *               address:  # Valor agregado
+ *                 description: (Optional) Profile image of the user.
+ *               address:
  *                 type: string
  *                 example: "123 Main St, Anytown, USA"
  *               roleId:
@@ -255,7 +255,7 @@ export async function GET(request: NextRequest) {
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: "User  updated successfully"
+ *                   example: "User updated successfully"
  *                 data:
  *                   type: array
  *                   items:
@@ -273,7 +273,7 @@ export async function GET(request: NextRequest) {
  *                       imageUrl:
  *                         type: string
  *                         example: "https://cloudinary.com/path/to/image.jpg"
- *                       address:  # Valor agregado
+ *                       address:
  *                         type: string
  *                         example: "123 Main St, Anytown, USA"
  *                       role:
@@ -292,6 +292,7 @@ export async function GET(request: NextRequest) {
  *       500:
  *         description: Server error while updating user.
  */
+
 export async function PATCH(request: NextRequest) {
   // Validar el token primero
   const auth = authMiddleware(request);
@@ -337,9 +338,10 @@ export async function PATCH(request: NextRequest) {
     const password = form.get("password")?.toString();
     const imageFile = form.get("imageUrl");
     const roleIdRaw = form.get("roleId")?.toString();
+    const address = form.get("address")?.toString() || undefined;
     const roleId = roleIdRaw ? parseInt(roleIdRaw) : undefined;
 
-    if (roleId) {
+     if (roleId) {
       if (roleIdRaw && isNaN(roleId)) {
         return createResponse({
           success: false,
@@ -354,6 +356,7 @@ export async function PATCH(request: NextRequest) {
 
     if (name) updatedData.name = name;
     if (phone) updatedData.phone = phone;
+    if (address) updatedData.address = address;
     if (roleId !== undefined) updatedData.roleId = roleId;
     if (password) updatedData.password = await hashPassword(password);
     if (imageFile && imageFile instanceof File) {

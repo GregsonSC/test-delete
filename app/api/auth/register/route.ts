@@ -22,7 +22,6 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - password
  *               - name
  *               - roleId
- *               - imageUrl
  *               - address
  *             properties:
  *               email:
@@ -64,6 +63,7 @@ export async function POST(request: NextRequest) {
     const roleIdRaw = form.get("roleId")?.toString();
     const imageFile = form.get("imageUrl");
     const address = form.get("address")?.toString();
+    let imageUrl: string | undefined = "";
 
     if (!email || !password || !name || !phone || !roleIdRaw || !address) {
       return NextResponse.json(
@@ -105,26 +105,26 @@ export async function POST(request: NextRequest) {
     }
 
     const hashedPassword = await hashPassword(password);
+    if (imageFile) {
+      if (!(imageFile instanceof File)) {
+        return createResponse({
+          success: false,
+          message: "The image must be valid file.",
+          errors: ["Must be uploaded as file."],
+          status: 400,
+        });
+      }
+      imageUrl = await createImage(imageFile);
 
-    if (!(imageFile instanceof File)) {
-      return createResponse({
-        success: false,
-        message: "The image must be valid file.",
-        errors: ["Must be uploaded as file."],
-        status: 400,
-      });
+      if (!imageUrl) {
+        return createResponse({
+          success: false,
+          message: "The image was not uploaded to cloudinary",
+          errors: ["Error cloudinary."],
+          status: 400,
+        });
+      }
     }
-    const imageUrl = await createImage(imageFile);
-
-    if (!imageUrl) {
-      return createResponse({
-        success: false,
-        message: "The image was not uploaded to cloudinary",
-        errors: ["Error cloudinary."],
-        status: 400,
-      });
-    }
-
     const newUser = await db.user.create({
       data: {
         email,
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error creating user: ", error);
     return NextResponse.json(
       {
         success: false,
