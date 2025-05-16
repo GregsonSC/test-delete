@@ -43,9 +43,9 @@ const SocialLinks = () => (
       { icon: Facebook, href: "#" },
       { icon: Instagram, href: "#" },
       { icon: Youtube, href: "#" },
-    ].map(({ icon: Icon, href }) => (
+    ].map(({ icon: Icon, href }, idx) => (
       <a
-        key={href}
+        key={href + idx}
         href={href}
         className="w-8 h-8 rounded-full bg-[#8ECF0A] flex items-center justify-center text-[#060B20] hover:bg-[#8ab82e] transition-colors"
       >
@@ -170,7 +170,7 @@ const DesktopAuthButtons = ({
 const DesktopNav = ({ navItems, activeDropdown, setActiveDropdown, pathname }: any) => (
   <nav className="hidden lg:flex gap-6 items-center">
     {navItems.map((item: any) => (
-      <div key={item.href} className="relative">
+      <div key={item.label + item.href} className="relative">
         {item.hasDropdown ? (
           <button
             className={cn(
@@ -218,7 +218,7 @@ const MobileNav = ({
 }: any) => (
   <nav className="flex flex-col space-y-4 flex-1 justify-center py-8">
     {navItems.map((item: any) => (
-      <div key={item.href} className="py-2 border-b border-gray-200 w-4/5">
+      <div key={item.label + item.href} className="py-2 border-b border-gray-200 w-4/5">
         {item.hasDropdown ? (
           <MobileDropdown
             item={item}
@@ -266,20 +266,20 @@ const MobileDropdown = ({
     <div
       className={cn(
         "overflow-hidden transition-all duration-300",
-        mobileDropdowns[item.label] ? "mt-3 max-h-[500px] overflow-y-auto" : "max-h-0"
+        mobileDropdowns[item.label] ? "mt-3 max-h-[500px]" : "max-h-0"
       )}
     >
       {item.dropdownContent?.map((content: any) =>
         content.areaLinks ? (
           <MobileAreaDropdown
-            key={content.href}
+            key={content.label + content.href}
             content={content}
             areaDropdowns={areaDropdowns}
             toggleAreaDropdown={toggleAreaDropdown}
           />
         ) : (
           <Link
-            key={content.href}
+            key={content.label + content.href}
             href={content.href}
             className="block py-2 max-[400px]:text-base text-lg text-[#060B20]/80 hover:text-[#8ECF0A]"
           >
@@ -359,11 +359,12 @@ const MobileAreaDropdown = ({ content, areaDropdowns, toggleAreaDropdown }: any)
 const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) => (
   <div
     className={cn(
-      "w-full bg-[#fafafa] shadow-lg overflow-hidden hidden lg:block",
+      "w-full bg-[#fafafa] shadow-lg overflow-hidden hidden lg:block fixed left-0 top-[72px] z-[60]",
       activeDropdown
         ? "transition-all duration-500 ease-in-out opacity-100 max-h-[1000px] transform-gpu"
         : "opacity-0 max-h-0"
     )}
+    style={{ width: "100vw" }}
   >
     <div className="container mx-auto px-4 md:px-8 py-12 pb-4">
       <div className="max-w-7xl mx-auto">
@@ -380,7 +381,7 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
                 {item.dropdownContent?.map((content: any) =>
                   content.areaLinks ? (
                     <NavAreaCard
-                      key={content.href}
+                      key={content.label + content.href}
                       title={content.label}
                       links={content.areaLinks.map((link: any) => ({
                         name: link.name,
@@ -392,7 +393,7 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
                     />
                   ) : (
                     <NavCard
-                      key={content.href}
+                      key={content.label + content.href}
                       title={content.label}
                       description={content.description}
                       iconUrl={content.icon}
@@ -418,6 +419,32 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
   </div>
 );
 
+// Botón hamburguesa animado clásico (X al abrir)
+function HamburgerButton({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
+  return (
+    <button
+      className="relative w-9 h-9 flex flex-col items-center justify-center lg:hidden"
+      onClick={onClick}
+      aria-label="Toggle menu"
+      type="button"
+      style={{ outline: "none", border: "none" }}
+    >
+      {/* Línea superior */}
+      <span
+        className={`block absolute left-2 right-2 h-0.5 bg-white rounded transition-all duration-200 ${isOpen ? "top-5 rotate-45" : "top-3 rotate-0"}`}
+      />
+      {/* Línea central */}
+      <span
+        className={`block absolute left-2 right-2 h-0.5 bg-white rounded transition-all duration-200 ${isOpen ? "opacity-0" : "top-5 opacity-100"}`}
+      />
+      {/* Línea inferior */}
+      <span
+        className={`block absolute left-2 right-2 h-0.5 bg-white rounded transition-all duration-200 ${isOpen ? "top-5 -rotate-45" : "top-7 rotate-0"}`}
+      />
+    </button>
+  );
+}
+
 export function Navbar({ className }: NavbarProps) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -431,6 +458,25 @@ export function Navbar({ className }: NavbarProps) {
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
+
+  // Cierra los dropdowns móviles al cerrar el menú móvil
+  useEffect(() => {
+    if (!isMenuOpen) {
+      setMobileDropdowns({});
+      setAreaDropdowns({});
+    }
+  }, [isMenuOpen]);
+
+  // Cierra los dropdowns de escritorio y móviles al cambiar de tamaño de pantalla
+  useEffect(() => {
+    const handleResize = () => {
+      setActiveDropdown(null);
+      setMobileDropdowns({});
+      setAreaDropdowns({});
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleMobileDropdown = (label: string) => {
     setMobileDropdowns((prev) => ({
@@ -462,11 +508,9 @@ export function Navbar({ className }: NavbarProps) {
     <>
       <header
         className={cn(
-          "w-full py-4",
-          "lg:bg-[#020301] bg-[#191d22]",
-          "lg:static fixed top-0 left-0",
-          "lg:z-40 z-50",
-          "lg:shadow-none shadow-lg",
+          "w-full py-4 bg-[#020301]",
+          "fixed top-0 left-0 z-50",
+          "shadow-lg",
           className
         )}
       >
@@ -483,16 +527,8 @@ export function Navbar({ className }: NavbarProps) {
 
             <div className="flex items-center gap-[20px] lg:gap-3">
               <DesktopAuthButtons isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white p-1 lg:hidden"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? <X className="stroke-[3]" /> : <Menu className="stroke-[3]" />}
-              </Button>
+              {/* Botón hamburguesa animado clásico */}
+              <HamburgerButton isOpen={isMenuOpen} onClick={() => setIsMenuOpen((open) => !open)} />
             </div>
           </div>
         </div>
@@ -504,14 +540,15 @@ export function Navbar({ className }: NavbarProps) {
         setActiveDropdown={setActiveDropdown}
       />
 
+      {/* Overlay y panel móvil sin animación/transición */}
       <div
         className={cn(
-          "fixed inset-0 z-40 lg:hidden flex pt-[72px] bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out",
+          "fixed left-0 right-0 z-[70] lg:hidden flex pt-0",
           isMenuOpen
-            ? "opacity-100 pointer-events-auto scale-100"
-            : "opacity-0 pointer-events-none scale-95"
+            ? "top-[72px] h-[calc(100vh-72px)] bg-black/80 backdrop-blur-sm visible"
+            : "top-0 h-0 invisible"
         )}
-        style={{ transitionProperty: "opacity, transform" }}
+        style={{}}
       >
         <div
           className={cn(

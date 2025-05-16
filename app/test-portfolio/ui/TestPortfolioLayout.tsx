@@ -85,7 +85,7 @@ export default function TestPortfolioLayout() {
   const getChatTabs = (tab: string) => (tab === "Projects" ? [CHAT_TABS[0]] : CHAT_TABS);
 
   return (
-    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 min-h-[calc(100vh-64px)] h-[calc(100vh-64px)] text-gray-200">
+    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 min-h-[calc(100vh-64px)] h-[calc(100vh-72px)] text-gray-200">
       {/* Desktop/Tablet Layout - grid background is now transparent, allowing parent bg to show */}
       <div className="hidden md:grid grid-cols-3 gap-4 w-full h-full min-h-0">
         {/* Sidebar - card background changed */}
