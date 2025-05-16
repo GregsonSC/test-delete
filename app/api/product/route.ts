@@ -457,3 +457,12 @@ export async function DELETE(request: Request) {
     );
   }
 }
+
+
+
+//que raro ,la unica que no te funciona es esa o mas ?
+//creo que lead pero por lo mismo
+//pera lo pruebo en mi 
+//listo,no hubo necesidad de resetiar entonces por ejemplo si necesitas volver a modificarlo pues pruebas primero el generate y ya luego el migrate dev --name tal cosa y ya
+//Ya quedo fino
+//vale gracias,dale
