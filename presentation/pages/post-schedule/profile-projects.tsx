@@ -8,7 +8,7 @@ import { BadgeCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
-
+import { notFound } from "next/navigation";
 export function PostSchedule() {
   return (
     useEffect(() => {
@@ -22,15 +22,18 @@ export function PostSchedule() {
         day: "2-digit"
       });
 
+      if (!storedData.email){
+        notFound();
+      }
+
       DefaultToast.title(
         "Your request has been received!",
-        `Hello ${storedData.name}, your meeting is booked for ${formattedDate} between ${storedData.timeRange} in utc-5 timezone. We will contact you soon to confirm the details. Thank you for choosing us!`
+        `Hello ${storedData.name}, your meeting is booked for ${formattedDate} between ${storedData.timeRange} in utc-4 timezone. We will contact you soon to confirm the details. Thank you for choosing us!`
       );
       console.log("Información guardada en sessionStorage:", storedData);
       console.log("timeStart:", storedData.timeStart);
       console.log("timeFinish:", storedData.timeFinish);
     }, []),
-
     <MainLayout>
       <div className="lg:bg-[url('/fondos/RequestConfirmation.png')] lg:bg-cover lg:bg-no-repeat">
         {/* Main Content */}
@@ -71,8 +74,12 @@ export function PostSchedule() {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ullamcorper vitae lacus eu convallis. Phasellus ut lectus dolor. Vestibulum eleifend orci non dapibus tincidunt.
               </CardContent>
               <CardFooter className="mt-10  place-content-center items-center flex gap-5 lg:pl-20">
+              <Link href="/register">
                 <Button className="rounded-full text-[#050A2B] font-bold md:text-2xl">Go to register</Button>
+              </Link>
+              <Link href="/login">
                 <Button className="rounded-full text-white font-bold md:text-2xl bg-transparent border-2 border-[#99CC33]">Log In</Button>
+              </Link>
               </CardFooter>
             </Card>
           </div>
