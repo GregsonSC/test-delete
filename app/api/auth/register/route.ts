@@ -90,6 +90,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    // Validate that the Role exists
+    const role = await db.role.findUnique({ where: { id: roleId } });
+    if (!role) {
+      return createResponse({ success: false, message: "Role not found.", status: 400 });
+    }
 
     const userFound = await db.user.findUnique({ where: { email } });
     if (userFound) {

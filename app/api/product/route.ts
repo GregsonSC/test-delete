@@ -10,7 +10,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *     tags:
  *       - Product
  *     summary: Create a new product
- *     description: Creates a new product by uploading an image and providing name and description.
+ *     description: Creates a new product by uploading an image and providing name, description and siteUrl.
  *     requestBody:
  *       required: true
  *       content:
@@ -20,7 +20,8 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *             required:
  *               - name
  *               - description
- *               - url
+ *               - siteUrl
+ *               - imageUrl
  *             properties:
  *               name:
  *                 type: string
@@ -28,7 +29,10 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               description:
  *                 type: string
  *                 example: Access to premium features.
- *               url:
+ *               siteUrl:
+ *                 type: string
+ *                 example: https://example.com/product
+ *               imageUrl:
  *                 type: string
  *                 format: binary
  *     responses:
@@ -45,10 +49,10 @@ export async function POST(request: NextRequest) {
 
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
+    const siteUrl = form.get("siteUrl")?.toString();
+    const imageUrlForm = form.get("imageUrl");
 
-    const urlForm = form.get("url");
-
-    if (!(urlForm instanceof File)) {
+    if (!(imageUrlForm instanceof File)) {
       return createResponse({
         success: false,
         message: "The image must be valid file.",
@@ -56,9 +60,9 @@ export async function POST(request: NextRequest) {
         status: 400,
       });
     }
-    const url = await createImage(urlForm);
+    const imageUrl = await createImage(imageUrlForm);
 
-    if (!name || !description || !url) {
+    if (!name || !description || !imageUrl || !siteUrl) {
       return NextResponse.json(
         {
           success: false,
@@ -71,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newProduct = await db.product.create({
-      data: { name, description, url },
+      data: { name, description, imageUrl, siteUrl },
     });
 
     return NextResponse.json(
@@ -84,12 +88,12 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating product:", error);
+    console.error("Error creating Product:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating product",
+        message: "Error creating Product",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -174,7 +178,6 @@ export async function GET(request: Request) {
 
     // Get All
     if (!requestId) {
-      
       const [products, totalProducts] = await Promise.all([
         //Promise products
         db.product.findMany({
@@ -267,7 +270,7 @@ export async function GET(request: Request) {
  *     tags:
  *       - Product
  *     summary: Update a product
- *     description: Updates a product by ID. Accepts name, description, and a new image file. At least one field must be provided.
+ *     description: Updates a product by ID. Accepts name, description, siteUrl, and a new image file. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
@@ -288,7 +291,10 @@ export async function GET(request: Request) {
  *               description:
  *                 type: string
  *                 example: Updated description for the product.
- *               url:
+ *               siteUrl:
+ *                 type: string
+ *                 example: https://example.com/updated-product
+ *               imageUrl:
  *                 type: string
  *                 format: binary
  *     responses:
@@ -301,6 +307,7 @@ export async function GET(request: Request) {
  *       500:
  *         description: Server error while updating product.
  */
+
 
 export async function PATCH(request: Request) {
   try {
@@ -323,11 +330,12 @@ export async function PATCH(request: Request) {
     const form = await request.formData();
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
+    const siteUrl = form.get("siteUrl")?.toString();
 
-    const urlForm = form.get("url");
-    const url = urlForm instanceof File ? await createImage(urlForm) : undefined;
+    const imageUrlForm = form.get("imageUrl");
+    const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
-    if (!name && !description && !url) {
+    if (!name && !description && !imageUrl && !siteUrl) {
       return NextResponse.json(
         {
           success: false,
@@ -357,7 +365,8 @@ export async function PATCH(request: Request) {
       data: {
         ...(name && { name }),
         ...(description && { description }),
-        ...(url && { url }),
+        ...(imageUrl && { imageUrl }),
+        ...(siteUrl && { siteUrl }),
       },
     });
 

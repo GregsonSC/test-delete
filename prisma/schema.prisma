@@ -22,8 +22,10 @@ model User {
   phone        String
   imageUrl     String?
   address      String
+
   role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
   roleId       Int //Dato para hacer la relacion
+
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   Comment      Comment[]
@@ -203,21 +205,24 @@ model RolePermission {
 
 model Lead {
   id            Int        @id @default(autoincrement())
+
   clientName    String?
   clientEmail   String?
   clientPhone   String?
+  
   clientAddress String
-  name          String
   description   String
   state         LeadState
   startDate     String
   endDate       String
+
   userId        Int?
   user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   serviceId     Int?
   service       Service?   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   workTeamId    Int?
   WorkTeam      WorkTeam?  @relation(fields: [workTeamId], references: [id])
+
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   Estimate      Estimate[]
@@ -243,9 +248,12 @@ model UserPermission {
 
 model Product {
   id          Int          @id @default(autoincrement())
+
   name        String
   description String
-  url         String
+  imageUrl    String
+  siteUrl     String
+  
   Attachment  Attachment[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -291,6 +299,7 @@ model Activity {
   expectedDuration String
   startDate        String
   endDate          String
+
   phase_id         Int?
   phase            Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
   state            StateActivity
