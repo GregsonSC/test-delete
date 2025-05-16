@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/presentation/atoms/button/button";
 import Link from "next/link";
 // Update the imports to include Eye and EyeOff icons
-import { CircleUser, Phone, Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
+import { CircleUser, Phone, Mail, Lock, Loader2, Eye, EyeOff, MapPin } from "lucide-react";
 import AuthViewModel from "./AuthViewModel";
 import { AuthUser } from "@/components/interface/modules/Auth";
 import { toast } from "sonner";
@@ -44,6 +44,7 @@ export function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
 
   // Toggle password visibility function
   const togglePasswordVisibility = () => {
@@ -57,6 +58,56 @@ export function RegisterPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Add validation state for each field
+  const [validations, setValidations] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+    address: "",
+  });
+
+  // Add focus state tracking
+  const [focusedField, setFocusedField] = useState("");
+
+  // Field configuration object
+  const fieldConfig = {
+    name: { value: name, setter: setName, minLength: 3 },
+    phone: { value: phone, setter: setPhone, pattern: "[0-9]{10,15}" },
+    email: { value: email, setter: setEmail },
+    password: { value: password, setter: setPassword, minLength: 8 },
+    address: { value: address, setter: setAddress, minLength: 5 },
+  };
+
+  // Handle input validation on change
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+    const config = fieldConfig[field as keyof typeof fieldConfig];
+
+    // Update the field value
+    config.setter(value);
+
+    // Validate the field
+    const validationState = value === "" ? "" : e.target.checkValidity() ? "valid" : "invalid";
+    setValidations((prev) => ({ ...prev, [field]: validationState }));
+  };
+
+  // Get border style based on validation and focus state
+  const getBorderStyle = (field: string) => {
+    const config = fieldConfig[field as keyof typeof fieldConfig];
+    const isEmpty = config.value === "";
+    const isValid = validations[field as keyof typeof validations] === "valid";
+    const isInvalid = validations[field as keyof typeof validations] === "invalid";
+    const isFocused = focusedField === field;
+
+    if (isFocused && isEmpty) return "border-[#99cc33] border-2";
+    if (isFocused && isInvalid) return "border-red-500 border-2";
+    if (isFocused) return "border-[#99cc33] border-2";
+    if (isValid) return "border-[#99cc33] border-2";
+    if (isInvalid) return "border-red-500 border-2";
+    return "border-input";
+  };
+
   // Handle form submission
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -66,8 +117,7 @@ export function RegisterPage() {
       email,
       password,
       phone,
-
-      address: "asdasdasd", // TODO: ADD ADRESS IN UI
+      address,
       roleId: 1, // TODO: Review this roleId for the user
     };
 
@@ -75,20 +125,17 @@ export function RegisterPage() {
     const registerPromise = register(userData).then((result) => {
       if (result && result.success) {
         // Clear form on success
-        setName("");
-        setPhone("");
-        setEmail("");
-        setPassword("");
-        // Reset validation states to return borders to normal
+        Object.values(fieldConfig).forEach((config) => config.setter(""));
+        // Reset validation states
         setValidations({
           name: "",
           phone: "",
           email: "",
           password: "",
+          address: "",
         });
-        return result; // Return successful result
+        return result;
       } else {
-        // If the API returns success: false, throw an error to trigger the error toast
         throw new Error(result?.message || "Registration failed");
       }
     });
@@ -96,86 +143,9 @@ export function RegisterPage() {
     // Use toast.promise to handle all states
     toast.promise(registerPromise, {
       loading: "Creating your account...",
-      success: (result) => {
-        return result.message || "Registration successful!";
-      },
-      error: (error) => {
-        return error?.message || "Registration failed. Please try again.";
-      },
+      success: (result) => result.message || "Registration successful!",
+      error: (error) => error?.message || "Registration failed. Please try again.",
     });
-  };
-
-  // Add validation state for each field
-  const [validations, setValidations] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    password: "",
-  });
-
-  // Add focus state tracking
-  const [focusedField, setFocusedField] = useState("");
-
-  // Handle input validation on change
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
-    const value = e.target.value;
-
-    // Update the field value
-    if (field === "name") setName(value);
-    if (field === "phone") setPhone(value);
-    if (field === "email") setEmail(value);
-    if (field === "password") setPassword(value);
-
-    // Validate the field
-    if (value === "") {
-      // Empty field - neutral state
-      setValidations((prev) => ({ ...prev, [field]: "" }));
-    } else if (e.target.checkValidity()) {
-      // Valid input
-      setValidations((prev) => ({ ...prev, [field]: "valid" }));
-    } else {
-      // Invalid input
-      setValidations((prev) => ({ ...prev, [field]: "invalid" }));
-    }
-  };
-
-  // Get border style based on validation and focus state
-  const getBorderStyle = (field: string) => {
-    // When field is focused and empty, show green border
-    if (
-      focusedField === field &&
-      (field === "name"
-        ? name === ""
-        : field === "phone"
-          ? phone === ""
-          : field === "email"
-            ? email === ""
-            : field === "password"
-              ? password === ""
-              : false)
-    ) {
-      return "border-[#99cc33] border-2";
-    }
-
-    // When field is focused and has invalid content, show red border
-    if (focusedField === field && validations[field as keyof typeof validations] === "invalid") {
-      return "border-red-500 border-2";
-    }
-
-    // When field is focused and has valid content, show green border
-    if (focusedField === field) {
-      return "border-[#99cc33] border-2";
-    }
-
-    // When field is not focused but has content
-    if (validations[field as keyof typeof validations] === "valid") {
-      return "border-[#99cc33] border-2";
-    } else if (validations[field as keyof typeof validations] === "invalid") {
-      return "border-red-500 border-2";
-    }
-
-    // Default state
-    return "border-input";
   };
 
   return (
@@ -283,6 +253,24 @@ export function RegisterPage() {
                     onFocus={() => setFocusedField("email")}
                     onBlur={() => setFocusedField("")}
                     required
+                  />
+                </div>
+
+                <div className="relative w-80 h-10 mb-3 xl:w-[330px]">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-[13px] pointer-events-none">
+                    <MapPin color="#A2ABE7" />
+                  </div>
+                  <input
+                    id="address"
+                    type="text"
+                    placeholder="Address"
+                    className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle("address")} outline-none`}
+                    value={address}
+                    onChange={(e) => handleInputChange(e, "address")}
+                    onFocus={() => setFocusedField("address")}
+                    onBlur={() => setFocusedField("")}
+                    required
+                    minLength={5}
                   />
                 </div>
 
