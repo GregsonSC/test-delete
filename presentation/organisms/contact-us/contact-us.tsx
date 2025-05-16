@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/presentation/atoms/button/button";
 import { Planner } from "@/presentation/organisms/planner/planner";
 import { ContactUsViewModel, GetHoursViewModel } from "./contact-usViewmodel";
+import { useUser } from "@/context/UserContext";
 
 const userName = "Name";
-
 const formSchema = z.object({
   name: z
     .string()
@@ -38,12 +38,9 @@ const formSchema = z.object({
   timeRange: z.string().nonempty({ message: "Time range is required" }),
 });
 
-interface ContactUsProps {
-  isLoggedIn: boolean;
-}
-
 // !CH010 [ADD] funcionamiento del endpoint del calendario para citas
-export function ContactUs({ isLoggedIn }: ContactUsProps) {
+export function ContactUs() {
+  const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
   const router = useRouter();

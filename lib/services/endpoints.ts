@@ -56,7 +56,7 @@ export const endpoints = {
   },
 
   newsletter: {
-    CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook-test/b82dfac6-6194-4177-ba5f-b485c6cad955`,
+    CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
   },
 
   contact_us:{
