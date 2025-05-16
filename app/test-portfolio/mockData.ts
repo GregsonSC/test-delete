@@ -12,6 +12,11 @@ export const mockProjects = [
     ],
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     date: "2024-05-14",
+    details: Array.from({ length: 4 }, (_, i) => ({
+      description: `Detalle ${i + 1} de Project Alpha. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+      documents: [{ name: `AlphaDoc${i + 1}-A.pdf` }, { name: `AlphaDoc${i + 1}-B.pdf` }],
+      date: `2024-05-${14 + i}`,
+    })),
   },
   {
     id: "2",
@@ -26,6 +31,11 @@ export const mockProjects = [
     ],
     description: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     date: "2024-05-10",
+    details: Array.from({ length: 4 }, (_, i) => ({
+      description: `Detalle ${i + 1} de Project Beta. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`,
+      documents: [{ name: `BetaDoc${i + 1}-A.pdf` }, { name: `BetaDoc${i + 1}-B.pdf` }],
+      date: `2024-05-${10 + i}`,
+    })),
   },
   // 8 más
   ...Array.from({ length: 8 }, (_, i) => ({
@@ -41,6 +51,11 @@ export const mockProjects = [
     ],
     description: `Descripción del proyecto ${String.fromCharCode(67 + i)}.`,
     date: `2024-05-${11 + i}`,
+    details: Array.from({ length: 4 }, (_, j) => ({
+      description: `Detalle ${j + 1} de Project ${String.fromCharCode(67 + i)}.`,
+      documents: [{ name: `Doc${i + 1}-${j + 1}-A.pdf` }, { name: `Doc${i + 1}-${j + 1}-B.pdf` }],
+      date: `2024-05-${11 + i + j}`,
+    })),
   })),
 ];
 

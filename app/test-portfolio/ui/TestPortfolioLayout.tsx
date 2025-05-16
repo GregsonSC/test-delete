@@ -7,6 +7,8 @@ import RequestList from "./RequestList";
 import ProjectList from "./ProjectList";
 import { ProfileChat } from "../../../presentation/atoms/chat/profile-chat";
 import { useChatManager } from "../hooks/useChatManager";
+import { RequestDetail } from "../../../presentation/atoms/profile-project/request/request-detail";
+import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
 
 // Updated Placeholder for dark background
 const Placeholder = ({ label }: { label: string }) => (
@@ -85,7 +87,7 @@ export default function TestPortfolioLayout() {
   const getChatTabs = (tab: string) => (tab === "Projects" ? [CHAT_TABS[0]] : CHAT_TABS);
 
   return (
-    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 min-h-[calc(100vh-64px)] h-[calc(100vh-72px)] text-gray-200">
+    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 h-[calc(100vh-72px)] text-gray-200">
       {/* Desktop/Tablet Layout - grid background is now transparent, allowing parent bg to show */}
       <div className="hidden md:grid grid-cols-3 gap-4 w-full h-full min-h-0">
         {/* Sidebar - card background changed */}
@@ -127,7 +129,36 @@ export default function TestPortfolioLayout() {
         <div className="col-span-2 flex flex-col gap-4 h-full min-h-0">
           {/* Top Section - card background changed */}
           <div className="bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4">
-            <Placeholder label={getMainDetailsLabel(requestTab)} />
+            {requestTab === "Requests" && selectedRequest ? (
+              <RequestDetail
+                requestName={mockRequests.find((r) => r.id === selectedRequest)?.name || ""}
+                associatedService={
+                  mockRequests.find((r) => r.id === selectedRequest)?.service || ""
+                }
+                companyPlan={mockRequests.find((r) => r.id === selectedRequest)?.plan || ""}
+                description={mockRequests.find((r) => r.id === selectedRequest)?.description || ""}
+                leadStatus={mockRequests.find((r) => r.id === selectedRequest)?.status || ""}
+              />
+            ) : requestTab === "Projects" && selectedProject ? (
+              <div className="overflow-y-auto h-[190px] pr-2 py-2 flex flex-col gap-y-4">
+                {(mockProjects.find((p) => p.id === selectedProject)?.details || []).map(
+                  (detail: any, idx: number) => (
+                    <ProfileProjectDetail
+                      key={idx}
+                      description={detail.description}
+                      documents={detail.documents.map((doc: any, j: number) => ({
+                        id: `${selectedProject}-${idx}-${j}`,
+                        name: doc.name,
+                        url: `/docs/${doc.name}`,
+                      }))}
+                      date={detail.date ? new Date(detail.date) : undefined}
+                    />
+                  )
+                )}
+              </div>
+            ) : (
+              <Placeholder label={getMainDetailsLabel(requestTab)} />
+            )}
           </div>
           {/* Bottom Section - card background changed */}
           <div className="bg-[#13103A] rounded-xl shadow p-4 flex-1 flex flex-col gap-4 min-h-0 h-0">
@@ -170,8 +201,10 @@ export default function TestPortfolioLayout() {
         </div>
       </div>
       {/* Mobile Layout - background is now transparent, allowing parent bg to show */}
-      <div className="md:hidden flex flex-col gap-4 w-full h-screen min-h-0 flex-1 mt-[70px] lg:mt-0">
+      <div className="md:hidden flex flex-col gap-4 w-full h-screen min-h-0 flex-1 lg:mt-0">
         <MobilePortfolioLayout
+          requestTab={requestTab}
+          setRequestTab={setRequestTab}
           selectedRequest={selectedRequest}
           setSelectedRequest={setSelectedRequest}
           selectedProject={selectedProject}

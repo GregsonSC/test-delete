@@ -1,14 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { mockProjects, mockRequests } from "../mockData";
 import ProjectList from "./ProjectList";
 import RequestList from "./RequestList";
-import ProjectDetailMobile from "./ProjectDetailMobile";
-import RequestDetailMobile from "./RequestDetailMobile";
+import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
+import { RequestDetail } from "../../../presentation/atoms/profile-project/request/request-detail";
 
 const REQUEST_TABS = ["Requests", "Projects"];
 
 type Props = {
+  requestTab: string;
+  setRequestTab: (tab: string) => void;
   selectedRequest: string | null;
   setSelectedRequest: (id: string | null) => void;
   selectedProject: string | null;
@@ -17,39 +19,79 @@ type Props = {
 };
 
 export default function MobilePortfolioLayout({
+  requestTab,
+  setRequestTab,
   selectedRequest,
   setSelectedRequest,
   selectedProject,
   setSelectedProject,
   chatComponent,
 }: Props) {
-  const [tab, setTab] = useState<(typeof REQUEST_TABS)[number]>(REQUEST_TABS[0]);
   const [projectDetailTab, setProjectDetailTab] = useState("Chat");
 
   // Navegación: si hay seleccionado, mostrar detalle, si no, lista
-  if (tab === "Projects" && selectedProject) {
+  if (requestTab === "Projects" && selectedProject) {
     const project = mockProjects.find((p) => p.id === selectedProject);
     if (!project) return null;
     return (
       <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
-        <ProjectDetailMobile
-          project={project}
-          tab={projectDetailTab}
-          setTab={setProjectDetailTab}
-          chatComponent={chatComponent}
-        />
+        <div className="flex flex-col gap-2 h-full min-h-0">
+          <h2 className="font-bold text-xl mb-2">{project.name}</h2>
+          <div className="flex gap-2 mb-2 flex-shrink-0">
+            {["Chat", "Documents"].map((t) => (
+              <button
+                key={t}
+                className={`px-3 py-1 rounded-full font-semibold transition-colors ${
+                  projectDetailTab === t
+                    ? "bg-[#eaf7d6] text-[#7bb12b]"
+                    : "bg-[#f6f8fa] text-gray-500 border border-[#eaf7d6]"
+                }`}
+                onClick={() => setProjectDetailTab(t)}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          <div className="flex-1 min-h-0">
+            {projectDetailTab === "Chat" ? (
+              chatComponent
+            ) : (
+              <div className="flex flex-col gap-4 max-h-72 overflow-y-auto pr-2">
+                {(project.details || []).map((detail: any, idx: number) => (
+                  <ProfileProjectDetail
+                    key={idx}
+                    description={detail.description}
+                    documents={detail.documents.map((doc: any, j: number) => ({
+                      id: `${project.id}-${idx}-${j}`,
+                      name: doc.name,
+                      url: `/docs/${doc.name}`,
+                    }))}
+                    date={detail.date ? new Date(detail.date) : undefined}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
         <button className="mt-4 text-blue-600 underline" onClick={() => setSelectedProject(null)}>
           Volver a proyectos
         </button>
       </div>
     );
   }
-  if (tab === "Requests" && selectedRequest) {
+  if (requestTab === "Requests" && selectedRequest) {
     const request = mockRequests.find((r) => r.id === selectedRequest);
     if (!request) return null;
     return (
       <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
-        <RequestDetailMobile request={request} chatComponent={chatComponent} />
+        <RequestDetail
+          requestName={request.name}
+          associatedService={request.service}
+          companyPlan={request.plan}
+          description={request.description}
+          leadStatus={request.status}
+        />
+        <div className="flex-1 min-h-0">{chatComponent}</div>
         <button className="mt-4 text-blue-600 underline" onClick={() => setSelectedRequest(null)}>
           Volver a requests
         </button>
@@ -63,15 +105,13 @@ export default function MobilePortfolioLayout({
         {REQUEST_TABS.map((t) => (
           <button
             key={t}
-            className={`px-3 py-1 rounded-full font-semibold transition-colors ${
-              tab === t
-                ? "bg-[#eaf7d6] text-[#7bb12b]"
-                : "bg-[#f6f8fa] text-gray-500 border border-[#eaf7d6]"
+            className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
+              requestTab === t
+                ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                : "bg-transparent text-[#99CC33] border-[#99CC33]"
             }`}
             onClick={() => {
-              setTab(t);
-              setSelectedProject(null);
-              setSelectedRequest(null);
+              setRequestTab(t);
             }}
           >
             {t}
@@ -79,17 +119,23 @@ export default function MobilePortfolioLayout({
         ))}
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto">
-        {tab === "Projects" ? (
+        {requestTab === "Projects" ? (
           <ProjectList
             projects={mockProjects}
             selectedId={selectedProject}
-            onSelect={setSelectedProject}
+            onSelect={(id) => {
+              setSelectedProject(id);
+              setRequestTab("Projects");
+            }}
           />
         ) : (
           <RequestList
             requests={mockRequests}
             selectedId={selectedRequest}
-            onSelect={setSelectedRequest}
+            onSelect={(id) => {
+              setSelectedRequest(id);
+              setRequestTab("Requests");
+            }}
           />
         )}
       </div>

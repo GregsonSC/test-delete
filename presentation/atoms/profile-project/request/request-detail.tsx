@@ -1,54 +1,50 @@
 import { cn } from "@/lib/utils";
 
 interface RequestDetailProps {
-    requestName: string;
-    associatedService: string;
-    companyPlan: string;
-    description: string;
-    leadStatus: string;
-    className?: string;
+  requestName: string;
+  associatedService: string;
+  companyPlan: string;
+  description: string;
+  leadStatus: string;
+  className?: string;
 }
 
 export function RequestDetail({
-    requestName,
-    associatedService,
-    companyPlan,
-    description,
-    leadStatus,
-    className
+  requestName,
+  associatedService,
+  companyPlan,
+  description,
+  leadStatus,
+  className,
 }: RequestDetailProps) {
-    return (
-        // Outer container for gradient border
-        <div className={cn(
-            "relative p-[3px] rounded-lg h-full", // Padding for border, full height
-            "bg-gradient-to-r from-[#99CC33] to-[#66CCCC]", // Gradient background
-            "max-h-80", // <-- Add your preferred max height here (e.g., max-h-80 for 20rem)
-            className
-        )}>
-            {/* Inner Content Container */}
-            <div className={cn(
-                "flex flex-col justify-between p-4 rounded-[5px] h-full", // Flex column, padding, rounding, full height
-                "bg-white" // White background
-            )}>
-                {/* Top section with text details */}
-                <div className="space-y-2">
-                    <h2 className="text-xl font-bold text-[#2C3E50]">
-                        {requestName}
-                    </h2>
-                    <p className="text-base text-gray-700">{associatedService}</p>
-                    <p className="text-base text-gray-700">{companyPlan}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                        {description}
-                    </p>
-                </div>
-
-                {/* Bottom section with lead status */}
-                <div className="mt-4">
-                    <span className="px-4 py-1 bg-[#2C3E50] text-white text-sm rounded-full inline-block">
-                        {leadStatus}
-                    </span>
-                </div>
-            </div>
+  return (
+    // Outer container for gradient border
+    <div
+      className={cn(
+        "relative p-[6px] rounded-lg",
+        "bg-gradient-to-r from-[#99CC33] via-[#66CCCC] to-[#99CC33]",
+        className
+      )}
+    >
+      {/* Inner Content Container */}
+      <div className={cn("flex flex-col justify-between p-4 rounded-md", "bg-[#100e34]")}>
+        {/* Top section with text details */}
+        <div className="space-y-1">
+          <h2 className="text-[30px] font-semibold text-white" style={{ fontWeight: 600 }}>
+            {requestName}
+          </h2>
+          <p className="text-[20px] text-gray-200">{associatedService}</p>
+          <p className="text-[20px] text-gray-200">{companyPlan}</p>
+          <p className="text-[16px] text-gray-300 mt-1">{description}</p>
         </div>
-    );
+
+        {/* Bottom section with lead status */}
+        <div className="mt-2">
+          <span className="px-4 py-1 bg-[#04081e] text-gray-100 text-sm rounded-full inline-block shadow-sm">
+            {leadStatus}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }
