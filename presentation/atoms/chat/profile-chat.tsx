@@ -169,7 +169,7 @@ export function ProfileChat({
                 <div
                   className={`px-4 py-2 rounded-md text-[14px] font-medium shadow-sm transition-colors duration-200 self-end ${
                     message.role === "user"
-                      ? "bg-[#04081E] text-white self-end"
+                      ? "bg-[#13103a] md:bg-[#04081E] text-white self-end"
                       : "bg-[#739926] text-white self-start"
                   }`}
                 >

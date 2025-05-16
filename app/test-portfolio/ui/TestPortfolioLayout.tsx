@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MobilePortfolioLayout from "./MobilePortfolioLayout";
 import { mockRequests, mockProjects } from "../mockData";
 import RequestList from "./RequestList";
@@ -53,6 +53,10 @@ export default function TestPortfolioLayout() {
     clearChatState,
   } = useChatManager();
 
+  // Contador de historial de detalles por tab
+  const detailHistoryCount = useRef({ Requests: 0, Projects: 0 });
+  const lastTab = useRef(requestTab);
+
   // Effect to clear chat state if no project/request is selected globally
   useEffect(() => {
     const isAnyItemSelected = selectedRequest || selectedProject;
@@ -60,6 +64,57 @@ export default function TestPortfolioLayout() {
       clearChatState();
     }
   }, [selectedRequest, selectedProject, clearChatState]);
+
+  // --- FUNCIONALIDAD DE HISTORIAL GLOBAL ---
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onPopState = () => {
+      if (selectedProject) setSelectedProject(null);
+      if (selectedRequest) setSelectedRequest(null);
+      // Al volver atrás, decrementa el contador de la tab actual
+      const tabKey = requestTab as keyof typeof detailHistoryCount.current;
+      if (detailHistoryCount.current[tabKey] > 0) {
+        detailHistoryCount.current[tabKey]--;
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [selectedProject, selectedRequest, requestTab]);
+
+  // Al seleccionar un project/request, haz pushState y acumula solo en la tab actual
+  const handleSelectProject = (id: string) => {
+    if (typeof window !== "undefined") {
+      if (selectedProject) {
+        window.history.replaceState({}, "");
+      } else {
+        window.history.pushState({}, "");
+      }
+    }
+    setSelectedProject(id);
+    setRequestTab("Projects");
+  };
+  const handleSelectRequest = (id: string) => {
+    if (typeof window !== "undefined") {
+      if (selectedRequest) {
+        window.history.replaceState({}, "");
+      } else {
+        window.history.pushState({}, "");
+      }
+    }
+    setSelectedRequest(id);
+    setRequestTab("Requests");
+  };
+
+  // Al cambiar de tab, solo limpia la selección y el contador, NO uses go(-count)
+  const handleTabChange = (tab: string) => {
+    if (tab === requestTab) return;
+    // Al cambiar de tab, solo limpia la selección y el contador, NO uses go(-count)
+    const tabKey = requestTab as keyof typeof detailHistoryCount.current;
+    detailHistoryCount.current[tabKey] = 0;
+    setSelectedRequest(null);
+    setSelectedProject(null);
+    setRequestTab(tab);
+  };
 
   // Use the module-level helper function
   const { currentEntityId, currentEntityType } = getChatEntityDetails(
@@ -101,11 +156,7 @@ export default function TestPortfolioLayout() {
                     ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
                     : "bg-transparent text-[#99CC33] border-[#99CC33]"
                 }`}
-                onClick={() => {
-                  setRequestTab(tab);
-                  setSelectedRequest(null);
-                  setSelectedProject(null);
-                }}
+                onClick={() => handleTabChange(tab)}
               >
                 {tab}
               </button>
@@ -115,13 +166,13 @@ export default function TestPortfolioLayout() {
             <RequestList
               requests={mockRequests}
               selectedId={selectedRequest}
-              onSelect={setSelectedRequest}
+              onSelect={handleSelectRequest}
             />
           ) : (
             <ProjectList
               projects={mockProjects}
               selectedId={selectedProject}
-              onSelect={setSelectedProject}
+              onSelect={handleSelectProject}
             />
           )}
         </div>
@@ -204,12 +255,14 @@ export default function TestPortfolioLayout() {
       <div className="md:hidden flex flex-col gap-4 w-full h-screen min-h-0 flex-1 lg:mt-0">
         <MobilePortfolioLayout
           requestTab={requestTab}
-          setRequestTab={setRequestTab}
+          setRequestTab={handleTabChange}
           selectedRequest={selectedRequest}
           setSelectedRequest={setSelectedRequest}
           selectedProject={selectedProject}
           setSelectedProject={setSelectedProject}
           chatComponent={chatComponentInstance}
+          handleSelectProject={handleSelectProject}
+          handleSelectRequest={handleSelectRequest}
         />
       </div>
     </div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { mockProjects, mockRequests } from "../mockData";
 import ProjectList from "./ProjectList";
 import RequestList from "./RequestList";
@@ -16,16 +16,18 @@ type Props = {
   selectedProject: string | null;
   setSelectedProject: (id: string | null) => void;
   chatComponent: React.ReactNode;
+  handleSelectProject: (id: string) => void;
+  handleSelectRequest: (id: string) => void;
 };
 
 export default function MobilePortfolioLayout({
   requestTab,
   setRequestTab,
   selectedRequest,
-  setSelectedRequest,
   selectedProject,
-  setSelectedProject,
   chatComponent,
+  handleSelectProject,
+  handleSelectRequest,
 }: Props) {
   const [projectDetailTab, setProjectDetailTab] = useState("Chat");
 
@@ -41,10 +43,10 @@ export default function MobilePortfolioLayout({
             {["Chat", "Documents"].map((t) => (
               <button
                 key={t}
-                className={`px-3 py-1 rounded-full font-semibold transition-colors ${
+                className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
                   projectDetailTab === t
-                    ? "bg-[#eaf7d6] text-[#7bb12b]"
-                    : "bg-[#f6f8fa] text-gray-500 border border-[#eaf7d6]"
+                    ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                    : "bg-transparent text-[#99CC33] border-[#99CC33]"
                 }`}
                 onClick={() => setProjectDetailTab(t)}
               >
@@ -52,11 +54,11 @@ export default function MobilePortfolioLayout({
               </button>
             ))}
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 h-full">
             {projectDetailTab === "Chat" ? (
               chatComponent
             ) : (
-              <div className="flex flex-col gap-4 max-h-72 overflow-y-auto pr-2">
+              <div className="flex flex-col gap-4 flex-1 min-h-0 h-full overflow-y-auto pr-2">
                 {(project.details || []).map((detail: any, idx: number) => (
                   <ProfileProjectDetail
                     key={idx}
@@ -73,9 +75,6 @@ export default function MobilePortfolioLayout({
             )}
           </div>
         </div>
-        <button className="mt-4 text-blue-600 underline" onClick={() => setSelectedProject(null)}>
-          Volver a proyectos
-        </button>
       </div>
     );
   }
@@ -92,9 +91,6 @@ export default function MobilePortfolioLayout({
           leadStatus={request.status}
         />
         <div className="flex-1 min-h-0">{chatComponent}</div>
-        <button className="mt-4 text-blue-600 underline" onClick={() => setSelectedRequest(null)}>
-          Volver a requests
-        </button>
       </div>
     );
   }
@@ -123,19 +119,13 @@ export default function MobilePortfolioLayout({
           <ProjectList
             projects={mockProjects}
             selectedId={selectedProject}
-            onSelect={(id) => {
-              setSelectedProject(id);
-              setRequestTab("Projects");
-            }}
+            onSelect={handleSelectProject}
           />
         ) : (
           <RequestList
             requests={mockRequests}
             selectedId={selectedRequest}
-            onSelect={(id) => {
-              setSelectedRequest(id);
-              setRequestTab("Requests");
-            }}
+            onSelect={handleSelectRequest}
           />
         )}
       </div>
