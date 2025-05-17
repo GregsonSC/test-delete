@@ -38,7 +38,7 @@ export const endpoints = {
 
   // Test endpoint for checking API connectivity
   test: `${API}/health-check`,
-  //StudyCase endpoints 
+  //StudyCase endpoints
   studycase: {
     getCases: `${API}/studycase`, // Endpoint to get all study cases (GET)
     getCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to get a specific study case by ID (GET)
@@ -53,6 +53,14 @@ export const endpoints = {
     getServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
     createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
     updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
+  },
+
+  newsletter: {
+    CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
+  },
+
+  contact_us:{
+    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook-test/4e962737-09f2-461d-9f4b-5264f424ea39`,
   },
 };
 
@@ -166,7 +174,7 @@ export const useFetch = () => {
 
 export default endpoints;
 
-/* 
+/*
 
 const { fetchData } = useFetch();
 
