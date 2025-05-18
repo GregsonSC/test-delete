@@ -47,6 +47,8 @@ import { createImage } from "../cloudinary/upload/route";
  *                         type: string
  *                       imageUrl:
  *                         type: string
+ *                       address:  
+ *                         type: string
  *                       role:
  *                         type: object
  *                         properties:
@@ -92,12 +94,12 @@ import { createImage } from "../cloudinary/upload/route";
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: "User not found"
+ *                   example: "User  not found"
  *                 errors:
  *                   type: array
  *                   items:
  *                     type: string
- *                     example: ["User does not exist"]
+ *                     example: ["User  does not exist"]
  *       500:
  *         description: Error del servidor
  *         content:
@@ -136,6 +138,7 @@ export async function GET(request: NextRequest) {
           email: true,
           phone: true,
           imageUrl: true,
+          address:true,
           role: true,
         },
       });
@@ -204,7 +207,7 @@ export async function GET(request: NextRequest) {
  *     tags:
  *       - User
  *     summary: Update a user
- *     description: Updates a user's information by ID. Accepts name, phone, password, image, and roleId. At least one field must be provided.
+ *     description: Updates a user's information by ID. Accepts name, phone, password, image, address, and roleId. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
@@ -231,7 +234,10 @@ export async function GET(request: NextRequest) {
  *               imageUrl:
  *                 type: string
  *                 format: binary
- *                 description: Profile image of the user (optional).
+ *                 description: (Optional) Profile image of the user.
+ *               address:
+ *                 type: string
+ *                 example: "123 Main St, Anytown, USA"
  *               roleId:
  *                 type: integer
  *                 example: 2
@@ -267,6 +273,9 @@ export async function GET(request: NextRequest) {
  *                       imageUrl:
  *                         type: string
  *                         example: "https://cloudinary.com/path/to/image.jpg"
+ *                       address:
+ *                         type: string
+ *                         example: "123 Main St, Anytown, USA"
  *                       role:
  *                         type: object
  *                         properties:
@@ -329,9 +338,10 @@ export async function PATCH(request: NextRequest) {
     const password = form.get("password")?.toString();
     const imageFile = form.get("imageUrl");
     const roleIdRaw = form.get("roleId")?.toString();
+    const address = form.get("address")?.toString() || undefined;
     const roleId = roleIdRaw ? parseInt(roleIdRaw) : undefined;
 
-    if (roleId) {
+     if (roleId) {
       if (roleIdRaw && isNaN(roleId)) {
         return createResponse({
           success: false,
@@ -346,6 +356,7 @@ export async function PATCH(request: NextRequest) {
 
     if (name) updatedData.name = name;
     if (phone) updatedData.phone = phone;
+    if (address) updatedData.address = address;
     if (roleId !== undefined) updatedData.roleId = roleId;
     if (password) updatedData.password = await hashPassword(password);
     if (imageFile && imageFile instanceof File) {
@@ -373,7 +384,6 @@ export async function PATCH(request: NextRequest) {
       data: [updatedUser],
       status: 200,
     });
-
   } catch (error) {
     console.error("Error updating user:", error);
     return createResponse({

@@ -22,7 +22,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - password
  *               - name
  *               - roleId
- *               - imageUrl
+ *               - address
  *             properties:
  *               email:
  *                 type: string
@@ -40,6 +40,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               roleId:
  *                 type: integer
  *                 description: ID del rol del usuario (1 = Admin, 2 = Usuario, etc.)
+ *               address:
+ *                 type: string
+ *                 description: Dirección del usuario.
  *     responses:
  *       201:
  *         description: Usuario creado exitosamente.
@@ -59,14 +62,16 @@ export async function POST(request: NextRequest) {
     const phone = form.get("phone")?.toString() || null;
     const roleIdRaw = form.get("roleId")?.toString();
     const imageFile = form.get("imageUrl");
+    const address = form.get("address")?.toString();
+    let imageUrl: string | undefined = "";
 
-    if (!email || !password || !name || !phone || !roleIdRaw || !imageFile) {
+    if (!email || !password || !name || !phone || !roleIdRaw || !address) {
       return NextResponse.json(
         {
           success: false,
           data: [],
           message: "Missing required fields",
-          errors: ["email, password, name and roleId are required"],
+          errors: ["email, password, name, roleId and address are required"],
         },
         { status: 400 }
       );
@@ -85,6 +90,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    // Validate that the Role exists
+    const role = await db.role.findUnique({ where: { id: roleId } });
+    if (!role) {
+      return createResponse({ success: false, message: "Role not found.", status: 400 });
+    }
 
     const userFound = await db.user.findUnique({ where: { email } });
     if (userFound) {
@@ -100,26 +110,26 @@ export async function POST(request: NextRequest) {
     }
 
     const hashedPassword = await hashPassword(password);
+    if (imageFile) {
+      if (!(imageFile instanceof File)) {
+        return createResponse({
+          success: false,
+          message: "The image must be valid file.",
+          errors: ["Must be uploaded as file."],
+          status: 400,
+        });
+      }
+      imageUrl = await createImage(imageFile);
 
-    if (!(imageFile instanceof File)) {
-      return createResponse({
-        success: false,
-        message: "The image must be valid file.",
-        errors: ["Must be uploaded as file."],
-        status: 400,
-      });
+      if (!imageUrl) {
+        return createResponse({
+          success: false,
+          message: "The image was not uploaded to cloudinary",
+          errors: ["Error cloudinary."],
+          status: 400,
+        });
+      }
     }
-    const imageUrl = await createImage(imageFile);
-    
-    if (!imageUrl) {
-      return createResponse({
-        success: false,
-        message: "The image was not uploaded to cloudinary",
-        errors: ["Error cloudinary."],
-        status: 400,
-      });
-    }
-
     const newUser = await db.user.create({
       data: {
         email,
@@ -128,6 +138,7 @@ export async function POST(request: NextRequest) {
         phone,
         imageUrl,
         roleId,
+        address,
       },
       include: { role: true },
     });
@@ -142,7 +153,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error creating user: ", error);
     return NextResponse.json(
       {
         success: false,

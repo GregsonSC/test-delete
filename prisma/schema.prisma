@@ -15,19 +15,23 @@ datasource db {
 }
 
 model User {
-  id           Int              @id @default(autoincrement())
-  name         String
-  email        String           @unique
-  password     String
-  phone        String
-  imageUrl     String
-  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId       Int //Dato para hacer la relacion
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  phone    String
+  imageUrl String?
+  address  String
+
+  role   Role @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId Int //Dato para hacer la relacion
+
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   Comment      Comment[]
   tickets      UserTicket[]
   blogs        Blog[]
+  contracts    Contract[]
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   UserActivity UserActivity[]
@@ -76,8 +80,13 @@ model Estimate {
   Project       Project[]
   costs         Cost[]
   comments      Comment[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+
+  deadLineToPay      String
+  invoiceDateCreated String
+  invoiceReference   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Blog {
@@ -195,22 +204,29 @@ model RolePermission {
 }
 
 model Lead {
-  id          Int        @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   clientName  String?
   clientEmail String?
   clientPhone String?
-  name        String
-  description String
-  state       LeadState
-  startDate   String
-  endDate     String
-  userId      Int? // Clave foránea
-  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serviceId   Int?
-  service     Service?   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  Estimate    Estimate[]
+
+  clientAddress String?
+  description   String
+  state         LeadState
+  startDate     String
+  endDate       String
+
+  userId     Int?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId  Int?
+  service    Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  workTeamId Int?
+  WorkTeam   WorkTeam? @relation(fields: [workTeamId], references: [id])
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Estimate  Estimate[]
+  contracts Contract[]
 }
 
 enum LeadState {
@@ -231,13 +247,16 @@ model UserPermission {
 }
 
 model Product {
-  id          Int          @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   name        String
   description String
-  url         String
-  Attachment  Attachment[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  imageUrl    String
+  siteUrl     String
+
+  Attachment Attachment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   ProductTag ProductTag[]
 }
@@ -274,19 +293,29 @@ enum PhaseState {
 }
 
 model Activity {
-  id               Int            @id @default(autoincrement())
+  id               Int    @id @default(autoincrement())
   name             String
   description      String
   expectedDuration String
   startDate        String
   endDate          String
-  phase_id         Int?
-  phase            Phase?         @relation(fields: [phase_id], references: [id], onDelete: Cascade)
-  state            StateActivity
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  UserActivity     UserActivity[]
-  Attachment       Attachment[]
+
+  phase_id Int?
+  phase    Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  state    StateActivity
+  priority Priority
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  UserActivity UserActivity[]
+  Attachment   Attachment[]
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
 
 enum StateActivity {
@@ -452,6 +481,7 @@ model WorkTeam {
   description  String
   state        StateWorkTeam
   area         AreaWorkTeam
+  leads        Lead[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   UserWorkTeam UserWorkTeam[]
@@ -531,4 +561,43 @@ model LoginAttempt {
   email       String? // El correo usado en el intento, puede ser null si no se envió,En algunos intentos, la IP podría golpear el endpoint sin enviar datos válidos. Esto evita que Prisma falle al guardar.
   success     Boolean
   attemptedAt DateTime @default(now())
+}
+
+model Clause {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String
+  clauses     ContractClause[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Contract {
+  id                Int              @id @default(autoincrement())
+  title             String
+  signedDate        String
+  companyEmail      String
+  companyAdd        String
+  companyPhone      String
+  content           String
+  ownerName         String
+  ownerSignDate     String
+  recipientName     String
+  recipientSignDate String
+  userId            Int
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leadId            Int
+  lead              Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  clauses           ContractClause[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model ContractClause {
+  contractId Int
+  clauseId   Int
+  contract   Contract @relation(fields: [contractId], references: [id])
+  clause     Clause   @relation(fields: [clauseId], references: [id])
+
+  @@id([contractId, clauseId]) // clave primaria compuesta
 }
