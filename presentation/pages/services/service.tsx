@@ -36,7 +36,11 @@ export function ServicePage() {
         setIsLoading(false);
       } catch (error) {
         console.error("Error loading service area:", error);
-        notFound();
+
+        setIsLoading(false);
+
+        //notFound();
+
       }
     };
     if (serviceAreas.length === 0) {
@@ -49,28 +53,28 @@ export function ServicePage() {
     }
   }, [serviceAreas]);
 
+
   useEffect(() => {
     if (!isLoading && (!serviceAreas || serviceAreas.length === 0)) {
       notFound();
     }
   }, [isLoading, serviceAreas]);
+
   return (
     <MainLayout>
       <section>
         {/* first section */}
         <section>
           <div className="overflow-hidden relative">
-            {serviceAreas[0]?.heroImageUrl ? (
-              <Image
-                src={serviceAreas[0]?.heroImageUrl}
-                alt="hero"
-                width={840}
-                height={679}
-                className="hidden lg:block rounded-md absolute top-28 right-0 w-[840px] h-[679px] object-cover opacity-50 z-0"
-              />
-            ) : (
-              <div className="hidden lg:block rounded-md absolute top-28 right-0 w-[840px] h-[679px] bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33] opacity-50 z-0" />
-            )}
+
+            <Image
+              src={serviceAreas[0]?.heroImageUrl}
+              alt="hero"
+              width={840}
+              height={679}
+              className="hidden lg:block rounded-md absolute top-28 right-0 w-[840px] h-[679px] object-cover opacity-50 z-0"
+            />
+
             <div className="relative mt-20 text-center px-5 z-0 overflow-hidden lg:mt-60 lg:mb-80">
               <div className="lg:place-items-start relative z-10 space-y-5 lg:pl-28 lg:pr-[448px] 2xl:lg:pr-[900px]">
                 {isLoading ? (
@@ -112,11 +116,9 @@ export function ServicePage() {
         {/* second section (Cards section) */}
         <section className="p-0">
           <div className="overflow-hidden relative h-full">
-            {serviceAreas[0]?.benefitsImageUrl ? (
-              <Image src={serviceAreas[0]?.benefitsImageUrl} alt="benefits" width={1920} height={1080} className="hidden lg:block rounded-md absolute top-20  lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600px] object-cover" />
-            ) : (
-              <div className="hidden lg:block rounded-md absolute top-20  lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600] bg-gradient-to-r from-[#99CC33] via-[#33CCCC] to-[#99CC33]" />
-            )}
+
+            <Image src={serviceAreas[0]?.benefitsImageUrl} alt="benefits" width={1920} height={1080} className="hidden lg:block rounded-md absolute top-20  lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600px] object-cover" />
+
             <div className="items-center mt-10 lg:mt-20 lg:mb-28 text-center px-5  lg:pl-96 xl:pl-[658px] lg:pr-[76px] lg:px-0 relative z-0">
               {isLoading ? (
                 <>

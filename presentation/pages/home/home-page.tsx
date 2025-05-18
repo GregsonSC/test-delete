@@ -6,7 +6,10 @@ import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
-import { PortfolioCarousel, PortfolioItem } from "@/presentation/organisms/carousel/portfolio-carousel"; // Import PortfolioItem type
+import {
+  PortfolioCarousel,
+  PortfolioItem,
+} from "@/presentation/organisms/carousel/portfolio-carousel"; // Import PortfolioItem type
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { LatestNews } from "@/presentation/molecules/news/latest-news";
@@ -15,7 +18,6 @@ import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info"
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
 import { blogItems, caseItems, reviewItems } from "@/lib/constants2"; // Removed portfolioItems from here
 import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel"; // Import the ViewModel
-
 
 export function HomePage() {
   // Fetch portfolio items using the ViewModel
@@ -29,12 +31,12 @@ export function HomePage() {
     if (loading || error || !fetchedPortfolioItems) {
       return []; // Return empty array for loading/error states, skeleton will show
     }
-    return fetchedPortfolioItems.map(item => ({
+    return fetchedPortfolioItems.map((item) => ({
       ...item,
       // Ensure imageUrl and href are correctly mapped if names differ
       // For example, if your API returns 'image' and 'url':
       imageUrl: item.image, // Adjust if API field name is different
-      href: item.url,           // Adjust if API field name is different
+      href: item.url, // Adjust if API field name is different
       tags: defaultTags,
     }));
   }, [fetchedPortfolioItems, loading, error, defaultTags]);
@@ -43,45 +45,41 @@ export function HomePage() {
     <MainLayout>
       {/* First Section - Hero */}
       <section
-        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden mt-20"
-        style={{ backgroundColor: "#020301" }}
+        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/images/home/hero-background.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 1,
+        }}
       >
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: "url('/images/home/hero-background.webp')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.7
-          }}
-        />
-
-        <div className="container mt-5 mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto relative z-10 text-white">
+        <div className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
           <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
-            Web Design and Digital Marketing<br />
+            Web Design and Digital Marketing
+            <br />
             Agency in Miami
           </Heading>
 
           <p className="text-[16px] md:text-[18px] font-normal mb-12 max-w-3xl mx-auto">
-            Did you know that your website is the first impression of your business? At Senavia, we are experts in
-            web design and digital marketing, turning your online presence into a client-generating machine.
+            Did you know that your website is the first impression of your business? At Senavia, we
+            are experts in web design and digital marketing, turning your online presence into a
+            client-generating machine.
           </p>
 
           <Button
             asChild
             size="lg"
-            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#a3e635] text-black hover:bg-[#87c232] transition-colors"
+            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
           >
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
         </div>
 
-        <div className="relative z-10 mt-16 w-full max-w-6xl mx-auto">
+        <div className="relative z-10 mt-16 w-full max-w-8xl mx-auto">
           <img
             src="/images/home/hero-image.webp"
             alt="Website Preview"
             className="w-full h-auto "
-
           />
         </div>
       </section>
@@ -133,7 +131,9 @@ export function HomePage() {
             5-Star Digital Marketing Agency
           </h1>
           <p className="text-base md:text-lg text-[#181C3A] text-center max-w-xl mx-auto mb-8">
-            Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing standout design, web development, and marketing solutions tailored to meet your business needs.
+            Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing
+            standout design, web development, and marketing solutions tailored to meet your business
+            needs.
           </p>
           <div className="flex justify-center">
             <div className="w-full max-w-2xl aspect-video rounded-lg overflow-hidden shadow-lg border-2 border-[#181C3A]/10 bg-black md:my-10">
@@ -210,8 +210,7 @@ export function HomePage() {
             level="h2"
             className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
           >
-            Our Web Design &
-            Development Portfolio
+            Our Web Design & Development Portfolio
           </Heading>
           <p className="text-[24px] md:text-[20px] font-[600] text-center  mb-8 max-w-4xl mx-auto">
             Fuel your creativity with our latest web design & development masterpieces!
@@ -224,9 +223,7 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
       <ExpandingColumns />
-
       {/* New Section with same container and background */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
@@ -241,7 +238,8 @@ export function HomePage() {
                   Testimonials Section
                 </h3>
                 <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
-                  See the results of dozens of businesses in Miami that have trusted Senavia and seen positive returns. We offer a unique experience where you are our #1 priority.
+                  See the results of dozens of businesses in Miami that have trusted Senavia and
+                  seen positive returns. We offer a unique experience where you are our #1 priority.
                 </p>
               </div>
 
@@ -266,7 +264,7 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      {ContactInfo(1)}
+      {ContactInfo(1)} //TODO: Esto hace que la pagina sea muy ancha, hay que ver como arreglarlo
       <ScheduleFreeConsultation />
       {/* Fourth Section - Blog/Resources */}
       <section

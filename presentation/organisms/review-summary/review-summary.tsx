@@ -1,5 +1,6 @@
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
-import { reviewItems } from "@/lib/constants2";
+import { reviewItems } from "@/components/const/reviewItems";
+//import { reviewItems } from "@/lib/constants2";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 
 export function ReviewSummary() {

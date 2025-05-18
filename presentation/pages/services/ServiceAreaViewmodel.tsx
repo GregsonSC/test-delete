@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useFetch } from "@/lib/services/endpoints";
 import { endpoints } from "@/lib/services/endpoints";
 import { ApiResponse, ServiceArea } from "@/components/interface/modules/ServiceArea";
+
 export const ServiceAreaViewModel = () => {
     const { fetchData } = useFetch();
     const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
+
     // ! Toca cambiar el viewmodel cuando se reciba los datos del backend para ver si la respuesta es igual a la de mockapi o no
     const getServiceArea = async (id: string) => {
         const { response, status, errorLogs } = await fetchData(endpoints.servicearea.getServiceArea(id), "get");
@@ -17,6 +19,8 @@ export const ServiceAreaViewModel = () => {
             else { console.error("No hay datos:", errorLogs); alert("Error al cargar el servicio"); }
         } else {
             console.error("HTTP error:", status, errorLogs);
+            alert("Error al cargar el servicio");
+
         }
     }
     return { serviceAreas, getServiceArea };

@@ -16,11 +16,17 @@ const AuthViewModel = () => {
   const register = async (userData: AuthUser) => {
     setLoading(true);
     try {
+      // Convert userData to FormData
+      const formData = new FormData();
+      Object.entries(userData).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+      });
+
       const { response, status, errorLogs } = await fetchData<RegisterApiResponse>(
         endpoints.auth.registerUser,
         "post",
-        userData,
-        "json",
+        formData,
+        "form",
       );
 
       console.log("Registration Response:", response);
