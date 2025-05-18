@@ -264,7 +264,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
-      {ContactInfo(1)} //TODO: Esto hace que la pagina sea muy ancha, hay que ver como arreglarlo
+      {ContactInfo(1)} 
+      {/* //TODO: Esto hace que la pagina sea muy ancha, hay que ver como arreglarlo */}
       <ScheduleFreeConsultation />
       {/* Fourth Section - Blog/Resources */}
       <section
