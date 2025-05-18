@@ -5,13 +5,14 @@ import db from "@/lib/prisma";
  * @swagger
  * tags:
  *   - name: Contract
- *     description: Los contratos son acuerdos legales que establecen derechos y obligaciones entre las partes.
+ *     description: Contracts are legal agreements that establish rights and obligations between parties.
+ *
  * /api/contract:
  *   post:
  *     tags:
  *       - Contract
- *     summary: Crear un nuevo contrato
- *     description: Crea un contrato con los datos enviados en el body.
+ *     summary: Create a new contract
+ *     description: Creates a contract with the data provided in the request body.
  *     requestBody:
  *       required: true
  *       content:
@@ -34,52 +35,86 @@ import db from "@/lib/prisma";
  *             properties:
  *               title:
  *                 type: string
- *                 description: Título del contrato.
+ *                 description: Title of the contract.
  *               signedDate:
  *                 type: string
  *                 format: date
- *                 description: Fecha de firma del contrato.
+ *                 description: Date when the contract was signed.
  *               companyEmail:
  *                 type: string
  *                 format: email
- *                 description: Correo electrónico de la compañía.
+ *                 description: Email address of the company.
  *               companyAdd:
  *                 type: string
- *                 description: Dirección de la compañía.
+ *                 description: Address of the company.
  *               companyPhone:
  *                 type: string
- *                 description: Teléfono de contacto de la compañía.
+ *                 description: Contact phone number of the company.
  *               content:
  *                 type: string
- *                 description: Contenido del contrato.
+ *                 description: Content of the contract.
  *               ownerName:
  *                 type: string
- *                 description: Nombre del propietario que firma el contrato.
+ *                 description: Name of the owner signing the contract.
  *               ownerSignDate:
  *                 type: string
  *                 format: date
- *                 description: Fecha de firma del propietario.
+ *                 description: Date when the owner signed the contract.
  *               recipientName:
  *                 type: string
- *                 description: Nombre del destinatario que firma el contrato.
+ *                 description: Name of the recipient signing the contract.
  *               recipientSignDate:
  *                 type: string
  *                 format: date
- *                 description: Fecha de firma del destinatario.
+ *                 description: Date when the recipient signed the contract.
  *               user_id:
  *                 type: integer
- *                 description: ID del usuario asociado al contrato.
+ *                 description: ID of the user associated with the contract.
  *               lead_id:
  *                 type: integer
- *                 description: ID del lead asociado al contrato.
+ *                 description: ID of the lead associated with the contract.
  *     responses:
  *       201:
- *         description: Contrato creado exitosamente
+ *         description: Contract created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Contract created successfully
  *       400:
- *         description: Campos faltantes o inválidos
+ *         description: Missing or invalid fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Missing or invalid fields
  *       500:
- *         description: Error del servidor
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error creating contract
  */
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -156,22 +191,26 @@ export async function POST(request: NextRequest) {
 }
 /**
  * @swagger
+ * tags:
+ *   - name: Contract
+ *     description: Operations related to contracts
+ *
  * /api/contract:
  *   get:
  *     tags:
  *       - Contract
- *     summary: Obtener contratos
- *     description: Obtiene todos los contratos o uno específico si se proporciona el parámetro `id`.
+ *     summary: Retrieve contracts
+ *     description: Fetch all contracts or a specific contract if the `id` parameter is provided.
  *     parameters:
  *       - in: query
  *         name: id
  *         required: false
  *         schema:
  *           type: integer
- *         description: ID del contrato a obtener (opcional)
+ *         description: ID of the contract to retrieve (optional).
  *     responses:
  *       200:
- *         description: Contrato(s) obtenido(s) exitosamente
+ *         description: Contract(s) retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -179,23 +218,59 @@ export async function POST(request: NextRequest) {
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   example: true
  *                 data:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Contract'
  *                 message:
  *                   type: string
+ *                   example: Contracts retrieved successfully
  *                 errors:
  *                   type: array
  *                   items:
  *                     type: string
  *       400:
- *         description: El ID proporcionado no es válido
+ *         description: The provided ID is not valid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid ID provided
  *       404:
- *         description: El contrato no fue encontrado
+ *         description: The contract was not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Contract not found
  *       500:
- *         description: Error interno del servidor
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error retrieving contracts
  */
+
 
 export async function GET(request: Request) {
   try {
@@ -283,19 +358,23 @@ export async function GET(request: Request) {
 
 /**
  * @swagger
+ * tags:
+ *   - name: Contract
+ *     description: Operations related to contracts
+ *
  * /api/contract:
  *   patch:
  *     tags:
  *       - Contract
- *     summary: Actualizar un contrato
- *     description: Actualiza parcialmente un contrato por su ID.
+ *     summary: Update a contract
+ *     description: Partially update an existing contract by providing its ID and the fields to be updated.
  *     parameters:
  *       - in: query
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del contrato a actualizar
+ *         description: ID of the contract to update.
  *     requestBody:
  *       required: true
  *       content:
@@ -305,45 +384,93 @@ export async function GET(request: Request) {
  *             properties:
  *               title:
  *                 type: string
- *                 description: Título del contrato
+ *                 description: Title of the contract.
  *               signedDate:
  *                 type: string
- *                 description: Fecha de firma
+ *                 format: date
+ *                 description: Date when the contract was signed.
  *               companyEmail:
  *                 type: string
  *                 format: email
- *                 description: Correo de la empresa
+ *                 description: Email address of the company.
  *               companyAdd:
  *                 type: string
- *                 description: Dirección de la empresa
+ *                 description: Address of the company.
  *               companyPhone:
  *                 type: string
- *                 description: Teléfono de la empresa
+ *                 description: Phone number of the company.
  *               content:
  *                 type: string
- *                 description: Contenido del contrato
+ *                 description: Content of the contract.
  *               ownerName:
  *                 type: string
- *                 description: Nombre del propietario
+ *                 description: Name of the contract owner.
  *               ownerSignDate:
  *                 type: string
- *                 description: Fecha de firma del propietario
+ *                 format: date
+ *                 description: Date when the owner signed the contract.
  *               recipientName:
  *                 type: string
- *                 description: Nombre del destinatario
+ *                 description: Name of the recipient.
  *               recipientSignDate:
  *                 type: string
- *                 description: Fecha de firma del destinatario
+ *                 format: date
+ *                 description: Date when the recipient signed the contract.
  *     responses:
  *       200:
- *         description: Contrato actualizado exitosamente
+ *         description: Contract updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Contract updated successfully
  *       400:
- *         description: ID inválido o datos faltantes
+ *         description: Invalid ID or missing data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid ID or missing required fields
  *       404:
- *         description: Contrato no encontrado
+ *         description: Contract not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Contract not found
  *       500:
- *         description: Error del servidor
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error updating contract
  */
+
 
 export async function PATCH(request: Request) {
   try {
@@ -418,27 +545,89 @@ export async function PATCH(request: Request) {
 
 /**
  * @swagger
+ * tags:
+ *   - name: Contract
+ *     description: Operations related to contracts
+ *
  * /api/contract:
  *   delete:
  *     tags:
  *       - Contract
- *     summary: Eliminar un contrato
- *     description: Elimina un contrato existente por su ID.
+ *     summary: Delete a contract
+ *     description: Delete an existing contract by providing its ID as a query parameter.
  *     parameters:
  *       - in: query
  *         name: id
- *         required: true
  *         schema:
  *           type: integer
- *         description: ID del contrato a eliminar
+ *         required: true
+ *         description: ID of the contract to delete.
  *     responses:
  *       200:
- *         description: Contrato eliminado exitosamente
+ *         description: Contract deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Contract deleted successfully
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       404:
- *         description: Contrato no encontrado
+ *         description: Contract not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Contract not found
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       500:
- *         description: Error del servidor
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 message:
+ *                   type: string
+ *                   example: Error deleting contract
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
+
 
 export async function DELETE(request: Request) {
   try {
