@@ -3,6 +3,9 @@ import db from "@/lib/prisma";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Comment
+ *     description: Comments made by users through the chat service available in their profile, regarding their Requests, Estimates, or Projects in progress.
  * /api/comment:
  *   post:
  *     tags:

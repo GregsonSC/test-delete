@@ -15,22 +15,18 @@ export function WebsitesPage() {
   return (
     <MainLayout>
       {/* First Section - Hero */}
-      <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden" style={{ backgroundColor: "#020301" }}>
-
+      <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden bg-black">
         <div className="container px-4 md:px-6 text-center max-w-5xl mx-auto">
           <Heading level="h1" className="text-[36px] md:text-[48px] font-[700] mb-6">
-            Professional Web Design and
-            Development in Miami
+            Professional Web Design and Development in Miami
           </Heading>
           <p className="text-[24px] md:text-[20px] font-[600] text-muted-foreground mb-8 max-w-4xl mx-auto">
-            Do you still not have a website, or is your current site not up to date with modern design standards? We specialize in creating websites designed to generate the maximum number of conversions.
-            Every visitor to your site is an opportunity, and we ensure you don’t miss any.
+            Do you still not have a website, or is your current site not up to date with modern
+            design standards? We specialize in creating websites designed to generate the maximum
+            number of conversions. Every visitor to your site is an opportunity, and we ensure you
+            don’t miss any.
           </p>
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full px-8 text-[20px] font-[600]"
-          >
+          <Button asChild size="lg" className="rounded-full px-8 text-[20px] font-[600]">
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
         </div>
@@ -58,7 +54,7 @@ export function WebsitesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon1.png"
+                icon="/images/marketing/icon1.webp"
                 title="Custom Web Design"
                 content="Partner with our team to get a web design that combines cutting-edge technology, top-notch quality, and the innovation your business deserves. Each design is 100% customized and fully optimized for search engines."
                 link="/services/advertising"
@@ -66,7 +62,7 @@ export function WebsitesPage() {
 
               {/* Second Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon2.png"
+                icon="/images/marketing/icon2.webp"
                 title="CMS Web Development"
                 content="Managing website content has never been easier. Run your website while effortlessly updating daily content. Our clean-coded CMS web development services deliver a reliable and scalable platform for seamless content management."
                 link="/services/social-media"
@@ -75,7 +71,7 @@ export function WebsitesPage() {
               {/* Third Card - Wrapped in a div for positioning */}
               <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
                 <HoverCardWGC
-                  icon="/images/marketing/icon3.png"
+                  icon="/images/marketing/icon3.webp"
                   title="E-commerce Websites"
                   content="We specialize in creating powerful, fully responsive E-commerce websites that not only look great but perform brilliantly as well. With reliable top-notch payment gateway integration and the latest technologies working with popular platforms like Shopify, Magento, and WooCommerce."
                   link="/services/seo"
@@ -122,7 +118,8 @@ export function WebsitesPage() {
                   Testimonials Section
                 </h3>
                 <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
-                  See the results of dozens of businesses in Miami that have trusted Senavia and seen positive returns. We offer a unique experience where you are our #1 priority.
+                  See the results of dozens of businesses in Miami that have trusted Senavia and
+                  seen positive returns. We offer a unique experience where you are our #1 priority.
                 </p>
               </div>
 
@@ -157,7 +154,6 @@ export function WebsitesPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
-
         <LatestNews blogItems={blogItems} caseItems={caseItems} />
       </section>
     </MainLayout>

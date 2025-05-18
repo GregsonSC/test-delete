@@ -4,6 +4,7 @@ import { Logo } from "@/presentation/atoms/logo/logo";
 import { Button } from "@/presentation/atoms/button/button";
 import { EmailForm } from "@/presentation/molecules/email-form/email-form";
 import { inter600 } from "@/styles/font";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -15,20 +16,21 @@ export function Footer() {
         <div className="space-y-4 flex flex-col items-center md:items-start">
           <Logo className="mb-3" />
           {/* ! CH006 [ADD] Agregar las 3 urls de los las redes sociales */}
+          {/* Hecho */}
           <div className="flex space-x-2">
-            <a href="https://www.facebook.com">
+            <a href="https://www.facebook.com/senaviacorporation/">
               <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
                 <Facebook className="h-4 w-4" color="black" />
                 <span className="sr-only">Facebook</span>
               </Button>
             </a>
-            <a href="https://www.instagram.com">
+            <a href="https://www.instagram.com/senaviacorporation/">
               <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
                 <Instagram className="h-4 w-4" color="black" />
                 <span className="sr-only">Instagram</span>
               </Button>
             </a>
-            <a href="https://www.youtube.com">
+            <a href="https://www.youtube.com/channel/UCWL5yUwa4fSxNTtBxmhtOlQ/featured">
               <Button className="bg-[#99CC33] hover:bg-gray-100 rounded-full h-8 w-8 p-0">
                 <Youtube className="h-4 w-4" color="black" />
                 <span className="sr-only">Youtube</span>
@@ -142,9 +144,9 @@ export function Footer() {
           </p>
           <div className="flex space-x-2">
             {/* ! CH007 [ADD] Agregar los reconocimientos de Senavia */}
-            <div className="bg-[#99CC33] w-20 h-12"></div>
-            <div className="bg-[#99CC33] w-20 h-12"></div>
-            <div className="bg-[#99CC33] w-20 h-12"></div>
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
           </div>
         </div>
       </div>

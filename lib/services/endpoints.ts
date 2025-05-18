@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Axios, { AxiosResponse } from "axios";
+import { create } from "domain";
+import { DeleteIcon } from "lucide-react";
 import { toast } from "sonner";
 
 // API Base URLs
@@ -19,18 +21,47 @@ export const endpoints = {
     submit: `${API}/contact`,
   },
   blog: {
-    getPosts: `${API}/blog`,
-    createPost: `${API}/blog`,
-    updatePost: (id: string) => `${API}/blog?id=${id}`,
-    deletePost: (id: string) => `${API}/blog?id=${id}`,
+    getPosts: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    createPost: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    updatePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
+    deletePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
   },
   // Add authentication endpoints
   auth: {
     registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
+    loginUser: `${API}/auth/login`, // Endpoint for user login (POST)
+    logoutUser: `${API}/auth/logOut`, // Endpoint for user logout (POST)
+  },
+  portfolio: {
+    getProducts: `https://681426c1225ff1af162804b1.mockapi.io/portaolio`,
   },
 
   // Test endpoint for checking API connectivity
   test: `${API}/health-check`,
+  //StudyCase endpoints
+  studycase: {
+    getCases: `${API}/studycase`, // Endpoint to get all study cases (GET)
+    getCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to get a specific study case by ID (GET)
+    createCase: `${API}/studycase`, // Endpoint to create a new study case (POST)
+    updateCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to update a specific study case by ID (PATCH)
+    DeleteCase: (id: string) => `${API}/studycase/${id}`, // Endpoint to delete a specific study case by ID (DELETE)
+  },
+
+  //ServiceArea endpoints
+  servicearea: {
+    getServiceAreas: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to get all service areas (GET)
+    getServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
+    createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
+    updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
+  },
+
+  newsletter: {
+    CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
+  },
+
+  contact_us:{
+    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook-test/4e962737-09f2-461d-9f4b-5264f424ea39`,
+  },
 };
 
 // Header configurations
@@ -48,6 +79,14 @@ const CONFIG_FORM = {
   },
 };
 
+/* const CONFIG_FORM_TOKEN = {
+  headers: {
+    accept: "/",
+    "Content-Type": "multipart/form-data",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+}; */
+
 export interface FetchResponse<T> {
   response: T | null;
   loading: boolean;
@@ -59,6 +98,7 @@ export const useFetch = () => {
   const configTypes: Record<string, object> = {
     json: CONFIG_JSON,
     form: CONFIG_FORM,
+    // token: CONFIG_FORM_TOKEN,
   };
 
   type HttpMethod = "get" | "post" | "put" | "delete" | "patch";
@@ -74,6 +114,7 @@ export const useFetch = () => {
    * @param {object|null} body - Data to send in the request (optional)
    * @param {string} typeConfig - Configuration type ("json" or "form")
    * @param {object|null} formFiles - Files to send in the form (optional)
+   * @param {boolean} withCredentials - Whether to send cookies (optional)
    * @returns {Promise<FetchResponse<T>>} - Object with response, loading state, status code and errors
    */
   const fetchData = async <T>(
@@ -81,7 +122,8 @@ export const useFetch = () => {
     method: string,
     body: object | null = null,
     typeConfig: "json" | "form" = "json",
-    formFiles: object | null = null
+    withCredentials: boolean = false, // <-- Move withCredentials here
+    formFiles?: object                // <-- Make formFiles last and optional
   ): Promise<FetchResponse<T>> => {
     let response: T | null = null;
     let loading = true;
@@ -93,6 +135,10 @@ export const useFetch = () => {
 
       if (formFiles) {
         axiosConfig = { ...axiosConfig, data: formFiles };
+      }
+
+      if (withCredentials) {
+        axiosConfig = { ...axiosConfig, withCredentials: true };
       }
 
       if (isValidHttpMethod(method)) {
@@ -108,7 +154,7 @@ export const useFetch = () => {
       } else {
         console.error("Error in request:", error);
         try {
-          //toast.error(error.message); Esta linea mostraba un toast de error pero no deberia verse porque la api ya nos regresa mensajes de error
+          //toast.error(error.message);
         } catch (error) {
           console.error("Error in toast:", error);
         }
@@ -128,7 +174,7 @@ export const useFetch = () => {
 
 export default endpoints;
 
-/* 
+/*
 
 const { fetchData } = useFetch();
 

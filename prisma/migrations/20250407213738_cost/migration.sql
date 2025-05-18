@@ -22,7 +22,7 @@ CREATE TABLE "Cost" (
     "value" DOUBLE PRECISION NOT NULL,
     "estimateId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "udpatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Cost_pkey" PRIMARY KEY ("id")
 );

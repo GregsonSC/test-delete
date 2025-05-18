@@ -8,7 +8,11 @@ type Props = {
 };
 
 function ReactSwagger({ spec }: Props) {
-  return <SwaggerUI spec={spec} />;
+  return (
+    <div style={{ background: 'white', padding: '20px' }}>
+      <SwaggerUI spec={spec} />
+    </div>
+  );
 }
 
 export default ReactSwagger;

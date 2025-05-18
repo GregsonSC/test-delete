@@ -3,6 +3,9 @@ import db from "@/lib/prisma";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Ticket
+ *     description: Request made by a client or a company member to resolve an issue, error, or problem related to internal processes.
  * /api/ticket:
  *   post:
  *     tags:

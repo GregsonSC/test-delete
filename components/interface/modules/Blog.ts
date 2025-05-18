@@ -16,7 +16,7 @@ interface Blog {
   publicationDate: string;
   imageUrl: string;
   createdAt: string;
-  udpatedAt: string;
+  updatedAt: string;
 }
 
 export type { BlogPost, Blog };

@@ -2,12 +2,98 @@ import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 
 const validState = ["PENDING", "ASSIGNED", "INPROCESS", "REVIEWING", "FINISHED"];
+const validPriotity = ["LOW", "NORMAL", "HIGH", "URGENT"];
+/**
+ * @swagger
+ * tags:
+ *   - name: Activity
+ *     description: Task associated with a project phase that describes the activities a user must perform in order to progress. These tasks can be accessed from the Project Board section in the admin panel.
+ *
+ * /api/activity:
+ *   post:
+ *     tags:
+ *       - Activity
+ *     summary: Create a new Activity
+ *     description: Creates a new activity with all required fields, a valid state, and a priority level.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - expectedDuration
+ *               - startDate
+ *               - endDate
+ *               - state
+ *               - priority
+ *               - phase_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Implement Authentication Flow
+ *               description:
+ *                 type: string
+ *                 example: Develop and test login, logout, and session persistence.
+ *               expectedDuration:
+ *                 type: string
+ *                 example: 5 days
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-06-01
+ *               state:
+ *                 type: string
+ *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
+ *                 description: >
+ *                   Current status of the activity:
+ *                   - **PENDING**: Activity has not yet been assigned.
+ *                   - **ASSIGNED**: Activity has been assigned to a user.
+ *                   - **INPROCESS**: Activity is currently in progress.
+ *                   - **REVIEWING**: Activity is under evaluation after submission.
+ *                   - **FINISHED**: Activity is complete and approved.
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, NORMAL, HIGH, URGENT]
+ *                 description: >
+ *                   Priority level of the activity:
+ *                   - **LOW**: Not urgent or critical.
+ *                   - **NORMAL**: Regular priority.
+ *                   - **HIGH**: Important and should be prioritized.
+ *                   - **URGENT**: Needs immediate attention.
+ *                 example: NORMAL
+ *               phase_id:
+ *                 type: integer
+ *                 example: 4
+ *     responses:
+ *       201:
+ *         description: Activity created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, state } = data;
+    const { name, description, expectedDuration, startDate, endDate, state, phase_id, priority } =
+      data;
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !state) {
+    if (
+      !name ||
+      !description ||
+      !expectedDuration ||
+      !startDate ||
+      !endDate ||
+      !state ||
+      !priority
+    ) {
       return createResponse({
         success: false,
         message: "Missing required fields.",
@@ -15,12 +101,27 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+    // Validate that the Phase exists
+    if (phase_id) {
+      const phase = await db.phase.findUnique({ where: { id: phase_id } });
+      if (!phase) {
+        return createResponse({ success: false, message: "Phase not found.", status: 400 });
+      }
+    }
 
     if (!validState.includes(state)) {
       return createResponse({
         success: false,
         message: "Invalid state.",
         errors: [`State must be one of: ${validState.join(", ")}`],
+        status: 400,
+      });
+    }
+    if (!validPriotity.includes(priority)) {
+      return createResponse({
+        success: false,
+        message: "Invalid priority.",
+        errors: [`Priority must be one of: ${validPriotity.join(", ")}`],
         status: 400,
       });
     }
@@ -46,6 +147,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Activity");
   }
 }
+/**
+ * @route GET /api/activity
+ * @desc Obtener una o todas las actividades
+ * @swagger
+ * /api/activity:
+ *   get:
+ *     tags:
+ *       - Activity
+ *     summary: Get one or all Activities
+ *     description: Retrieve all activities or one by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: ID of the activity to retrieve.
+ *     responses:
+ *       200:
+ *         description: Activity or list of activities retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Activity not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -92,6 +220,79 @@ export async function GET(req: Request) {
     return handleError(error, "GET Activity");
   }
 }
+/**
+ * @swagger
+ * /api/activity:
+ *   patch:
+ *     tags:
+ *       - Activity
+ *     summary: Update an Activity
+ *     description: Update fields of an existing activity using its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the activity to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Update UI components
+ *               description:
+ *                 type: string
+ *                 example: Refactor and polish user interface for mobile compatibility.
+ *               expectedDuration:
+ *                 type: string
+ *                 example: 3 days
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-10
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-15
+ *               state:
+ *                 type: string
+ *                 enum: [PENDING, ASSIGNED, INPROCESS, REVIEWING, FINISHED]
+ *                 description: >
+ *                   Current status of the activity:
+ *                   - **PENDING**: Not yet assigned.
+ *                   - **ASSIGNED**: Assigned to a user.
+ *                   - **INPROCESS**: Work is in progress.
+ *                   - **REVIEWING**: Under review after submission.
+ *                   - **FINISHED**: Marked as completed and approved.
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, NORMAL, HIGH, URGENT]
+ *                 description: >
+ *                   Priority level of the activity:
+ *                   - **LOW**: Not urgent.
+ *                   - **NORMAL**: Standard importance.
+ *                   - **HIGH**: Requires prioritization.
+ *                   - **URGENT**: Critical and immediate.
+ *                 example: HIGH
+ *               phase_id:
+ *                 type: integer
+ *                 example: 2
+ *                 description: ID of the phase this activity belongs to.
+ *     responses:
+ *       200:
+ *         description: Activity updated successfully.
+ *       400:
+ *         description: Invalid input or ID.
+ *       404:
+ *         description: Activity not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -131,6 +332,16 @@ export async function PATCH(request: Request) {
         });
       }
     }
+    if (data.priority) {
+      if (!validPriotity.includes(data.priority)) {
+        return createResponse({
+          success: false,
+          message: "Invalid priority.",
+          errors: [`Priority must be one of: ${validPriotity.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
     const activity = await db.activity.findUnique({ where: { id } });
     if (!activity) {
       return createResponse({
@@ -156,7 +367,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Activity");
   }
 }
-
+/**
+ * @route DELETE /api/activity
+ * @desc Eliminar una actividad
+ * @swagger
+ * /api/activity:
+ *   delete:
+ *     tags:
+ *       - Activity
+ *     summary: Delete an Activity
+ *     description: Delete an activity by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the activity to delete.
+ *     responses:
+ *       200:
+ *         description: Activity deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

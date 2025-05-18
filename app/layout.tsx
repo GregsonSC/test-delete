@@ -3,6 +3,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Analytics from "./analytics";
+import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { decodeJwt } from "jose";
+import { UserProvider } from "@/context/UserContext";
+import TokenValidator from '@/components/auth/TokenValidator';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,7 +17,27 @@ export const metadata = {
   description: "Digital Agency That Generates Business Growth",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Hydrate user from server-side cookie
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  let initialUser = null;
+
+  if (token) {
+    try {
+      const decoded: any = decodeJwt(token);
+      initialUser = {
+        id: decoded.id || "",
+        email: decoded.email || "",
+        name: decoded.name || "",
+        // Add other fields as needed
+      };
+      console.log("Initial User:", initialUser);
+    } catch (e) {
+      initialUser = null;
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <head>
@@ -31,17 +57,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="twitter:image" content="/senavia/main.jpeg" />
       </head>
       <body className={`${inter.className} bg-[#050A2B]`}>
+        <Suspense>
+          <Analytics />
+        </Suspense>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider initialUser={initialUser}>
+            <TokenValidator />
+            {children}
+          </UserProvider>
         </ThemeProvider>
         <Toaster
           richColors
-          // # TODO: revisar aqui el cambio de estilos
           toastOptions={{
             style: {
               background: "#04081E",

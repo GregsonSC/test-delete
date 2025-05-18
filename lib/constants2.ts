@@ -33,67 +33,67 @@ export const portfolioItems = [
         description: "Brief description of project 1.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-1", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 2",
         description: "Brief description of project 2.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-2", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 3",
         description: "Brief description of project 3.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-3", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 4",
         description: "Brief description of project 4.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-4", // Replace with actual link
-      },
-      {
+    },
+    {
         title: "Page title 5",
         description: "Brief description of project 5.",
         imageUrl: "/images/portfolio/portafolioTestImg.webp", // Replace with actual image path
         href: "/portfolio/project-5", // Replace with actual link
-      },
+    },
 ];
 
 // Review items data
 export const reviewItems = [
     {
-        profilePicture: "https://lh3.googleusercontent.com/a-/ALV-UjVWb3MqeBtg2ZnRGme6R9radiGa_YNNsiaXBuXaZlphLeQxPOjH=w49-h49-p-rp-mo-br100",
+        profilePicture: "/fotos-prueba/joe.webp",
         name: "Ninoska Diaz",
         rating: 5.0,
         review: "Working with Senavia has been a good experience, knowing that you are in the hands of experts who will design your website exactly as you thought, they help you with very positive ideas with a very satisfactory final result. I recommend them 100%. Thank you. Senavia!",
     },
     {
-        profilePicture: "https://lh3.googleusercontent.com/a-/ALV-UjUiyogTxdeuYPfCmVIzDaGUeKMNG8IMp_XMwhlr65xjtXhnLEk=w49-h49-p-rp-mo-br100",
+        profilePicture: "/fotos-prueba/joe.webp",
         name: "Mile High Patio",
         rating: 5.0,
         review: "Thank you so much for the design of my new website! Our leads have increased significantly after my website redesign! 100% recommended!!",
     },
     {
-        profilePicture: "https://lh3.googleusercontent.com/a-/ALV-UjWBq5I6Z_Sxycn_tkHoxTgHrqc55Sp6wGbYtWKnm-3pof65mUs=w49-h49-p-rp-mo-br100",
+        profilePicture: "/fotos-prueba/joe.webp",
         name: "Alejandro Gutierrez",
         rating: 5.0,
         review: "I had the pleasure of working with Senavia and especially with Sebastián, the owner of the company. They provided exceptional Community Management services for my business. Sebastián and his team were professional, efficient, and always …",
     },
     {
-        profilePicture: "https://lh3.googleusercontent.com/a-/ALV-UjWnreFwniQfazba5sx7pVOsuiKnHUBR-BMlPeSIZnvcHgC7-p7m=w36-h36-p-rp-mo-br100",
+        profilePicture: "/fotos-prueba/joe.webp",
         name: "Mayela Reyes",
         rating: 5.0,
         review: "Wanted to share how satisfied I am with Senavia Corporation!! Highly recommend to take your business to another level! Excellent service Sebastian!",
     },
     {
-        profilePicture: "https://lh3.googleusercontent.com/a-/ALV-UjX015BOQx13mdn61f4H-Rm4Z389m0EnxgDNRgY6Y4fC5D0hLNU-=w36-h36-p-rp-mo-br100",
+        profilePicture: "/fotos-prueba/joe.webp",
         name: "David Arce",
         rating: 5.0,
         review: "Senavia Corp. has definitely exceeded my expectations. They have done a professional job with all my web design needs. They go the extra mile to satisfy all ideas and targets for our business development. I highly recommend Senavia Corp.",
     },
     {
-        profilePicture: "https://lh3.googleusercontent.com/a/ACg8ocIh77e7ye5CDUwo1pNrqt2ncC0gexvkoQGYnzLK3ND5cT_X0w=w36-h36-p-rp-mo-br100",
+        profilePicture: "/fotos-prueba/joe.webp",
         name: "Mary Delgado",
         rating: 5.0,
         review: "Highly recommended!!! The best in web design, super professional and friendly. Sebastian's guide was very reliable and satisfactory.",
@@ -162,4 +162,25 @@ export const caseItems: NewsItem[] = [
         date: "July 3, 2023",
         tag: "SEO"
     }
+];
+
+export const schedules = [
+    "9:00am - 9:30am",
+    "9:30am - 10:00am",
+    "10:00am - 10:30am",
+    "10:30am - 11:00am",
+    "11:00am - 11:30am",
+    "11:30am - 12:00pm",
+    "12:00pm - 12:30pm",
+    "12:30pm - 1:00pm",
+    "1:00pm - 1:30pm",
+    "1:30pm - 2:00pm",
+    "2:00pm - 2:30pm",
+    "2:30pm - 3:00pm",
+    "3:00pm - 3:30pm",
+    "3:30pm - 4:00pm",
+    "4:00pm - 4:30pm",
+    "4:30pm - 5:00pm",
+    "5:00pm - 5:30pm",
+    "5:30pm - 6:00pm"
 ];

@@ -4,12 +4,72 @@ import db from "@/lib/prisma";
 const validName = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Phase
+ *     description: Represents a phase of a project lifecycle. Each phase has a predefined name and tracks its progress through various states.
+ *
+ * /api/phase:
+ *   post:
+ *     tags:
+ *       - Phase
+ *     summary: Create a new Phase
+ *     description: >
+ *       Creates a new phase for a specific project.  
+ *       The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".  
+ *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - expectedDuration
+ *               - startDate
+ *               - endDate
+ *               - state
+ *               - project_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the phase (e.g., "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY")
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-06-01
+ *               state:
+ *                 type: string
+ *                 description: Current state of the phase (e.g., "PLANNING", "INPROCESS", "TESTING", "FINISHED")
+ *               project_id:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Phase created successfully.
+ *       400:
+ *         description: Missing or invalid fields.
+ *       500:
+ *         description: Server error.
+ */
+
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, state } = data;
+    const { name, description, expectedDuration, startDate, endDate, state,project_id } = data;
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !state) {
+    if (!name || !description || !expectedDuration || !startDate || !endDate || !state||!project_id) {
       return createResponse({
         success: false,
         message: "Missing required fields.",
@@ -54,6 +114,33 @@ export async function POST(request: Request) {
     return handleError(error, "POST Phase");
   }
 }
+/**
+ * @route GET /api/phase
+ * @desc Obtener una o todas las fases
+ * @swagger
+ * /api/phase:
+ *   get:
+ *     tags:
+ *       - Phase
+ *     summary: Get one or all Phases
+ *     description: Retrieve all phases or a single phase by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: false
+ *         schema:
+ *           type: integer
+ *         description: ID of the phase to retrieve.
+ *     responses:
+ *       200:
+ *         description: Phase(s) retrieved successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       404:
+ *         description: Phase not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function GET(req: Request) {
   try {
@@ -100,6 +187,68 @@ export async function GET(req: Request) {
     return handleError(error, "GET Phase");
   }
 }
+/**
+ * @swagger
+ * tags:
+ *   - name: Phase
+ *     description: Represents a phase of a project lifecycle. Each phase has a predefined name and tracks its progress through various states.
+ *
+ * /api/phase:
+ *   patch:
+ *     tags:
+ *       - Phase
+ *     summary: Update an existing Phase
+ *     description: >
+ *       Updates an existing phase of a project. The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".  
+ *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".  
+ *       The phase is identified by the `id` parameter.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the phase to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - project_id
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the phase (e.g., "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY")
+ *               description:
+ *                 type: string
+ *               expectedDuration:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-05-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 example: 2025-06-01
+ *               state:
+ *                 type: string
+ *                 description: Current state of the phase (e.g., "PLANNING", "INPROCESS", "TESTING", "FINISHED")
+ *               project_id:
+ *                 type: integer
+ *                 description: ID of the project that the phase belongs to.
+ *     responses:
+ *       200:
+ *         description: Phase updated successfully.
+ *       400:
+ *         description: Missing or invalid fields, including invalid date format or invalid state.
+ *       404:
+ *         description: Phase not found.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function PATCH(request: Request) {
   try {
@@ -171,6 +320,31 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH Phase");
   }
 }
+/**
+ * @route DELETE /api/phase
+ * @desc Eliminar una fase
+ * @swagger
+ * /api/phase:
+ *   delete:
+ *     tags:
+ *       - Phase
+ *     summary: Delete a Phase
+ *     description: Delete a phase by ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the phase to delete.
+ *     responses:
+ *       200:
+ *         description: Phase deleted successfully.
+ *       400:
+ *         description: Invalid ID.
+ *       500:
+ *         description: Server error.
+ */
 
 export async function DELETE(req: Request) {
   try {

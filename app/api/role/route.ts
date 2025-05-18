@@ -3,11 +3,14 @@ import db from "@/lib/prisma";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Role
+ *     description: Roles are sets of permissions that can be assigned to multiple users who share the same or similar responsibilities, without having to manually assign each permission individually.
  * /api/role:
  *   post:
  *     tags:
- *       - Roles
- *     summary: Crear un nuevo rol
+ *       - Role
+ *     summary: Crear un nuevo role
  *     description: Crea un rol con los datos enviados en el body.
  *     requestBody:
  *       required: true
@@ -76,8 +79,8 @@ export async function POST(request: NextRequest) {
  * /api/role:
  *   get:
  *     tags:
- *       - Roles
- *     summary: Obtener roles
+ *       - Role
+ *     summary: Obtener role
  *     description: Obtiene todos los roles o uno específico si se proporciona el parámetro `id`.
  *     parameters:
  *       - in: query
@@ -171,8 +174,8 @@ export async function GET(request: Request) {
  * /api/role:
  *   patch:
  *     tags:
- *       - Roles
- *     summary: Actualizar un rol
+ *       - Role
+ *     summary: Actualizar un role
  *     description: Actualiza parcialmente un rol por su ID.
  *     parameters:
  *       - in: query
@@ -277,8 +280,8 @@ export async function PATCH(request: Request) {
  * /api/role:
  *   delete:
  *     tags:
- *       - Roles
- *     summary: Eliminar un rol
+ *       - Role
+ *     summary: Eliminar un role
  *     description: Elimina un rol existente por su ID.
  *     parameters:
  *       - in: query

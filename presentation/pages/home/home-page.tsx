@@ -1,102 +1,121 @@
+"use client"; // Add "use client" because PortfolioViewModel uses hooks
+
 import Link from "next/link";
+import React, { useMemo } from "react"; // Import useMemo
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
 import { HoverCardWGC } from "@/presentation/molecules/hover-card-wgc/hover-card-wgc";
-import { PortfolioCarousel } from "@/presentation/organisms/carousel/portfolio-carousel";
+import {
+  PortfolioCarousel,
+  PortfolioItem,
+} from "@/presentation/organisms/carousel/portfolio-carousel"; // Import PortfolioItem type
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { LatestNews } from "@/presentation/molecules/news/latest-news";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
-import { blogItems, caseItems, portfolioItems, reviewItems } from "@/lib/constants2";
+import { blogItems, caseItems, reviewItems } from "@/lib/constants2"; // Removed portfolioItems from here
+import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel"; // Import the ViewModel
 
 export function HomePage() {
+  // Fetch portfolio items using the ViewModel
+  const { portfolioItems: fetchedPortfolioItems, loading, error } = PortfolioViewModel();
+
+  // Hardcoded tags
+  const defaultTags = ["Tag1", "Tag2", "Tag3"];
+
+  // Memoize the portfolio items with added tags
+  const carouselPortfolioItems: PortfolioItem[] = useMemo(() => {
+    if (loading || error || !fetchedPortfolioItems) {
+      return []; // Return empty array for loading/error states, skeleton will show
+    }
+    return fetchedPortfolioItems.map((item) => ({
+      ...item,
+      // Ensure imageUrl and href are correctly mapped if names differ
+      // For example, if your API returns 'image' and 'url':
+      imageUrl: item.image, // Adjust if API field name is different
+      href: item.url, // Adjust if API field name is different
+      tags: defaultTags,
+    }));
+  }, [fetchedPortfolioItems, loading, error, defaultTags]);
+
   return (
     <MainLayout>
       {/* First Section - Hero */}
       <section
-        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden mt-20"
-        style={{ backgroundColor: "#020301" }}
+        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/images/home/hero-background.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 1,
+        }}
       >
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: "url('/images/home/hero-background.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.7
-          }}
-        />
-
-        <div className="container mt-5 mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto relative z-10 text-white">
+        <div className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
           <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
-            Web Design and Digital Marketing<br />
+            Web Design and Digital Marketing
+            <br />
             Agency in Miami
           </Heading>
 
           <p className="text-[16px] md:text-[18px] font-normal mb-12 max-w-3xl mx-auto">
-            Did you know that your website is the first impression of your business? At Senavia, we are experts in
-            web design and digital marketing, turning your online presence into a client-generating machine.
+            Did you know that your website is the first impression of your business? At Senavia, we
+            are experts in web design and digital marketing, turning your online presence into a
+            client-generating machine.
           </p>
 
           <Button
             asChild
             size="lg"
-            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#a3e635] text-black hover:bg-[#87c232] transition-colors"
+            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
           >
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
         </div>
 
-        <div className="relative z-10 mt-16 w-full max-w-6xl mx-auto">
+        <div className="relative z-10 mt-16 w-full max-w-8xl mx-auto">
           <img
-            src="/images/home/hero-image.png"
+            src="/images/home/hero-image.webp"
             alt="Website Preview"
             className="w-full h-auto "
-
           />
         </div>
       </section>
-
-
-
       {/* --- PARTNERS LOGOS SECTION --- */}
-      <section className="w-full bg-[#04071F00]-900 py-8 lg:h-[150px]">
+      <section className="w-full bg-white py-8 lg:h-[150px]">
         <div className="container mx-auto h-full flex items-center justify-center">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-5 lg:gap-0 xl:gap-5">
             <img
-              src="/images/home/google.svg"
+              src="images/home/googleAnalytic.webp"
               alt="Google Analytics"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/webflow.svg"
+              src="images/home/webflow.webp"
               alt="Webflow"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/shopify.svg"
+              src="images/home/shopify.webp"
               alt="Shopify"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/paypal.svg"
+              src="images/home/paypal.webp"
               alt="PayPal"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
             <img
-              src="/images/home/stripe.svg"
+              src="images/home/stripe.webp"
               alt="Stripe"
-              className="h-8 md:h-[100px] opacity-80 hover:opacity-100 transition-opacity"
+              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
             />
           </div>
         </div>
       </section>
       {/* --- END PARTNERS LOGOS SECTION --- */}
-
-
       {/* --- HERO VIDEO SECTION --- */}
       <section className="min-h-screen relative flex flex-col justify-center items-center">
         <video
@@ -112,7 +131,9 @@ export function HomePage() {
             5-Star Digital Marketing Agency
           </h1>
           <p className="text-base md:text-lg text-[#181C3A] text-center max-w-xl mx-auto mb-8">
-            Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing standout design, web development, and marketing solutions tailored to meet your business needs.
+            Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing
+            standout design, web development, and marketing solutions tailored to meet your business
+            needs.
           </p>
           <div className="flex justify-center">
             <div className="w-full max-w-2xl aspect-video rounded-lg overflow-hidden shadow-lg border-2 border-[#181C3A]/10 bg-black md:my-10">
@@ -129,11 +150,10 @@ export function HomePage() {
         </div>
       </section>
       {/* --- END HERO VIDEO SECTION --- */}
-
       {/* Second Section */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
@@ -144,48 +164,43 @@ export function HomePage() {
               Digital Services That Will Lead You To Online Success
             </Heading>
 
-          {/* ! CH005 [URL] Agregar urls para navegar donde se requiere */}
+            {/* ! CH005 [URL] Agregar urls para navegar donde se requiere */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon1.png"
+                icon="/images/marketing/icon1.webp"
                 title="Web Design & Development"
                 content="Engaging and powerful web design that converts visitors into new clients and more sales"
-                link="/services/advertising"
+                link="/websites"
               />
 
               {/* Second Card */}
               <HoverCardWGC
-                icon="/images/marketing/icon2.png"
+                icon="/images/marketing/icon2.webp"
                 title="Generate Traffic, Leads & Sales"
                 content="Drive more leads with a tailored marketing strategy designed exclusively for your business "
-                link="/services/social-media"
+                link="/marketing"
               />
 
               {/* Third Card - Wrapped in a div for positioning */}
               <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
                 <HoverCardWGC
-                  icon="/images/marketing/icon3.png"
+                  icon="/images/marketing/icon3.webp"
                   title="Create your Professional Brand"
                   content="We build a unique visual identity that leaves lasting impression on your brand"
-                  link="/services/seo"
+                  link="/marketing"
                 />
               </div>
             </div>
           </div>
         </div>
       </section>
-
-
-
-
-
       {/* Portfolio Section */}
       <section className=" px-4 md:px-6 mx-auto relative">
         <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
           <img
-            src="/images/marketing/portfolio-background.png"
+            src="/images/marketing/portfolio-background.webp"
             alt="Portfolio background"
             className="h-full object-contain"
           />
@@ -195,21 +210,20 @@ export function HomePage() {
             level="h2"
             className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
           >
-            Our Web Design &
-            Development Portfolio
+            Our Web Design & Development Portfolio
           </Heading>
           <p className="text-[24px] md:text-[20px] font-[600] text-center  mb-8 max-w-4xl mx-auto">
             Fuel your creativity with our latest web design & development masterpieces!
           </p>
           <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
             {/* ! CH002: obtener datos del backend para agregar la data del carousel, img, tags, title, description, href  */}
-            <PortfolioCarousel items={portfolioItems} />
+            {/* Pass the processed items to the carousel */}
+            {/* The carousel will show a skeleton if carouselPortfolioItems is empty (due to loading, error, or no data) */}
+            <PortfolioCarousel items={carouselPortfolioItems} />
           </div>
         </div>
       </section>
-
       <ExpandingColumns />
-
       {/* New Section with same container and background */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
@@ -224,7 +238,8 @@ export function HomePage() {
                   Testimonials Section
                 </h3>
                 <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
-                  See the results of dozens of businesses in Miami that have trusted Senavia and seen positive returns. We offer a unique experience where you are our #1 priority.
+                  See the results of dozens of businesses in Miami that have trusted Senavia and
+                  seen positive returns. We offer a unique experience where you are our #1 priority.
                 </p>
               </div>
 
@@ -249,24 +264,16 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-
-
-
-      {ContactInfo(1)}
-
+      {ContactInfo(1)} 
+      {/* //TODO: Esto hace que la pagina sea muy ancha, hay que ver como arreglarlo */}
       <ScheduleFreeConsultation />
-
       {/* Fourth Section - Blog/Resources */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
-
-        <LatestNews blogItems={blogItems} caseItems={caseItems} />
-
+        <LatestNews />
       </section>
-
     </MainLayout>
   );
 }
