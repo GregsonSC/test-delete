@@ -15,15 +15,17 @@ datasource db {
 }
 
 model User {
-  id           Int              @id @default(autoincrement())
-  name         String
-  email        String           @unique
-  password     String
-  phone        String
-  imageUrl     String?
-  address      String
-  role         Role             @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId       Int //Dato para hacer la relacion
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  phone    String
+  imageUrl String?
+  address  String
+
+  role   Role @relation(fields: [roleId], references: [id]) //Relacion con rol
+  roleId Int //Dato para hacer la relacion
+
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   Comment      Comment[]
@@ -202,26 +204,29 @@ model RolePermission {
 }
 
 model Lead {
-  id            Int        @id @default(autoincrement())
-  clientName    String?
-  clientEmail   String?
-  clientPhone   String?
-  clientAddress String
-  name          String
+  id Int @id @default(autoincrement())
+
+  clientName  String?
+  clientEmail String?
+  clientPhone String?
+
+  clientAddress String?
   description   String
   state         LeadState
   startDate     String
   endDate       String
-  userId        Int?
-  user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serviceId     Int?
-  service       Service?   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  workTeamId    Int?
-  WorkTeam      WorkTeam?  @relation(fields: [workTeamId], references: [id])
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  Estimate      Estimate[]
-  contracts     Contract[]
+
+  userId     Int?
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId  Int?
+  service    Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  workTeamId Int?
+  WorkTeam   WorkTeam? @relation(fields: [workTeamId], references: [id])
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Estimate  Estimate[]
+  contracts Contract[]
 }
 
 enum LeadState {
@@ -242,13 +247,16 @@ model UserPermission {
 }
 
 model Product {
-  id          Int          @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   name        String
   description String
-  url         String
-  Attachment  Attachment[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  imageUrl    String
+  siteUrl     String
+
+  Attachment Attachment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   ProductTag ProductTag[]
 }
@@ -285,16 +293,17 @@ enum PhaseState {
 }
 
 model Activity {
-  id               Int           @id @default(autoincrement())
+  id               Int    @id @default(autoincrement())
   name             String
   description      String
   expectedDuration String
   startDate        String
   endDate          String
-  phase_id         Int?
-  phase            Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
-  state            StateActivity
-  priority         Priority
+
+  phase_id Int?
+  phase    Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  state    StateActivity
+  priority Priority
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

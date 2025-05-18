@@ -1,42 +1,20 @@
 "use client"
-import React from "react";
-import { useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import React, { use, useEffect, useState } from "react";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/presentation/atoms/button/button";
-import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText } from "lucide-react";
-import { Planner } from "@/presentation/organisms/planner/planner";
-import { Label } from "@/components/ui/label"
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/presentation/atoms/button/button";
+import { Planner } from "@/presentation/organisms/planner/planner";
+import { ContactUsViewModel, GetHoursViewModel } from "./contact-usViewmodel";
+import { useUser } from "@/context/UserContext";
 
 const userName = "Name";
-
 const formSchema = z.object({
   name: z
     .string()
@@ -47,25 +25,27 @@ const formSchema = z.object({
     .min(1, { message: "Enter a valid number" })
     .max(15, { message: "Enter a valid number" }),
   email: z
-  .string()
-  .email({ message: "Please enter a valid email address." }),
+    .string()
+    .email({ message: "Please enter a valid email address." }),
   service: z
-  .string()
-  .nonempty({message: "Please select a service."}),
+    .string()
+    .nonempty({ message: "Please select a service." }),
   about: z
-  .string()
-  .nonempty({message: "Please tell us about your project."}),
+    .string()
+    .nonempty({ message: "Please tell us about your project." }),
   timezone: z.string().nonempty({ message: "Timezone is required" }),
   date: z.date({ required_error: "Date is required" }),
   timeRange: z.string().nonempty({ message: "Time range is required" }),
 });
 
-interface ContactUsProps {
-  isLoggedIn: boolean;
-}
-
 // !CH010 [ADD] funcionamiento del endpoint del calendario para citas
-export function ContactUs({ isLoggedIn }: ContactUsProps) {
+export function ContactUs() {
+  const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
+  const router = useRouter();
+  const { createCalendarEvent } = ContactUsViewModel();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,33 +69,60 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
     }
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [hourSelection, setHourSelection] = useState< { timezone: string; hour: string } | null >(null);
-  const router = useRouter();
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    sessionStorage.setItem(
-      "contactData",
-      JSON.stringify({
+    // Obtener timeStart y timeFinish formateados correctamente
+    const { timeStart, timeFinish } = GetHoursViewModel(values.date.toISOString(), values.timeRange);
+
+    // Guardar toda la información en sessionStorage
+    const contactData = {
+      name: values.name,
+      phone: values.phone,
+      email: values.email,
+      service: values.service,
+      about: values.about,
+      timezone: values.timezone,
+      date: values.date.toISOString(),
+      timeRange: values.timeRange,
+      timeStart: timeStart,
+      timeFinish: timeFinish,
+    };
+
+    sessionStorage.setItem("contactData", JSON.stringify(contactData));
+
+    // Opcionalmente, enviar los datos al API
+    try {
+      // Crear el objeto con el formato esperado por la API
+      const eventData = {
         name: values.name,
         phone: values.phone,
         email: values.email,
         service: values.service,
         about: values.about,
-        timezone: values.timezone,
-        date: values.date.toISOString(),
-        timeRange: values.timeRange,
-      })
-    );
-    router.push("/post-schedule");
-    form.reset();
+        timeStart: timeStart,
+        timeFinish: timeFinish
+      };
+
+      // Enviar al API utilizando el ViewModel
+      const result = await createCalendarEvent(eventData);
+
+      if (result.success) {
+        // Continuar con la navegación solo si el envío fue exitoso
+        router.push("/post-schedule");
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Error al enviar datos al API:", error);
+      // Navegar de todos modos ya que los datos se guardaron en sessionStorage
+      router.push("/post-schedule");
+      form.reset();
+    }
   }
 
   return (
     <Card className="bg-white w-full border-0 flex flex-col items-center justify-center md:w-[778px] md:justify-start md:items-start md:pt-14 md:pb-12">
       <CardHeader>
         <CardTitle className="text-[#0A1248] font-bold text-5xl text-wrap ml-10 mb-2">
-          Let’s <span className="block md:inline">Connect</span>
+          Let's <span className="block md:inline">Connect</span>
         </CardTitle>
         <CardDescription className="text-[#0A1248] font-normal text-base ml-10 mr-5 text-wrap">
           We are here to help you grow and achieve your business goals!
@@ -230,7 +237,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                               value={field.value}
                             >
                               <SelectTrigger className="text-[#636A9C] bg-[#EBEDF2] border-0 mb-5 rounded-sm placeholder-[#636A9C] py-6 pl-10 md:py-0 text-lg md:text-sm md:pl-10 md:mb-1">
-                                <SelectValue placeholder="Select a service"/>
+                                <SelectValue placeholder="Select a service" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
@@ -246,14 +253,14 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
-                            <ConciergeBell color="#636A9C" className="absolute inset-y-3 md:inset-y-2 left-2"/>
+                            <ConciergeBell color="#636A9C" className="absolute inset-y-3 md:inset-y-2 left-2" />
                           </div>
                         </FormControl>
                       </FormItem>
                     )}
                   />
-                  
-                  <FormField 
+
+                  <FormField
                     name="about"
                     control={form.control}
                     render={({ field }) => (
@@ -269,14 +276,14 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                               id="about"
                               className="w-[96%] m-auto flex rounded-sm bg-white text-[#636A9C] py-2 px-8 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto"
                               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                              placeholder="Describe your project..."  
+                              placeholder="Describe your project..."
                             />
                           </FormControl>
                         </div>
                       </FormItem>
                     )}
                   />
-                  
+
 
                   {Object.keys(form.formState.errors).length > 0 && (
                     <div className="mt-4 text-red-600">
@@ -290,7 +297,7 @@ export function ContactUs({ isLoggedIn }: ContactUsProps) {
                 </form>
               </Form>
             )}
-            <div className="mt-5">
+            <div className="">
               <Planner
                 onDateSelected={(date: Date) => {
                   setSelectedDate(date);

@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Button } from "@/presentation/atoms/button/button";
 import { ArrowRight } from 'lucide-react';
 import { toast } from "sonner";
+import { NewsletterViewModel } from "./email-formViewModel";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -17,6 +18,8 @@ const formSchema = z.object({
 });
 // !CH009 [UPDATE] Agregar endpoint para el newsletter
 export function EmailForm() {
+  const { subscriptionStatus, subscribeToNewsletter } = NewsletterViewModel();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -25,20 +28,15 @@ export function EmailForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const registerPromise = new Promise<{ message: string }>((resolve, reject) => {
-      setTimeout(() => {
-        resolve({ message: `¡Correo registrado: ${values.email}!` });
-        // Para simular error, usa: reject(new Error("Hubo un error"));
-      }, 2000);
+    const result = await subscribeToNewsletter(values.email);
+
+    toast(result.success ? "success" : "error", {
+      description: result.message,
     });
 
-    await toast.promise(registerPromise, {
-      loading: "Registrando tu correo...",
-      success: (result) => result.message || "¡Registro exitoso!",
-      error: (error) => error?.message || "Registro fallido. Intenta de nuevo.",
-    });
-
-    form.reset();
+    if (result.success) {
+      form.reset();
+    }
   }
 
   return (
@@ -54,7 +52,7 @@ export function EmailForm() {
               <Input
                 placeholder="Email"
                 {...field}
-                className="bg-white text-black w-full pr-12" 
+                className="bg-white text-black w-full pr-12"
               />
               <Button className="absolute inset-y-2 right-3 rounded-full m-0 p-3 w-3 h-3">
                 <ArrowRight strokeWidth={5} color="white"  />

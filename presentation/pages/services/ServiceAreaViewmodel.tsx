@@ -20,10 +20,9 @@ export const ServiceAreaViewModel = () => {
         } else {
             console.error("HTTP error:", status, errorLogs);
             alert("Error al cargar el servicio");
+
         }
     }
-
     return { serviceAreas, getServiceArea };
 };
-
 export default ServiceAreaViewModel
