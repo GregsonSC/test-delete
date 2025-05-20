@@ -15,7 +15,8 @@ export const ContactUsViewModel = () => {
             service: event.service,
             about: event.about,
             timeStart: event.timeStart,
-            timeFinish: event.timeFinish
+            timeFinish: event.timeFinish,
+            isLoggedIn: event.isLoggedIn
         };
 
         const { response, status, errorLogs } = await fetchData(

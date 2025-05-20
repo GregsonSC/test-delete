@@ -13,8 +13,8 @@ import { Button } from "@/presentation/atoms/button/button";
 import { Planner } from "@/presentation/organisms/planner/planner";
 import { ContactUsViewModel, GetHoursViewModel } from "./contact-usViewmodel";
 import { useUser } from "@/context/UserContext";
-
-const userName = "Name";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
 const formSchema = z.object({
   name: z
     .string()
@@ -40,6 +40,7 @@ const formSchema = z.object({
 
 // !CH010 [ADD] funcionamiento del endpoint del calendario para citas
 export function ContactUs() {
+  const { toast } = useToast();
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
@@ -70,6 +71,15 @@ export function ContactUs() {
   }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (isLoggedIn && !values.timeRange) {
+      toast({
+        title: "Time Range Required",
+        description: "Please select a time range to schedule your event.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Obtener timeStart y timeFinish formateados correctamente
     const { timeStart, timeFinish } = GetHoursViewModel(values.date.toISOString(), values.timeRange);
 
@@ -89,33 +99,62 @@ export function ContactUs() {
 
     sessionStorage.setItem("contactData", JSON.stringify(contactData));
 
-    // Opcionalmente, enviar los datos al API
-    try {
-      // Crear el objeto con el formato esperado por la API
-      const eventData = {
-        name: values.name,
-        phone: values.phone,
-        email: values.email,
-        service: values.service,
-        about: values.about,
-        timeStart: timeStart,
-        timeFinish: timeFinish
-      };
+    if (isLoggedIn) {
+      try {
+        // Crear el objeto con el formato esperado por la API
+        const eventData = {
+          name: user?.name || '',
+          email: user?.email || '',
+          timeStart: timeStart,
+          timeFinish: timeFinish,
+          isLoggedIn: isLoggedIn
+        };
 
-      // Enviar al API utilizando el ViewModel
-      const result = await createCalendarEvent(eventData);
+        // Enviar al API utilizando el ViewModel
+        const result = await createCalendarEvent(eventData);
 
-      if (result.success) {
-        // Continuar con la navegación solo si el envío fue exitoso
+        if (result.success) {
+          // Continuar con la navegación solo si el envío fue exitoso
+          router.push("/post-schedule");
+          form.reset();
+        }
+      } catch (error) {
+        console.error("Error al enviar datos al API:", error);
+        // Navegar de todos modos ya que los datos se guardaron en sessionStorage
         router.push("/post-schedule");
         form.reset();
       }
-    } catch (error) {
-      console.error("Error al enviar datos al API:", error);
-      // Navegar de todos modos ya que los datos se guardaron en sessionStorage
-      router.push("/post-schedule");
-      form.reset();
     }
+    else {
+      try {
+        // Crear el objeto con el formato esperado por la API
+        const eventData = {
+          name: values.name,
+          phone: values.phone,
+          email: values.email,
+          service: values.service,
+          about: values.about,
+          timeStart: timeStart,
+          timeFinish: timeFinish,
+          isLoggedIn: isLoggedIn
+        };
+
+        // Enviar al API utilizando el ViewModel
+        const result = await createCalendarEvent(eventData);
+
+        if (result.success) {
+          // Continuar con la navegación solo si el envío fue exitoso
+          router.push("/post-schedule");
+          form.reset();
+        }
+      } catch (error) {
+        console.error("Error al enviar datos al API:", error);
+        // Navegar de todos modos ya que los datos se guardaron en sessionStorage
+        router.push("/post-schedule");
+        form.reset();
+      }
+    }
+
   }
 
   return (
@@ -142,8 +181,8 @@ export function ContactUs() {
                 <CardContent className="flex flex-row">
                   <div className="w-16 h-16 mr-3 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]"></div>
                   <div className="flex flex-col text-left justify-center">
-                    <span className="font-normal text-[#060B20]">{userName}</span>
-                    <span className="text-sm text-gray-500">user@example.com</span>
+                    <span className="font-normal text-[#060B20]">{user?.name}</span>
+                    <span className="text-sm text-gray-500">{user?.email}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="pb-3 pl-3">
@@ -305,7 +344,6 @@ export function ContactUs() {
                 }}
                 onHourSelected={(selection: { timezone: string; hour: string }) => {
                   setHourSelection(selection);
-                  // Guardamos tanto la zona horaria como el rango de horas
                   form.setValue("timezone", selection.timezone);
                   form.setValue("timeRange", selection.hour);
                 }}
@@ -317,6 +355,18 @@ export function ContactUs() {
               type="submit"
               form="contact-form"
               className="rounded-full bg-secondary text-white mt-5 text-base px-6 py-5 font-normal hover:bg-[#04081e]"
+              onClick={() => {
+                if (isLoggedIn) {
+                  // Si está logueado, usar los datos del usuario
+                  const userData = {
+                    name: user?.name || '',
+                    email: user?.email || '',
+                    date: form.getValues('date'),
+                    timeRange: form.getValues('timeRange')
+                  };
+                  onSubmit(userData as any);
+                }
+              }}
             >
               Schedule event
             </Button>
