@@ -151,28 +151,8 @@ export function ServicePage() {
           </div>
         </section>
 
-        {/* Testimonial section */}
-        <section
-          className="flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/fondos/ReviewsGreenBurblesBackground.jpg')" }}
-        >
-          <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
-            <div className="max-w-5xl mx-auto w-full">
-              {/* Content container */}
-              <div className="bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-3xl p-8 md:p-12 mx-auto max-w-5xl relative overflow-hidden my-[120px]">
-                <div className="text-center mb-8">
-                  <h3 className="text-[32px] md:text-[36px] font-bold text-white mb-4">
-                    Testimonials Section
-                  </h3>
-                  <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
-                    See the results of dozens of businesses that have trusted Senavia and seen positive returns. We offer a unique experience where you are our #1 priority.
-                  </p>
-                </div>
-                <ReviewSummary />
-              </div>
-            </div>
-          </div>
-        </section>
+        <ReviewSummary />
+
       </section>
       {ContactInfo(2)}
     </MainLayout>
