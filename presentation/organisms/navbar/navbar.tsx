@@ -512,9 +512,8 @@ export function Navbar({ className }: NavbarProps) {
     <>
       <header
         className={cn(
-          "w-full py-4 bg-[#020301]",
+          "w-full py-4 bg-[#020301] shadow-lg lg:bg-transparent lg:shadow-none",
           "fixed top-0 left-0 z-50",
-          "shadow-lg",
           className
         )}
       >
