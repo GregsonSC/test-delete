@@ -78,11 +78,9 @@ model Estimate {
   Project       Project[]
   costs         Cost[]
   comments      Comment[]
-
   deadLineToPay      String
   invoiceDateCreated String
   invoiceReference   String
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -184,7 +182,7 @@ enum EstimateState {
 model Role {
   id          Int              @id @default(autoincrement())
   name        String
-  description String
+  description String?
   active      Boolean
   user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
   permissions RolePermission[]
@@ -371,7 +369,7 @@ model Comment {
 model Plan {
   id          Int        @id @default(autoincrement())
   name        String
-  description String
+  description String?
   type        PlanType
   variants    Variant[] // Relación uno-a-muchos con Variant
   serviceId   Int
@@ -384,7 +382,7 @@ model Plan {
 model Variant {
   id          Int      @id @default(autoincrement())
   name        String
-  description String
+  description String?
   benefits    String
   price       Float
   planId      Int
@@ -412,7 +410,7 @@ model Ticket {
   id          Int          @id @default(autoincrement())
   title       String
   type        TicketPlan
-  description String
+  description String?
   status      TicketStatus
   users       UserTicket[]
   Attachment  Attachment[]
@@ -580,13 +578,13 @@ model Contract {
   companyPhone      String
   content           String
   ownerName         String
-  ownerSignDate     String
+  ownerSignDate     String?
   recipientName     String
-  recipientSignDate String
+  recipientSignDate String?
   userId            Int
   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  leadId            Int
-  lead              Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId            Int?
+  lead              Lead?             @relation(fields: [leadId], references: [id], onDelete: Cascade)
   clauses           ContractClause[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt

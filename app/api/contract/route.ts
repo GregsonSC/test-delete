@@ -115,7 +115,6 @@ import db from "@/lib/prisma";
  *                   example: Error creating contract
  */
 
-
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
@@ -128,11 +127,8 @@ export async function POST(request: NextRequest) {
       "companyPhone",
       "content",
       "ownerName",
-      "ownerSignDate",
       "recipientName",
-      "recipientSignDate",
       "user_id",
-      "lead_id",
     ];
 
     const missingFields = requiredFields.filter((field) => !data[field]);
@@ -270,7 +266,6 @@ export async function POST(request: NextRequest) {
  *                   type: string
  *                   example: Error retrieving contracts
  */
-
 
 export async function GET(request: Request) {
   try {
@@ -471,7 +466,6 @@ export async function GET(request: Request) {
  *                   example: Error updating contract
  */
 
-
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -627,7 +621,6 @@ export async function PATCH(request: Request) {
  *                   items:
  *                     type: string
  */
-
 
 export async function DELETE(request: Request) {
   try {

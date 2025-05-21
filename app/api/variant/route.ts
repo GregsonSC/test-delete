@@ -44,19 +44,27 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.name) {
+    // Required fields for creating a variant
+    const requiredFields = ["name", "benefits", "price", "planId"];
+
+    const missingFields = requiredFields.filter((field) => !data[field]);
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Variant name is required",
-          errors: ["Missing 'name' field"],
+          message: "Missing fields in the request",
+          errors: missingFields.map((field) => `Missing field '${field}'`),
         },
         { status: 400 }
       );
     }
 
-    const newVariant = await db.variant.create({ data, include: { plan: true } });
+    const newVariant = await db.variant.create({
+      data,
+      include: { plan: true },
+    });
 
     return NextResponse.json(
       {
@@ -73,13 +81,14 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         data: [],
-        message: "Error creating variant",
+        message: "Error creating the variant",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
     );
   }
 }
+
 
 /**
  * @swagger

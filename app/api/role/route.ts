@@ -40,26 +40,22 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.name) {
+    // Required fields for creating a role
+    const requiredFields = ["name", "active"];
+
+    const missingFields = requiredFields.filter(
+      (field) => data[field] === undefined || data[field] === null
+    );
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Role name is required",
-          errors: ["Missing 'name' field"],
+          message: "Missing fields in the request",
+          errors: missingFields.map((field) => `Missing field '${field}'`),
         },
-        { status: 422 }
-      );
-    }
-     if (!data.description) {
-      return NextResponse.json(
-        {
-          success: false,
-          data: [],
-          message: "Role description is required",
-          errors: ["Missing 'description' field"],
-        },
-        { status: 422 }
+        { status: 400 }
       );
     }
 
@@ -80,7 +76,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         data: [],
-        message: "Error creating role",
+        message: "Error creating the role",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
@@ -123,7 +119,7 @@ export async function GET(request: Request) {
           id: true,
           name: true,
           description: true,
-          active:true
+          active: true,
         },
       });
 
