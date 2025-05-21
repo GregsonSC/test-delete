@@ -103,7 +103,7 @@ export async function POST(request: Request) {
     const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
     const ImageReference = formData.get("ImageReference")?.toString();
 
-    const ContentImageUrlForm = formData.get("ContentImageUrl")?.toString();
+    const ContentImageUrlForm = formData.get("ContentImageUrl");
     const imageUrlForm = formData.get("imageUrl");
 
     const userId = formData.get("userId")
@@ -141,7 +141,6 @@ export async function POST(request: Request) {
       });
     }
 
-    
     if (!(imageUrlForm instanceof File) || !(ContentImageUrlForm instanceof File)) {
       return createResponse({
         success: false,
@@ -154,8 +153,18 @@ export async function POST(request: Request) {
     const imageUrl = await createImage(imageUrlForm);
     const ContentImageUrl = await createImage(ContentImageUrlForm);
 
-    
-    if (!title || !resume || !content || !topic || !publicationDate || !imageUrl) {
+    if (
+      !title ||
+      !resume ||
+      !content ||
+      !topic ||
+      !publicationDate ||
+      !imageUrl ||
+      !SubTitle ||
+      !ImageSubTitle ||
+      !ContentImageUrl ||
+      !ImageReference
+    ) {
       return createResponse({
         success: false,
         message: "All fields are required.",
