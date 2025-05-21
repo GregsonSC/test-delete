@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useFetch } from "@/lib/services/endpoints";
 import { endpoints } from "@/lib/services/endpoints";
-import { AuthUser, RegisterApiResponse, LoginApiResponse, LoginCredentials } from "@/components/interface/modules/Auth";
+import {
+  AuthUser,
+  RegisterApiResponse,
+  LoginApiResponse,
+  LoginCredentials,
+} from "@/components/interface/modules/Auth";
 import { useUser } from "@/context/UserContext";
 
 const AuthViewModel = () => {
@@ -26,7 +31,7 @@ const AuthViewModel = () => {
         endpoints.auth.registerUser,
         "post",
         formData,
-        "form",
+        "form"
       );
 
       console.log("Registration Response:", response);
@@ -70,10 +75,10 @@ const AuthViewModel = () => {
         "json",
         true // withCredentials
       );
-  
+
       console.log("Login Response:", response);
       console.log("Login Status:", status);
-  
+
       // If login is successful, update the user context
       if (response?.success && response?.data) {
         setUser({
@@ -83,9 +88,8 @@ const AuthViewModel = () => {
         });
         setIsLoggedIn(true);
       }
-  
+
       return response as LoginApiResponse;
-  
     } catch (err: any) {
       console.error("Error during login:", err);
       return {
@@ -111,21 +115,22 @@ const AuthViewModel = () => {
         true // withCredentials
       );
       if (status === 200) {
-        console.log("Logout Response:", response);
+        setUser(null);
+        setIsLoggedIn(false);
         return {
           success: true,
-          message: response?.message || "Logged out successfully"
+          message: response?.message || "Logged out successfully",
         };
       } else {
         return {
           success: false,
-          message: errorLogs?.message || "Logout failed"
+          message: errorLogs?.message || "Logout failed",
         };
       }
     } catch (err: any) {
       return {
         success: false,
-        message: err.message || "An unexpected error occurred"
+        message: err.message || "An unexpected error occurred",
       };
     } finally {
       setLoading(false);

@@ -7,7 +7,7 @@ import { MainLayout } from "@/presentation/templates/main-layout";
 import { ProfileDrawer } from "@/presentation/atoms/drawer/drawer";
 
 export function ProfileSettings() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  /*  const [isDrawerOpen, setIsDrawerOpen] = useState(false); */
 
   return (
     <MainLayout>
@@ -16,13 +16,13 @@ export function ProfileSettings() {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Account Info</h1>
-            <Button
+            {/*  <Button
               variant="secondary"
               className="rounded-full bg-[#34374a] text-white hover:bg-[#2a2d3d] hover:shadow-[0_0_15px_rgba(52,55,74,0.5)] px-5 py-1 sm:mr-8 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
               onClick={() => setIsDrawerOpen(true)}
             >
               Close Settings
-            </Button>
+            </Button> */}
           </div>
 
           {/* My Profile Section */}
@@ -109,13 +109,13 @@ export function ProfileSettings() {
       </div>
 
       {/* Profile Drawer */}
-      <ProfileDrawer
+      {/* <ProfileDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         profileName="Profile Name"
         email="example@gmail.com"
         phone="+00 0000000000"
-      />
+      /> */}
     </MainLayout>
   );
 }
