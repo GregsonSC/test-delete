@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Contract" ALTER COLUMN "ownerSignDate" DROP NOT NULL,
+ALTER COLUMN "recipientSignDate" DROP NOT NULL,
+ALTER COLUMN "leadId" DROP NOT NULL;

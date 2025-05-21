@@ -27,35 +27,47 @@ import db from "@/lib/prisma";
  *                 type: string
  *               type:
  *                 type: string
+ *                 enum:
+ *                   - SINGLEPAYMENT
+ *                   - MONTHLY
  *               serviceId:
  *                 type: integer
  *               description:
  *                 type: string
  *     responses:
  *       201:
- *         description: Plan creado exitosamente
+ *         description: Plan created successfully
  *       400:
- *         description: Campos requeridos faltantes
+ *         description: Missing required fields
  *       500:
- *         description: Error del servidor
+ *         description: Server error
  */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.name || !data.type || !data.serviceId) {
+    // Required fields for creating a plan
+    const requiredFields = ["name", "type", "serviceId"];
+
+    // Detect missing fields
+    const missingFields = requiredFields.filter((field) => !data[field]);
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Missing required fields",
-          errors: ["'name', 'type', and 'serviceId' are required"],
+          message: "Missing fields in the request",
+          errors: missingFields.map((field) => `Missing field '${field}'`),
         },
         { status: 400 }
       );
     }
 
-    const newPlan = await db.plan.create({ data, include: { service: true } });
+    const newPlan = await db.plan.create({
+      data,
+      include: { service: true },
+    });
 
     return NextResponse.json(
       {
@@ -72,7 +84,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         data: [],
-        message: "Error creating plan",
+        message: "Error creating the plan",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
       { status: 500 }
