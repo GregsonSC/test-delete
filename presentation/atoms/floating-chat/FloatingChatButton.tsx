@@ -1,8 +1,13 @@
 "use client";
 import React from "react";
-import { Button } from "./button";
-import { Popover, PopoverTrigger, PopoverContent } from "./popover";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./accordion";
+import { Button } from "../../../components/ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "../../../components/ui/popover";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../../../components/ui/accordion";
 
 const sections = [
   {

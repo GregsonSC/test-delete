@@ -9,9 +9,9 @@ import { Button } from "@/presentation/atoms/button/button";
 import { toast } from "sonner";
 import { DefaultToast } from "@/presentation/atoms/toast/default/default-toast";
 import { DefaultSucess } from "@/presentation/atoms/toast/sucess/default-sucess";
-import { EstimatedValue } from "@/presentation/atoms/profile-project/request/estimated-value";
-import { Invoice } from "@/presentation/atoms/profile-project/request/invoice";
-import { FloatingChatButton } from "@/components/ui/FloatingChatButton";
+import { EstimatedValue } from "@/presentation/atoms/dashboard/request/estimated-value";
+import { Invoice } from "@/presentation/atoms/dashboard/request/invoice";
+import { FloatingChatButton } from "../../presentation/atoms/floating-chat/FloatingChatButton";
 
 export default function TestingComp() {
   const promise = () =>

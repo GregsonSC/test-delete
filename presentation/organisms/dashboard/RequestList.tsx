@@ -1,5 +1,5 @@
 import React from "react";
-import { RequestCard } from "@/presentation/atoms/profile-project/request/request-card";
+import { RequestCard } from "../../atoms/dashboard/request/request-card";
 
 export type RequestListProps = {
   requests: { id: string; name: string; status: string }[];

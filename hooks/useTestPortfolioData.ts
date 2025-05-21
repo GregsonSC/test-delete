@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { mockRequests, mockProjects } from "../mockData";
+import { mockRequests, mockProjects } from "../presentation/organisms/dashboard/mockData";
 
 // Simula un fetch a una API con delay
 function fakeFetch(data: any, delay = 600): Promise<any> {

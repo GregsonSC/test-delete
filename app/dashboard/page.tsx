@@ -1,5 +1,9 @@
-import { DashboardPage } from "@/presentation/pages/dashboard/dashboard-page";
-
+import DashboardPage from "../../presentation/pages/dashboard/dashboard-page";
+import { MainLayout } from "@/presentation/templates/main-layout";
 export default function Dashboard() {
-  return <DashboardPage />;
+  return (
+    <MainLayout showFooter={false}>
+      <DashboardPage />
+    </MainLayout>
+  );
 }

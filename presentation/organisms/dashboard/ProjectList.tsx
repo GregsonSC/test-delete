@@ -1,5 +1,5 @@
 import React from "react";
-import { ProfileProjectCard } from "@/presentation/atoms/profile-project/profile-project-card";
+import { ProfileProjectCard } from "../../atoms/dashboard/profile-project-card";
 
 export type ProjectListProps = {
   projects: {

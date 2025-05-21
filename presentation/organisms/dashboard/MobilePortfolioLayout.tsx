@@ -2,10 +2,10 @@
 import React, { useState } from "react";
 import ProjectList from "./ProjectList";
 import RequestList from "./RequestList";
-import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
-import { RequestDetail } from "../../../presentation/atoms/profile-project/request/request-detail";
-import { EstimatedValue } from "../../../presentation/atoms/profile-project/request/estimated-value";
-import { Invoice } from "../../../presentation/atoms/profile-project/request/invoice";
+import { ProfileProjectDetail } from "../../atoms/dashboard/profile-project-detail";
+import { RequestDetail } from "../../atoms/dashboard/request/request-detail";
+import { EstimatedValue } from "../../atoms/dashboard/request/estimated-value";
+import { Invoice } from "../../atoms/dashboard/request/invoice";
 
 const REQUEST_TABS = ["Requests", "Projects"];
 
@@ -50,7 +50,9 @@ export default function MobilePortfolioLayout({
   requestTab,
   onTabChange,
   selectedRequest,
+  setSelectedRequest,
   selectedProject,
+  setSelectedProject,
   chatComponent,
   handleSelectProject,
   handleSelectRequest,
@@ -114,6 +116,12 @@ export default function MobilePortfolioLayout({
     if (loadingProjectDetail) {
       return (
         <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
+          <button
+            className="mb-1 px-2 py-1 rounded bg-[#99CC33] text-[#13103A] text-xs font-semibold hover:bg-[#7fa82a] transition-colors self-start"
+            onClick={() => setSelectedProject(null)}
+          >
+            ← Back to Projects
+          </button>
           <TabButtons
             tabs={["Chat", "Documents"]}
             activeTab={projectDetailTab}
@@ -139,6 +147,12 @@ export default function MobilePortfolioLayout({
     if (!projectDetail) return null;
     return (
       <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
+        <button
+          className="mb-1 px-2 py-1 rounded bg-[#99CC33] text-[#13103A] text-xs font-semibold hover:bg-[#7fa82a] transition-colors self-start"
+          onClick={() => setSelectedProject(null)}
+        >
+          ← Back to Projects
+        </button>
         <div className="flex flex-col gap-2 h-full min-h-0">
           <h2 className="font-bold text-xl mb-2">{projectDetail.name}</h2>
           <TabButtons
@@ -175,6 +189,12 @@ export default function MobilePortfolioLayout({
     if (loadingRequestDetail) {
       return (
         <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
+          <button
+            className="mb-1 px-2 py-1 rounded bg-[#99CC33] text-[#13103A] text-xs font-semibold hover:bg-[#7fa82a] transition-colors self-start"
+            onClick={() => setSelectedRequest(null)}
+          >
+            ← Back to Requests
+          </button>
           <RequestDetail
             requestName=""
             associatedService=""
@@ -199,6 +219,12 @@ export default function MobilePortfolioLayout({
     if (!requestDetail) return null;
     return (
       <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
+        <button
+          className="mb-1 px-2 py-1 rounded bg-[#99CC33] text-[#13103A] text-xs font-semibold hover:bg-[#7fa82a] transition-colors self-start"
+          onClick={() => setSelectedRequest(null)}
+        >
+          ← Back to Requests
+        </button>
         <RequestDetail
           requestName={requestDetail.name}
           associatedService={requestDetail.service}
