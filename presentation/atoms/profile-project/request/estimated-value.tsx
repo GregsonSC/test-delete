@@ -52,11 +52,11 @@ function SkeletonEstimate() {
       {Array.from({ length: 1 }).map((_, index) => (
         <div
           key={index}
-          className="rounded-lg border border-gray-200 shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] animate-pulse"
+          className="rounded-lg border border-gray-700 shadow-[0_2px_8px_0_rgba(0,0,0,0.10)] bg-[#0b0e1c] animate-pulse"
         >
-          <div className="w-full h-full bg-white rounded-lg p-3 flex justify-between items-center">
-            <div className="h-5 w-1/3 bg-gray-300/40 rounded" />
-            <div className="h-5 w-1/4 bg-gray-300/40 rounded" />
+          <div className="w-full h-full bg-[#0b0e1c] rounded-lg p-3 flex justify-between items-center">
+            <div className="h-5 w-1/3 bg-gray-700/60 rounded" />
+            <div className="h-5 w-1/4 bg-gray-700/60 rounded" />
           </div>
         </div>
       ))}
@@ -176,7 +176,7 @@ export function EstimatedValue({
                 : "border border-gray-200 shadow-[0_2px_8px_0_rgba(0,0,0,0.06)]"
             )}
           >
-            <div className={cn("w-full h-full bg-white rounded-lg", isOpen ? "p-4" : "")}>
+            <div className={cn("w-full h-full bg-[#0b0e1c] rounded-lg", isOpen ? "p-4" : "")}>
               {/* Header (Always Visible, Clickable) */}
               <div
                 className={cn(
@@ -186,8 +186,8 @@ export function EstimatedValue({
                 )}
                 onClick={handleToggle}
               >
-                <span className="font-bold text-lg text-[#0B1A33]">{estimate.title}</span>
-                <span className="font-semibold text-lg text-[#0B1A33]">
+                <span className="font-bold text-lg text-gray-100">{estimate.title}</span>
+                <span className="font-semibold text-lg text-gray-100">
                   {formatCurrency(totalValue, currencySymbol)}
                 </span>
               </div>
@@ -201,7 +201,7 @@ export function EstimatedValue({
                 )}
               >
                 {/* Item List */}
-                <ul className="mb-4 space-y-1 text-[#0B1A33]">
+                <ul className="mb-4 space-y-1 text-gray-200">
                   {estimate.items.map((item, itemIndex) => (
                     <li key={itemIndex} className="flex justify-between items-center text-sm ml-4">
                       <span>• {item.name}</span>
@@ -211,9 +211,9 @@ export function EstimatedValue({
                 </ul>
 
                 {/* Total Row */}
-                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
-                  <span className="font-semibold text-[#0B1A33]">Total</span>
-                  <span className="font-bold text-[#0B1A33]">
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-700">
+                  <span className="font-semibold text-gray-100">Total</span>
+                  <span className="font-bold text-gray-100">
                     {formatCurrency(totalValue, currencySymbol)}
                   </span>
                 </div>
@@ -224,7 +224,7 @@ export function EstimatedValue({
                     {onDecline && (
                       <button
                         onClick={handleInitiateDecline}
-                        className="px-5 py-1 bg-[#99CC33] text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
+                        className="px-5 py-1 bg-[#99CC33] text-[#13103A] rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
                       >
                         Decline
                       </button>
@@ -239,7 +239,7 @@ export function EstimatedValue({
                           newOpenStates[index] = false;
                           setOpenStates(newOpenStates);
                         }}
-                        className="px-5 py-1 bg-[#99CC33] text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
+                        className="px-5 py-1 bg-[#99CC33] text-[#13103A] rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
                       >
                         Accept
                       </button>
@@ -252,31 +252,31 @@ export function EstimatedValue({
             {/* Decline Reason Section (Overlay) */}
             <div
               className={cn(
-                "absolute top-[3px] left-[3px] right-[3px] bottom-[3px] bg-white p-4 flex flex-col rounded-lg",
+                "absolute top-[3px] left-[3px] right-[3px] bottom-[3px] bg-[#0b0e1c] p-4 flex flex-col rounded-lg",
                 "transition-all duration-300 ease-in-out",
                 showDeclineReason
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-full pointer-events-none"
               )}
             >
-              <h3 className="font-bold text-lg text-[#0B1A33] mb-2">Decline Reason</h3>
+              <h3 className="font-bold text-lg text-gray-100 mb-2">Decline Reason</h3>
               <textarea
                 value={declineMessages[index]}
                 onChange={handleDeclineMessageChange}
                 placeholder="Type your message here."
-                className="w-full p-2 border border-gray-300 rounded-md resize-none text-sm text-[#4A5568] placeholder-gray-400 flex-grow bg-white outline-none focus:outline-none focus:border-gray-300"
+                className="w-full p-2 border border-gray-700 rounded-md resize-none text-sm text-gray-200 placeholder-gray-400 flex-grow bg-[#0b0e1c] outline-none focus:outline-none focus:border-gray-500"
                 rows={6}
               />
               <div className="flex justify-end gap-3 mt-auto pt-3">
                 <button
                   onClick={handleCancelDecline}
-                  className="px-5 py-1 bg-transparent text-[#99CC33] border border-[#99CC33] rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors"
+                  className="px-5 py-1 bg-transparent text-[#99CC33] border border-[#99CC33] rounded-full text-sm font-semibold hover:bg-gray-900 transition-colors"
                 >
                   Go Back
                 </button>
                 <button
                   onClick={handleConfirmDecline}
-                  className="px-5 py-1 bg-[#99CC33] text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
+                  className="px-5 py-1 bg-[#99CC33] text-[#13103A] rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
                   disabled={!(declineMessages[index] || "").trim()}
                 >
                   Send Message

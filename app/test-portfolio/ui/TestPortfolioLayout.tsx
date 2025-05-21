@@ -16,9 +16,6 @@ export default function TestPortfolioLayout() {
   const REQUEST_TABS = ["Requests", "Projects"];
   const CHAT_TABS = ["Chat", "Estimated value", "Invoices"];
 
-  // Lógica de history (restaurada)
-  const detailHistoryCount = useRef({ Requests: 0, Projects: 0 });
-
   // Hook de datos y lógica
   const data = useTestPortfolioData();
 
@@ -35,31 +32,21 @@ export default function TestPortfolioLayout() {
 
   // Cambiar de tab: limpia selección y datos, y actualiza la tab
   const handleTabChange = (tab: string) => {
-    if (typeof window !== "undefined") {
-      window.history.replaceState({}, "");
-    }
+    clearAllSelectionAndData();
+    data.setChatTab("Chat");
     if (tab === "Requests") {
       data.setLoadingRequests(true);
-      clearAllSelectionAndData();
       setRequestTab(tab);
       data.fetchRequests();
     } else if (tab === "Projects") {
       data.setLoadingProjects(true);
-      clearAllSelectionAndData();
       setRequestTab(tab);
       data.fetchProjects();
     }
   };
 
-  // Helper para cambiar selección y cargar datos, con history
+  // Helper para cambiar selección y cargar datos
   const handleSelectRequest = (id: string) => {
-    if (typeof window !== "undefined") {
-      if (!data.selectedRequest) {
-        window.history.pushState({}, "");
-      } else {
-        window.history.replaceState({}, "");
-      }
-    }
     data.setSelectedRequest(id);
     data.clearRequestData();
     data.fetchRequestDetail(id);
@@ -69,33 +56,13 @@ export default function TestPortfolioLayout() {
     setRequestTab("Requests");
   };
   const handleSelectProject = (id: string) => {
-    if (typeof window !== "undefined") {
-      if (!data.selectedProject) {
-        window.history.pushState({}, "");
-      } else {
-        window.history.replaceState({}, "");
-      }
-    }
     data.setSelectedProject(id);
     data.clearProjectData();
     data.fetchProjectDetail(id);
     data.fetchProjectChat(id);
+    data.setChatTab("Chat");
     setRequestTab("Projects");
   };
-
-  // Restaurar selección al navegar atrás
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onPopState = () => {
-      if (data.selectedRequest || data.selectedProject) {
-        clearAllSelectionAndData();
-      } else {
-        // Deja que el historial siga su curso normal
-      }
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, [data.selectedProject, data.selectedRequest, requestTab]);
 
   // Cargar listados al entrar a cada tab
   useEffect(() => {
@@ -197,13 +164,15 @@ export default function TestPortfolioLayout() {
 
   function renderBottomSection() {
     return (
-      <div className="bg-[#13103A] rounded-xl shadow p-4 flex-1 flex flex-col gap-4 min-h-0 h-0">
+      <div className="bg-[#13103A] rounded-xl shadow p-4 flex-1 flex flex-col gap-2 min-h-0 h-0">
+        {/* Tabs fijos */}
         <TabButtons
           tabs={getChatTabs(requestTab)}
           activeTab={data.chatTab}
           onTabChange={data.setChatTab}
         />
-        <div className="flex-1 min-h-0">
+        {/* Contenido con scroll */}
+        <div className="flex-1 min-h-0 overflow-y-auto mt-2">
           {/* Content for "Chat" tab */}
           <div className={`h-full ${data.chatTab === CHAT_TABS[0] ? "block" : "hidden"}`}>
             {data.chatTab === CHAT_TABS[0] && chatComponentInstance}
@@ -230,7 +199,7 @@ export default function TestPortfolioLayout() {
           )}
           {/* Content for "Invoices" tab */}
           {getChatTabs(requestTab).includes(CHAT_TABS[2]) && (
-            <div className={`h-full ${data.chatTab === CHAT_TABS[2] ? "block" : "hidden"}`}>
+            <div className={`h-full  ${data.chatTab === CHAT_TABS[2] ? "block" : "hidden"}`}>
               <Invoice
                 invoices={data.requestInvoice ? [data.requestInvoice] : []}
                 currencySymbol="$"
@@ -249,17 +218,13 @@ export default function TestPortfolioLayout() {
   }
 
   const handleMobileTabChange = (tab: string) => {
-    if (typeof window !== "undefined") {
-      window.history.replaceState({}, "");
-    }
+    clearAllSelectionAndData();
     if (tab === "Requests") {
       data.setLoadingRequests(true);
-      clearAllSelectionAndData();
       setRequestTab(tab);
       data.fetchRequests();
     } else if (tab === "Projects") {
       data.setLoadingProjects(true);
-      clearAllSelectionAndData();
       setRequestTab(tab);
       data.fetchProjects();
     }
