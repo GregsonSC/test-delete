@@ -139,11 +139,11 @@ const DesktopAuthButtons = ({
   return (
     <>
       <div
-        className="hidden sm:flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent h-8 min-h-0 group"
+        className="hidden sm:flex items-center cursor-pointer bg-[#ebedf2] px-3 py-2 rounded-full gap-2 group"
         onClick={onOpenDrawer}
       >
-        <div className="w-9 h-9 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
-        <span className="text-white font-semibold text-[14px]">{user?.name || "User"}</span>
+        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
+        <span className="text-[#13103A] font-semibold text-[13px]">{user?.name || "User"}</span>
       </div>
       <ProfileDrawer
         isOpen={drawerOpen}
