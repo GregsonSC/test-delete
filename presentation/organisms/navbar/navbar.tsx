@@ -45,19 +45,20 @@ const SocialLinks = () => (
   </div>
 );
 
-const MobileUserProfile = ({ user }: { user: any }) => (
-  <div className="sm:hidden">
-    {user && (
+const MobileUserProfile = ({ user, isMenuOpen }: { user: any; isMenuOpen: boolean }) => {
+  if (!user || !isMenuOpen) return null;
+  return (
+    <div className="sm:hidden">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all" />
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center " />
         <div className="flex flex-col text-left">
           <span className="font-semibold text-[#060B20]">{user.name}</span>
           <span className="text-sm text-gray-500">{user.email}</span>
         </div>
       </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 const MobileAuthButtons = ({
   isLoggedIn,
@@ -548,48 +549,42 @@ export function Navbar({ className }: NavbarProps) {
         setActiveDropdown={setActiveDropdown}
       />
 
-      {/* Overlay y panel móvil sin animación/transición */}
-      <div
-        className={cn(
-          "fixed left-0 right-0 z-[70] lg:hidden flex pt-0",
-          isMenuOpen
-            ? "top-[72px] h-[calc(100vh-72px)] bg-black/80 backdrop-blur-sm visible"
-            : "top-0 h-0 invisible"
-        )}
-        style={{}}
-      >
-        <div
-          className={cn(
-            "bg-[#14171b] h-full p-4 md:p-8",
-            "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
-          )}
-        >
-          <div className="hidden md:block opacity-65">
-            <Logo className="mb-8" />
+      {/* Overlay y panel móvil solo se montan si isMenuOpen es true */}
+      {isMenuOpen && (
+        <div className="fixed left-0 right-0 z-[70] lg:hidden flex pt-0 top-[72px] h-[calc(100vh-72px)] bg-black/80 backdrop-blur-sm visible">
+          <div
+            className={cn(
+              "bg-[#14171b] h-full p-4 md:p-8",
+              "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
+            )}
+          >
+            <div className="hidden md:block opacity-65">
+              <Logo className="mb-8" />
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
+              "w-[70%] max-[500px]:w-[80%] md:flex-1"
+            )}
+          >
+            <MobileUserProfile user={user} isMenuOpen={isMenuOpen} />
+
+            <MobileNav
+              navItems={navItems}
+              mobileDropdowns={mobileDropdowns}
+              toggleMobileDropdown={toggleMobileDropdown}
+              areaDropdowns={areaDropdowns}
+              toggleAreaDropdown={toggleAreaDropdown}
+            />
+
+            <MobileAuthButtons isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+
+            <SocialLinks />
           </div>
         </div>
-
-        <div
-          className={cn(
-            "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
-            "w-[70%] max-[500px]:w-[80%] md:flex-1"
-          )}
-        >
-          <MobileUserProfile user={user} />
-
-          <MobileNav
-            navItems={navItems}
-            mobileDropdowns={mobileDropdowns}
-            toggleMobileDropdown={toggleMobileDropdown}
-            areaDropdowns={areaDropdowns}
-            toggleAreaDropdown={toggleAreaDropdown}
-          />
-
-          <MobileAuthButtons isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-
-          <SocialLinks />
-        </div>
-      </div>
+      )}
     </>
   );
 }
