@@ -374,7 +374,11 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
               <div
                 key={item.label}
                 className={cn(
-                  `grid grid-cols-${item.dropdownColumns} gap-8`,
+                  "grid gap-8",
+                  item.dropdownColumns === 1 && "grid-cols-1",
+                  item.dropdownColumns === 2 && "grid-cols-2",
+                  item.dropdownColumns === 3 && "grid-cols-3",
+                  item.dropdownColumns === 4 && "grid-cols-4",
                   activeDropdown === item.label ? "" : "hidden"
                 )}
               >
@@ -409,7 +413,7 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
 
         <div className="flex justify-end mt-8 mb-2">
           <Link href="/contact">
-            <Button className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all">
+            <Button className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all">
               Get a free consultation!
             </Button>
           </Link>
@@ -514,8 +518,8 @@ export function Navbar({ className }: NavbarProps) {
           className
         )}
       >
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between px-0 lg:px-8 py-0 lg:py-1.5 h-[40px]">
+        <div className="w-full px-4 lg:px-8">
+          <div className="flex items-center justify-between py-0 h-[40px]">
             <Logo />
 
             <DesktopNav

@@ -143,5 +143,32 @@ export const navItems: NavItem[] = [
     ],
   },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "About Us", href: "/about" },
+  {
+    label: "About Us",
+    href: "/about",
+    hasDropdown: true,
+    dropdownColumns: 4,
+    dropdownContent: [
+      {
+        label: "Blog",
+        href: "/blog",
+        description: "Latest news and articles from our team.",
+      },
+      {
+        label: "Study Cases",
+        href: "/study-cases",
+        description: "Discover our success stories and case studies.",
+      },
+      {
+        label: "Contact Us",
+        href: "/contact",
+        description: "Get in touch with us for any inquiries.",
+      },
+      {
+        label: "About Us",
+        href: "/about",
+        description: "Learn more about our company and values.",
+      },
+    ],
+  },
 ];
