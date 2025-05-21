@@ -22,10 +22,8 @@ model User {
   phone    String
   imageUrl String?
   address  String
-
-  role   Role @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId Int //Dato para hacer la relacion
-
+  role   Role @relation(fields: [roleId], references: [id],onDelete: Cascade) //Relacion con rol
+  roleId Int 
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   Comment      Comment[]
@@ -187,6 +185,7 @@ model Role {
   id          Int              @id @default(autoincrement())
   name        String
   description String
+  active      Boolean
   user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
   permissions RolePermission[]
   createdAt   DateTime         @default(now())
@@ -338,7 +337,7 @@ model UserActivity {
 model Cost {
   id          Int      @id @default(autoincrement())
   name        String
-  description String
+  description String?
   type        CostType
   value       Float
   estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
@@ -361,10 +360,10 @@ model Comment {
   sendTime   String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
-  estimateId Int
-  estimate   Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
-  phaseId    Int
-  phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  estimateId Int?
+  estimate   Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phaseId    Int?
+  phase      Phase?    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }

@@ -20,15 +20,18 @@ import db from "@/lib/prisma";
  *             type: object
  *             required:
  *               - name
+ *               - active
  *             properties:
  *               name:
  *                 type: string
  *               description:
  *                 type: string
+ *               active:
+ *                 type: boolean
  *     responses:
  *       201:
  *         description: Rol creado exitosamente
- *       400:
+ *       422:
  *         description: Campos faltantes o inválidos
  *       500:
  *         description: Error del servidor
@@ -45,7 +48,18 @@ export async function POST(request: NextRequest) {
           message: "Role name is required",
           errors: ["Missing 'name' field"],
         },
-        { status: 400 }
+        { status: 422 }
+      );
+    }
+     if (!data.description) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: [],
+          message: "Role description is required",
+          errors: ["Missing 'description' field"],
+        },
+        { status: 422 }
       );
     }
 
@@ -95,7 +109,7 @@ export async function POST(request: NextRequest) {
  *         description: ID inválido
  *       404:
  *         description: Rol no encontrado
- *       500:
+ *       503:
  *         description: Error del servidor
  */
 export async function GET(request: Request) {
@@ -109,6 +123,7 @@ export async function GET(request: Request) {
           id: true,
           name: true,
           description: true,
+          active:true
         },
       });
 
@@ -164,7 +179,7 @@ export async function GET(request: Request) {
         message: "Error fetching role",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
-      { status: 500 }
+      { status: 503 }
     );
   }
 }
@@ -195,6 +210,8 @@ export async function GET(request: Request) {
  *                 type: string
  *               description:
  *                 type: string
+ *               active:
+ *                 type: boolean
  *     responses:
  *       200:
  *         description: Rol actualizado exitosamente
@@ -270,7 +287,7 @@ export async function PATCH(request: Request) {
         message: "Error updating role",
         errors: [error instanceof Error ? error.message : "Unknown error"],
       },
-      { status: 500 }
+      { status: 503 }
     );
   }
 }
@@ -295,7 +312,7 @@ export async function PATCH(request: Request) {
  *         description: Rol eliminado exitosamente
  *       404:
  *         description: Rol no encontrado
- *       500:
+ *       503:
  *         description: Error del servidor
  */
 export async function DELETE(request: Request) {

@@ -17,6 +17,7 @@ import db from "@/lib/prisma";
  *             type: object
  *             required:
  *               - name
+ *               - estimateId
  *             properties:
  *               name:
  *                 type: string
@@ -24,8 +25,14 @@ import db from "@/lib/prisma";
  *                 type: string
  *               type:
  *                 type: string
+ *                 enum:
+ *                   - LICENSE
+ *                   - OTHER_VALUE_1
+ *                   - OTHER_VALUE_2
  *               value:
  *                 type: number
+ *               estimateId:
+ *                 type: integer
  *     responses:
  *       201:
  *         description: Costo creado exitosamente
