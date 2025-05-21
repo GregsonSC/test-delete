@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import MobilePortfolioLayout from "./MobilePortfolioLayout";
 import { mockRequests, mockProjects } from "../mockData";
 import RequestList from "./RequestList";
@@ -9,6 +9,8 @@ import { ProfileChat } from "../../../presentation/atoms/chat/profile-chat";
 import { useChatManager } from "../hooks/useChatManager";
 import { RequestDetail } from "../../../presentation/atoms/profile-project/request/request-detail";
 import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
+import { EstimatedValue } from "../../../presentation/atoms/profile-project/request/estimated-value";
+import { Invoice } from "../../../presentation/atoms/profile-project/request/invoice";
 
 // Updated Placeholder for dark background
 const Placeholder = ({ label }: { label: string }) => (
@@ -55,7 +57,20 @@ export default function TestPortfolioLayout() {
 
   // Contador de historial de detalles por tab
   const detailHistoryCount = useRef({ Requests: 0, Projects: 0 });
-  const lastTab = useRef(requestTab);
+
+  // Estado compartido para EstimatedValue e Invoice SOLO para la request seleccionada
+  const [estimateOpenStates, setEstimateOpenStates] = useState<boolean[]>([false]);
+  const [estimateShowDeclineReasons, setEstimateShowDeclineReasons] = useState<boolean[]>([false]);
+  const [estimateDeclineMessages, setEstimateDeclineMessages] = useState<string[]>([""]);
+  const [invoiceOpenStates, setInvoiceOpenStates] = useState<boolean[]>([false]);
+
+  // Resetear estado cuando cambia la request seleccionada
+  useEffect(() => {
+    setEstimateOpenStates([false]);
+    setEstimateShowDeclineReasons([false]);
+    setEstimateDeclineMessages([""]);
+    setInvoiceOpenStates([false]);
+  }, [selectedRequest]);
 
   // Effect to clear chat state if no project/request is selected globally
   useEffect(() => {
@@ -123,6 +138,11 @@ export default function TestPortfolioLayout() {
     selectedProject
   );
 
+  // Obtener la request seleccionada
+  const selectedRequestObj = selectedRequest
+    ? mockRequests.find((r) => r.id === selectedRequest)
+    : null;
+
   const chatComponentInstance = (
     <ProfileChat
       entityId={currentEntityId}
@@ -182,13 +202,11 @@ export default function TestPortfolioLayout() {
           <div className="bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4">
             {requestTab === "Requests" && selectedRequest ? (
               <RequestDetail
-                requestName={mockRequests.find((r) => r.id === selectedRequest)?.name || ""}
-                associatedService={
-                  mockRequests.find((r) => r.id === selectedRequest)?.service || ""
-                }
-                companyPlan={mockRequests.find((r) => r.id === selectedRequest)?.plan || ""}
-                description={mockRequests.find((r) => r.id === selectedRequest)?.description || ""}
-                leadStatus={mockRequests.find((r) => r.id === selectedRequest)?.status || ""}
+                requestName={selectedRequestObj?.name || ""}
+                associatedService={selectedRequestObj?.service || ""}
+                companyPlan={selectedRequestObj?.plan || ""}
+                description={selectedRequestObj?.description || ""}
+                leadStatus={selectedRequestObj?.status || ""}
               />
             ) : requestTab === "Projects" && selectedProject ? (
               <div className="overflow-y-auto h-[190px] pr-2 py-2 flex flex-col gap-y-4">
@@ -237,14 +255,37 @@ export default function TestPortfolioLayout() {
               {/* Content for "Estimated value" tab */}
               {getChatTabs(requestTab).includes(CHAT_TABS[1]) && (
                 <div className={`h-full ${chatTab === CHAT_TABS[1] ? "block" : "hidden"}`}>
-                  <Placeholder label={`Content (${CHAT_TABS[1]})`} />
+                  <EstimatedValue
+                    estimates={selectedRequestObj?.estimate ? [selectedRequestObj.estimate] : []}
+                    currencySymbol="$"
+                    onAccept={() => alert(`Estimate accepted!`)}
+                    onDecline={(_, reason) =>
+                      alert(`Estimate declined: ${reason || "No reason provided"}`)
+                    }
+                    openStates={estimateOpenStates}
+                    setOpenStates={setEstimateOpenStates}
+                    showDeclineReasons={estimateShowDeclineReasons}
+                    setShowDeclineReasons={setEstimateShowDeclineReasons}
+                    declineMessages={estimateDeclineMessages}
+                    setDeclineMessages={setEstimateDeclineMessages}
+                  />
                 </div>
               )}
 
               {/* Content for "Invoices" tab */}
               {getChatTabs(requestTab).includes(CHAT_TABS[2]) && (
                 <div className={`h-full ${chatTab === CHAT_TABS[2] ? "block" : "hidden"}`}>
-                  <Placeholder label={`Content (${CHAT_TABS[2]})`} />
+                  <Invoice
+                    invoices={selectedRequestObj?.invoice ? [selectedRequestObj.invoice] : []}
+                    currencySymbol="$"
+                    onGoToPayment={() =>
+                      alert(
+                        `Redirecting to payment for Invoice #${selectedRequestObj?.invoice?.invoiceNumber}`
+                      )
+                    }
+                    openStates={invoiceOpenStates}
+                    setOpenStates={setInvoiceOpenStates}
+                  />
                 </div>
               )}
             </div>
@@ -263,6 +304,18 @@ export default function TestPortfolioLayout() {
           chatComponent={chatComponentInstance}
           handleSelectProject={handleSelectProject}
           handleSelectRequest={handleSelectRequest}
+          chatTab={chatTab}
+          setChatTab={setChatTab}
+          getChatTabs={getChatTabs}
+          // Estado compartido para EstimatedValue e Invoice
+          estimateOpenStates={estimateOpenStates}
+          setEstimateOpenStates={setEstimateOpenStates}
+          estimateShowDeclineReasons={estimateShowDeclineReasons}
+          setEstimateShowDeclineReasons={setEstimateShowDeclineReasons}
+          estimateDeclineMessages={estimateDeclineMessages}
+          setEstimateDeclineMessages={setEstimateDeclineMessages}
+          invoiceOpenStates={invoiceOpenStates}
+          setInvoiceOpenStates={setInvoiceOpenStates}
         />
       </div>
     </div>

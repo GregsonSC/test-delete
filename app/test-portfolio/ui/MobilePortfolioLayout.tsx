@@ -5,6 +5,8 @@ import ProjectList from "./ProjectList";
 import RequestList from "./RequestList";
 import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
 import { RequestDetail } from "../../../presentation/atoms/profile-project/request/request-detail";
+import { EstimatedValue } from "../../../presentation/atoms/profile-project/request/estimated-value";
+import { Invoice } from "../../../presentation/atoms/profile-project/request/invoice";
 
 const REQUEST_TABS = ["Requests", "Projects"];
 
@@ -18,6 +20,18 @@ type Props = {
   chatComponent: React.ReactNode;
   handleSelectProject: (id: string) => void;
   handleSelectRequest: (id: string) => void;
+  chatTab: string;
+  setChatTab: (tab: string) => void;
+  getChatTabs: (tab: string) => string[];
+  // Estado compartido para EstimatedValue e Invoice
+  estimateOpenStates: boolean[];
+  setEstimateOpenStates: (v: boolean[]) => void;
+  estimateShowDeclineReasons: boolean[];
+  setEstimateShowDeclineReasons: (v: boolean[]) => void;
+  estimateDeclineMessages: string[];
+  setEstimateDeclineMessages: (v: string[]) => void;
+  invoiceOpenStates: boolean[];
+  setInvoiceOpenStates: (v: boolean[]) => void;
 };
 
 export default function MobilePortfolioLayout({
@@ -28,6 +42,17 @@ export default function MobilePortfolioLayout({
   chatComponent,
   handleSelectProject,
   handleSelectRequest,
+  chatTab,
+  setChatTab,
+  getChatTabs,
+  estimateOpenStates,
+  setEstimateOpenStates,
+  estimateShowDeclineReasons,
+  setEstimateShowDeclineReasons,
+  estimateDeclineMessages,
+  setEstimateDeclineMessages,
+  invoiceOpenStates,
+  setInvoiceOpenStates,
 }: Props) {
   const [projectDetailTab, setProjectDetailTab] = useState("Chat");
 
@@ -90,7 +115,52 @@ export default function MobilePortfolioLayout({
           description={request.description}
           leadStatus={request.status}
         />
-        <div className="flex-1 min-h-0">{chatComponent}</div>
+        {/* Tabs para request: Chat, Estimated value, Invoices */}
+        <div className="flex gap-2 mb-2">
+          {getChatTabs("Requests").map((tab) => (
+            <button
+              key={tab}
+              className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
+                chatTab === tab
+                  ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                  : "bg-transparent text-[#99CC33] border-[#99CC33]"
+              }`}
+              onClick={() => setChatTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className="flex-1 min-h-0">
+          {chatTab === "Chat" && chatComponent}
+          {chatTab === "Estimated value" && request.estimate && (
+            <EstimatedValue
+              estimates={[request.estimate]}
+              currencySymbol="$"
+              onAccept={() => alert(`Estimate accepted!`)}
+              onDecline={(_, reason) =>
+                alert(`Estimate declined: ${reason || "No reason provided"}`)
+              }
+              openStates={estimateOpenStates}
+              setOpenStates={setEstimateOpenStates}
+              showDeclineReasons={estimateShowDeclineReasons}
+              setShowDeclineReasons={setEstimateShowDeclineReasons}
+              declineMessages={estimateDeclineMessages}
+              setDeclineMessages={setEstimateDeclineMessages}
+            />
+          )}
+          {chatTab === "Invoices" && request.invoice && (
+            <Invoice
+              invoices={[request.invoice]}
+              currencySymbol="$"
+              onGoToPayment={() =>
+                alert(`Redirecting to payment for Invoice #${request.invoice.invoiceNumber}`)
+              }
+              openStates={invoiceOpenStates}
+              setOpenStates={setInvoiceOpenStates}
+            />
+          )}
+        </div>
       </div>
     );
   }

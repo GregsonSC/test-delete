@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 // Define the structure for each item in the invoice
@@ -23,17 +23,22 @@ interface InvoiceProps {
   currencySymbol?: string;
   onGoToPayment?: (invoiceIndex: number) => void;
   status?: string;
+  // Estado controlado opcional
+  openStates?: boolean[];
+  setOpenStates?: (v: boolean[]) => void;
 }
 
 // Helper function to format currency
 const formatCurrency = (value: number, symbol: string = "$") => {
-  return new Intl.NumberFormat('en-US', { 
-    style: 'currency', 
-    currency: 'USD',
-    currencyDisplay: 'symbol',
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
-  }).format(value).replace('USD', symbol);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "symbol",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+    .format(value)
+    .replace("USD", symbol);
 };
 
 export function Invoice({
@@ -41,9 +46,18 @@ export function Invoice({
   currencySymbol = "$",
   onGoToPayment,
   status,
+  openStates: controlledOpenStates,
+  setOpenStates: setControlledOpenStates,
 }: InvoiceProps) {
-  // Track open state for each invoice
-  const [openStates, setOpenStates] = useState<boolean[]>(new Array(invoices.length).fill(false));
+  // Si no se pasan props, usa estado interno
+  const [internalOpenStates, internalSetOpenStates] = useState<boolean[]>(
+    new Array(invoices.length).fill(false)
+  );
+  useEffect(() => {
+    if (!controlledOpenStates) internalSetOpenStates(new Array(invoices.length).fill(false));
+  }, [invoices]);
+  const openStates = controlledOpenStates ?? internalOpenStates;
+  const setOpenStates = setControlledOpenStates ?? internalSetOpenStates;
 
   // --- Render Logic ---
   return (
@@ -51,30 +65,27 @@ export function Invoice({
       {invoices.map((invoice, index) => {
         // Calculate the total value for this invoice
         const totalValue = invoice.items.reduce((sum, item) => sum + item.value, 0);
-        
+
         const isOpen = openStates[index];
-        
+
         // Handlers for this specific invoice
         const handleToggle = () => {
           const newOpenStates = [...openStates];
           newOpenStates[index] = !newOpenStates[index];
           setOpenStates(newOpenStates);
         };
-        
+
         return (
           <div
             key={index}
             className={cn(
               "rounded-lg transition-all duration-300 ease-in-out overflow-hidden relative",
-              isOpen 
-                ? "p-[3px] bg-gradient-to-r from-[#99CC33] to-[#33CCCC]" 
+              isOpen
+                ? "p-[3px] bg-gradient-to-r from-[#99CC33] to-[#33CCCC]"
                 : "border border-gray-200 shadow-[0_2px_8px_0_rgba(0,0,0,0.06)]"
             )}
           >
-            <div className={cn(
-              "w-full h-full bg-white rounded-lg",
-              isOpen ? "p-4" : ""
-            )}>
+            <div className={cn("w-full h-full bg-white rounded-lg", isOpen ? "p-4" : "")}>
               {/* Header (Always Visible, Clickable) */}
               <div
                 className={cn(
@@ -130,7 +141,7 @@ export function Invoice({
                   <div className="flex justify-end mt-5">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); 
+                        e.stopPropagation();
                         if (onGoToPayment) onGoToPayment(index);
                       }}
                       className="px-5 py-1 bg-[#99CC33] text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition-colors"
