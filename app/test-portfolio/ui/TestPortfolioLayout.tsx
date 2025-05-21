@@ -1,321 +1,338 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MobilePortfolioLayout from "./MobilePortfolioLayout";
-import { mockRequests, mockProjects } from "../mockData";
 import RequestList from "./RequestList";
 import ProjectList from "./ProjectList";
 import { ProfileChat } from "../../../presentation/atoms/chat/profile-chat";
-import { useChatManager } from "../hooks/useChatManager";
 import { RequestDetail } from "../../../presentation/atoms/profile-project/request/request-detail";
 import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
 import { EstimatedValue } from "../../../presentation/atoms/profile-project/request/estimated-value";
 import { Invoice } from "../../../presentation/atoms/profile-project/request/invoice";
-
-// Updated Placeholder for dark background
-const Placeholder = ({ label }: { label: string }) => (
-  <div className="flex items-center justify-center h-full w-full text-gray-400 text-lg font-semibold border-2 border-dashed border-gray-700 rounded-lg">
-    {label}
-  </div>
-);
-
-const REQUEST_TABS = ["Requests", "Projects"];
-const CHAT_TABS = ["Chat", "Estimated value", "Invoices"];
-
-// Helper function defined at module scope
-function getChatEntityDetails(
-  requestTab: string,
-  selectedRequest: string | null,
-  selectedProject: string | null
-): {
-  currentEntityId: string | undefined;
-  currentEntityType: "project" | "request" | undefined;
-} {
-  if (requestTab === "Requests" && selectedRequest) {
-    return { currentEntityId: selectedRequest, currentEntityType: "request" };
-  }
-  if (requestTab === "Projects" && selectedProject) {
-    return { currentEntityId: selectedProject, currentEntityType: "project" };
-  }
-  return { currentEntityId: undefined, currentEntityType: undefined };
-}
+import { useTestPortfolioData } from "../hooks/useTestPortfolioData";
 
 export default function TestPortfolioLayout() {
-  const [requestTab, setRequestTab] = useState<(typeof REQUEST_TABS)[number]>(REQUEST_TABS[0]);
-  const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
-  const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const [chatTab, setChatTab] = useState(CHAT_TABS[0]);
+  // Tabs y chat tabs
+  const REQUEST_TABS = ["Requests", "Projects"];
+  const CHAT_TABS = ["Chat", "Estimated value", "Invoices"];
 
-  // Use the custom hook for chat logic
-  const {
-    currentChatMessages,
-    isLoadingChatHistory,
-    handleRequestHistoryLoad,
-    handleSendMessageRequest,
-    clearChatState,
-  } = useChatManager();
-
-  // Contador de historial de detalles por tab
+  // Lógica de history (restaurada)
   const detailHistoryCount = useRef({ Requests: 0, Projects: 0 });
 
-  // Estado compartido para EstimatedValue e Invoice SOLO para la request seleccionada
-  const [estimateOpenStates, setEstimateOpenStates] = useState<boolean[]>([false]);
-  const [estimateShowDeclineReasons, setEstimateShowDeclineReasons] = useState<boolean[]>([false]);
-  const [estimateDeclineMessages, setEstimateDeclineMessages] = useState<string[]>([""]);
-  const [invoiceOpenStates, setInvoiceOpenStates] = useState<boolean[]>([false]);
+  // Hook de datos y lógica
+  const data = useTestPortfolioData();
 
-  // Resetear estado cuando cambia la request seleccionada
-  useEffect(() => {
-    setEstimateOpenStates([false]);
-    setEstimateShowDeclineReasons([false]);
-    setEstimateDeclineMessages([""]);
-    setInvoiceOpenStates([false]);
-  }, [selectedRequest]);
+  // Estado real para la tab activa
+  const [requestTab, setRequestTab] = useState<string>(REQUEST_TABS[0]);
 
-  // Effect to clear chat state if no project/request is selected globally
-  useEffect(() => {
-    const isAnyItemSelected = selectedRequest || selectedProject;
-    if (!isAnyItemSelected) {
-      clearChatState();
+  // Limpieza centralizada de selección y datos
+  function clearAllSelectionAndData() {
+    data.setSelectedRequest(null);
+    data.setSelectedProject(null);
+    data.clearRequestData();
+    data.clearProjectData();
+  }
+
+  // Cambiar de tab: limpia selección y datos, y actualiza la tab
+  const handleTabChange = (tab: string) => {
+    if (typeof window !== "undefined") {
+      window.history.replaceState({}, "");
     }
-  }, [selectedRequest, selectedProject, clearChatState]);
+    if (tab === "Requests") {
+      data.setLoadingRequests(true);
+      clearAllSelectionAndData();
+      setRequestTab(tab);
+      data.fetchRequests();
+    } else if (tab === "Projects") {
+      data.setLoadingProjects(true);
+      clearAllSelectionAndData();
+      setRequestTab(tab);
+      data.fetchProjects();
+    }
+  };
 
-  // --- FUNCIONALIDAD DE HISTORIAL GLOBAL ---
+  // Helper para cambiar selección y cargar datos, con history
+  const handleSelectRequest = (id: string) => {
+    if (typeof window !== "undefined") {
+      if (!data.selectedRequest) {
+        window.history.pushState({}, "");
+      } else {
+        window.history.replaceState({}, "");
+      }
+    }
+    data.setSelectedRequest(id);
+    data.clearRequestData();
+    data.fetchRequestDetail(id);
+    data.fetchRequestChat(id);
+    data.fetchRequestEstimate(id);
+    data.fetchRequestInvoice(id);
+    setRequestTab("Requests");
+  };
+  const handleSelectProject = (id: string) => {
+    if (typeof window !== "undefined") {
+      if (!data.selectedProject) {
+        window.history.pushState({}, "");
+      } else {
+        window.history.replaceState({}, "");
+      }
+    }
+    data.setSelectedProject(id);
+    data.clearProjectData();
+    data.fetchProjectDetail(id);
+    data.fetchProjectChat(id);
+    setRequestTab("Projects");
+  };
+
+  // Restaurar selección al navegar atrás
   useEffect(() => {
     if (typeof window === "undefined") return;
     const onPopState = () => {
-      if (selectedProject) setSelectedProject(null);
-      if (selectedRequest) setSelectedRequest(null);
-      // Al volver atrás, decrementa el contador de la tab actual
-      const tabKey = requestTab as keyof typeof detailHistoryCount.current;
-      if (detailHistoryCount.current[tabKey] > 0) {
-        detailHistoryCount.current[tabKey]--;
+      if (data.selectedRequest || data.selectedProject) {
+        clearAllSelectionAndData();
+      } else {
+        // Deja que el historial siga su curso normal
       }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [selectedProject, selectedRequest, requestTab]);
+  }, [data.selectedProject, data.selectedRequest, requestTab]);
 
-  // Al seleccionar un project/request, haz pushState y acumula solo en la tab actual
-  const handleSelectProject = (id: string) => {
-    if (typeof window !== "undefined") {
-      if (selectedProject) {
-        window.history.replaceState({}, "");
-      } else {
-        window.history.pushState({}, "");
-      }
-    }
-    setSelectedProject(id);
-    setRequestTab("Projects");
-  };
-  const handleSelectRequest = (id: string) => {
-    if (typeof window !== "undefined") {
-      if (selectedRequest) {
-        window.history.replaceState({}, "");
-      } else {
-        window.history.pushState({}, "");
-      }
-    }
-    setSelectedRequest(id);
-    setRequestTab("Requests");
-  };
-
-  // Al cambiar de tab, solo limpia la selección y el contador, NO uses go(-count)
-  const handleTabChange = (tab: string) => {
-    if (tab === requestTab) return;
-    // Al cambiar de tab, solo limpia la selección y el contador, NO uses go(-count)
-    const tabKey = requestTab as keyof typeof detailHistoryCount.current;
-    detailHistoryCount.current[tabKey] = 0;
-    setSelectedRequest(null);
-    setSelectedProject(null);
-    setRequestTab(tab);
-  };
-
-  // Use the module-level helper function
-  const { currentEntityId, currentEntityType } = getChatEntityDetails(
-    requestTab,
-    selectedRequest,
-    selectedProject
-  );
-
-  // Obtener la request seleccionada
-  const selectedRequestObj = selectedRequest
-    ? mockRequests.find((r) => r.id === selectedRequest)
-    : null;
-
-  const chatComponentInstance = (
-    <ProfileChat
-      entityId={currentEntityId}
-      entityType={currentEntityType}
-      messagesToDisplay={currentChatMessages}
-      onSendMessageRequest={handleSendMessageRequest}
-      onRequestHistoryLoad={handleRequestHistoryLoad}
-      isLoadingHistory={isLoadingChatHistory}
-    />
-  );
-
-  // Main details label según tab
-  const getMainDetailsLabel = (tab: string) =>
-    tab === "Projects" ? "Main Details (Projects)" : "Main Details (Requests)";
+  // Cargar listados al entrar a cada tab
+  useEffect(() => {
+    if (requestTab === "Requests") data.fetchRequests();
+    if (requestTab === "Projects") data.fetchProjects();
+  }, [requestTab]);
 
   // Chat tabs para desktop según tab
   const getChatTabs = (tab: string) => (tab === "Projects" ? [CHAT_TABS[0]] : CHAT_TABS);
 
-  return (
-    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 h-[calc(100vh-72px)] text-gray-200">
-      {/* Desktop/Tablet Layout - grid background is now transparent, allowing parent bg to show */}
-      <div className="hidden md:grid grid-cols-3 gap-4 w-full h-full min-h-0">
-        {/* Sidebar - card background changed */}
-        <div className="col-span-1 bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4 h-full min-h-0">
-          <div className="flex gap-2">
-            {REQUEST_TABS.map((tab) => (
-              <button
-                key={tab}
-                className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
-                  requestTab === tab
-                    ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
-                    : "bg-transparent text-[#99CC33] border-[#99CC33]"
-                }`}
-                onClick={() => handleTabChange(tab)}
-              >
-                {tab}
-              </button>
+  // Chat component instance (usa el chat de request o project según selección)
+  const chatComponentInstance = (
+    <ProfileChat
+      entityId={data.selectedRequest || data.selectedProject || undefined}
+      entityType={data.selectedRequest ? "request" : data.selectedProject ? "project" : undefined}
+      messagesToDisplay={data.selectedRequest ? data.requestChat : data.projectChat}
+      onSendMessageRequest={data.handleSendMessageRequest}
+      onRequestHistoryLoad={data.handleRequestHistoryLoad}
+      isLoadingHistory={data.loadingRequestChat || data.loadingProjectChat}
+    />
+  );
+
+  // --- COMPONENTES AUXILIARES INTERNOS ---
+  function TabButtons({
+    tabs,
+    activeTab,
+    onTabChange,
+  }: {
+    tabs: string[];
+    activeTab: string;
+    onTabChange: (tab: string) => void;
+  }) {
+    return (
+      <div className="flex gap-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
+              activeTab === tab
+                ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                : "bg-transparent text-[#99CC33] border-[#99CC33]"
+            }`}
+            onClick={() => onTabChange(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  function renderMainDetails() {
+    if (requestTab === "Requests" && data.selectedRequest) {
+      return (
+        <RequestDetail
+          requestName={data.requestDetail?.name}
+          associatedService={data.requestDetail?.service}
+          companyPlan={data.requestDetail?.plan}
+          description={data.requestDetail?.description}
+          leadStatus={data.requestDetail?.status}
+          loading={data.loadingRequestDetail}
+        />
+      );
+    }
+    if (requestTab === "Projects" && data.selectedProject) {
+      if (data.loadingProjectDetail) {
+        return (
+          <div className="overflow-y-auto h-[190px] pr-2 py-2 flex flex-col gap-y-4">
+            {[...Array(2)].map((_, idx) => (
+              <ProfileProjectDetail key={idx} description="" documents={[]} loading={true} />
             ))}
           </div>
+        );
+      }
+      return (
+        <div className="overflow-y-auto h-[190px] pr-2 py-2 flex flex-col gap-y-4">
+          {(data.projectDetail?.details || []).map((detail: any, idx: number) => (
+            <ProfileProjectDetail
+              key={idx}
+              description={detail.description}
+              documents={detail.documents.map((doc: any, j: number) => ({
+                id: `${data.selectedProject}-${idx}-${j}`,
+                name: doc.name,
+                url: `/docs/${doc.name}`,
+              }))}
+              date={detail.date ? new Date(detail.date) : undefined}
+              loading={false}
+            />
+          ))}
+        </div>
+      );
+    }
+    return (
+      <div className="flex items-center justify-center h-full w-full text-gray-400 text-lg font-semibold border-2 border-dashed border-gray-700 rounded-lg">
+        {requestTab === "Projects" ? "Main Details (Projects)" : "Main Details (Requests)"}
+      </div>
+    );
+  }
+
+  function renderBottomSection() {
+    return (
+      <div className="bg-[#13103A] rounded-xl shadow p-4 flex-1 flex flex-col gap-4 min-h-0 h-0">
+        <TabButtons
+          tabs={getChatTabs(requestTab)}
+          activeTab={data.chatTab}
+          onTabChange={data.setChatTab}
+        />
+        <div className="flex-1 min-h-0">
+          {/* Content for "Chat" tab */}
+          <div className={`h-full ${data.chatTab === CHAT_TABS[0] ? "block" : "hidden"}`}>
+            {data.chatTab === CHAT_TABS[0] && chatComponentInstance}
+          </div>
+          {/* Content for "Estimated value" tab */}
+          {getChatTabs(requestTab).includes(CHAT_TABS[1]) && (
+            <div className={`h-full ${data.chatTab === CHAT_TABS[1] ? "block" : "hidden"}`}>
+              <EstimatedValue
+                estimates={data.requestEstimate ? [data.requestEstimate] : []}
+                currencySymbol="$"
+                onAccept={() => alert(`Estimate accepted!`)}
+                onDecline={(_, reason) =>
+                  alert(`Estimate declined: ${reason || "No reason provided"}`)
+                }
+                openStates={data.estimateOpenStates}
+                setOpenStates={data.setEstimateOpenStates}
+                showDeclineReasons={data.estimateShowDeclineReasons}
+                setShowDeclineReasons={data.setEstimateShowDeclineReasons}
+                declineMessages={data.estimateDeclineMessages}
+                setDeclineMessages={data.setEstimateDeclineMessages}
+                loading={data.loadingRequestEstimate}
+              />
+            </div>
+          )}
+          {/* Content for "Invoices" tab */}
+          {getChatTabs(requestTab).includes(CHAT_TABS[2]) && (
+            <div className={`h-full ${data.chatTab === CHAT_TABS[2] ? "block" : "hidden"}`}>
+              <Invoice
+                invoices={data.requestInvoice ? [data.requestInvoice] : []}
+                currencySymbol="$"
+                onGoToPayment={() =>
+                  alert(`Redirecting to payment for Invoice #${data.requestInvoice?.invoiceNumber}`)
+                }
+                openStates={data.invoiceOpenStates}
+                setOpenStates={data.setInvoiceOpenStates}
+                loading={data.loadingRequestInvoice}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const handleMobileTabChange = (tab: string) => {
+    if (typeof window !== "undefined") {
+      window.history.replaceState({}, "");
+    }
+    if (tab === "Requests") {
+      data.setLoadingRequests(true);
+      clearAllSelectionAndData();
+      setRequestTab(tab);
+      data.fetchRequests();
+    } else if (tab === "Projects") {
+      data.setLoadingProjects(true);
+      clearAllSelectionAndData();
+      setRequestTab(tab);
+      data.fetchProjects();
+    }
+  };
+
+  return (
+    <div className="w-full bg-[#04081E] p-4 flex flex-col gap-4 h-[calc(100vh-72px)] text-gray-200">
+      {/* Desktop/Tablet Layout */}
+      <div className="hidden md:grid grid-cols-3 gap-4 w-full h-full min-h-0">
+        {/* Sidebar */}
+        <div className="col-span-1 bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4 h-full min-h-0">
+          <TabButtons tabs={REQUEST_TABS} activeTab={requestTab} onTabChange={handleTabChange} />
           {requestTab === "Requests" ? (
             <RequestList
-              requests={mockRequests}
-              selectedId={selectedRequest}
+              requests={data.requests}
+              selectedId={data.selectedRequest}
               onSelect={handleSelectRequest}
+              loading={data.loadingRequests}
             />
           ) : (
             <ProjectList
-              projects={mockProjects}
-              selectedId={selectedProject}
+              projects={data.projects}
+              selectedId={data.selectedProject}
               onSelect={handleSelectProject}
+              loading={data.loadingProjects}
             />
           )}
         </div>
         {/* Main Content */}
         <div className="col-span-2 flex flex-col gap-4 h-full min-h-0">
-          {/* Top Section - card background changed */}
+          {/* Top Section */}
           <div className="bg-[#13103A] rounded-xl shadow p-4 flex flex-col gap-4">
-            {requestTab === "Requests" && selectedRequest ? (
-              <RequestDetail
-                requestName={selectedRequestObj?.name || ""}
-                associatedService={selectedRequestObj?.service || ""}
-                companyPlan={selectedRequestObj?.plan || ""}
-                description={selectedRequestObj?.description || ""}
-                leadStatus={selectedRequestObj?.status || ""}
-              />
-            ) : requestTab === "Projects" && selectedProject ? (
-              <div className="overflow-y-auto h-[190px] pr-2 py-2 flex flex-col gap-y-4">
-                {(mockProjects.find((p) => p.id === selectedProject)?.details || []).map(
-                  (detail: any, idx: number) => (
-                    <ProfileProjectDetail
-                      key={idx}
-                      description={detail.description}
-                      documents={detail.documents.map((doc: any, j: number) => ({
-                        id: `${selectedProject}-${idx}-${j}`,
-                        name: doc.name,
-                        url: `/docs/${doc.name}`,
-                      }))}
-                      date={detail.date ? new Date(detail.date) : undefined}
-                    />
-                  )
-                )}
-              </div>
-            ) : (
-              <Placeholder label={getMainDetailsLabel(requestTab)} />
-            )}
+            {renderMainDetails()}
           </div>
-          {/* Bottom Section - card background changed */}
-          <div className="bg-[#13103A] rounded-xl shadow p-4 flex-1 flex flex-col gap-4 min-h-0 h-0">
-            <div className="flex gap-2 mb-2">
-              {getChatTabs(requestTab).map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
-                    chatTab === tab
-                      ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
-                      : "bg-transparent text-[#99CC33] border-[#99CC33]"
-                  }`}
-                  onClick={() => setChatTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <div className="flex-1 min-h-0">
-              {/* Content for "Chat" tab */}
-              <div className={`h-full ${chatTab === CHAT_TABS[0] ? "block" : "hidden"}`}>
-                {chatTab === CHAT_TABS[0] && chatComponentInstance}
-              </div>
-
-              {/* Content for "Estimated value" tab */}
-              {getChatTabs(requestTab).includes(CHAT_TABS[1]) && (
-                <div className={`h-full ${chatTab === CHAT_TABS[1] ? "block" : "hidden"}`}>
-                  <EstimatedValue
-                    estimates={selectedRequestObj?.estimate ? [selectedRequestObj.estimate] : []}
-                    currencySymbol="$"
-                    onAccept={() => alert(`Estimate accepted!`)}
-                    onDecline={(_, reason) =>
-                      alert(`Estimate declined: ${reason || "No reason provided"}`)
-                    }
-                    openStates={estimateOpenStates}
-                    setOpenStates={setEstimateOpenStates}
-                    showDeclineReasons={estimateShowDeclineReasons}
-                    setShowDeclineReasons={setEstimateShowDeclineReasons}
-                    declineMessages={estimateDeclineMessages}
-                    setDeclineMessages={setEstimateDeclineMessages}
-                  />
-                </div>
-              )}
-
-              {/* Content for "Invoices" tab */}
-              {getChatTabs(requestTab).includes(CHAT_TABS[2]) && (
-                <div className={`h-full ${chatTab === CHAT_TABS[2] ? "block" : "hidden"}`}>
-                  <Invoice
-                    invoices={selectedRequestObj?.invoice ? [selectedRequestObj.invoice] : []}
-                    currencySymbol="$"
-                    onGoToPayment={() =>
-                      alert(
-                        `Redirecting to payment for Invoice #${selectedRequestObj?.invoice?.invoiceNumber}`
-                      )
-                    }
-                    openStates={invoiceOpenStates}
-                    setOpenStates={setInvoiceOpenStates}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Bottom Section */}
+          {renderBottomSection()}
         </div>
       </div>
-      {/* Mobile Layout - background is now transparent, allowing parent bg to show */}
+      {/* Mobile Layout */}
       <div className="md:hidden flex flex-col gap-4 w-full h-screen min-h-0 flex-1 lg:mt-0">
         <MobilePortfolioLayout
           requestTab={requestTab}
-          setRequestTab={handleTabChange}
-          selectedRequest={selectedRequest}
-          setSelectedRequest={setSelectedRequest}
-          selectedProject={selectedProject}
-          setSelectedProject={setSelectedProject}
+          onTabChange={handleMobileTabChange}
+          selectedRequest={data.selectedRequest}
+          setSelectedRequest={data.setSelectedRequest}
+          selectedProject={data.selectedProject}
+          setSelectedProject={data.setSelectedProject}
           chatComponent={chatComponentInstance}
           handleSelectProject={handleSelectProject}
           handleSelectRequest={handleSelectRequest}
-          chatTab={chatTab}
-          setChatTab={setChatTab}
+          chatTab={data.chatTab}
+          setChatTab={data.setChatTab}
           getChatTabs={getChatTabs}
-          // Estado compartido para EstimatedValue e Invoice
-          estimateOpenStates={estimateOpenStates}
-          setEstimateOpenStates={setEstimateOpenStates}
-          estimateShowDeclineReasons={estimateShowDeclineReasons}
-          setEstimateShowDeclineReasons={setEstimateShowDeclineReasons}
-          estimateDeclineMessages={estimateDeclineMessages}
-          setEstimateDeclineMessages={setEstimateDeclineMessages}
-          invoiceOpenStates={invoiceOpenStates}
-          setInvoiceOpenStates={setInvoiceOpenStates}
+          estimateOpenStates={data.estimateOpenStates}
+          setEstimateOpenStates={data.setEstimateOpenStates}
+          estimateShowDeclineReasons={data.estimateShowDeclineReasons}
+          setEstimateShowDeclineReasons={data.setEstimateShowDeclineReasons}
+          estimateDeclineMessages={data.estimateDeclineMessages}
+          setDeclineMessages={data.setEstimateDeclineMessages}
+          invoiceOpenStates={data.invoiceOpenStates}
+          setInvoiceOpenStates={data.setInvoiceOpenStates}
+          requests={data.requests}
+          projects={data.projects}
+          loadingRequests={data.loadingRequests}
+          loadingProjects={data.loadingProjects}
+          requestDetail={data.requestDetail}
+          loadingRequestDetail={data.loadingRequestDetail}
+          requestEstimate={data.requestEstimate}
+          loadingRequestEstimate={data.loadingRequestEstimate}
+          requestInvoice={data.requestInvoice}
+          loadingRequestInvoice={data.loadingRequestInvoice}
+          projectDetail={data.projectDetail}
+          loadingProjectDetail={data.loadingProjectDetail}
         />
       </div>
     </div>

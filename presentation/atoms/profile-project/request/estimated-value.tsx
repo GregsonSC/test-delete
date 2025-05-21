@@ -29,6 +29,7 @@ interface EstimatedValueProps {
   setShowDeclineReasons?: (v: boolean[]) => void;
   declineMessages?: string[];
   setDeclineMessages?: (v: string[]) => void;
+  loading?: boolean;
 }
 
 // Helper function to format currency
@@ -45,6 +46,24 @@ const formatCurrency = (value: number, symbol: string = "$") => {
     .replace("USD", symbol); // Replace default code if symbol provided
 };
 
+function SkeletonEstimate() {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 1 }).map((_, index) => (
+        <div
+          key={index}
+          className="rounded-lg border border-gray-200 shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] animate-pulse"
+        >
+          <div className="w-full h-full bg-white rounded-lg p-3 flex justify-between items-center">
+            <div className="h-5 w-1/3 bg-gray-300/40 rounded" />
+            <div className="h-5 w-1/4 bg-gray-300/40 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function EstimatedValue({
   estimates,
   currencySymbol = "$",
@@ -57,7 +76,10 @@ export function EstimatedValue({
   setShowDeclineReasons: setControlledShowDeclineReasons,
   declineMessages: controlledDeclineMessages,
   setDeclineMessages: setControlledDeclineMessages,
+  loading = false,
 }: EstimatedValueProps) {
+  if (loading) return <SkeletonEstimate />;
+
   // Si no se pasan props, usa estado interno
   const [internalOpenStates, internalSetOpenStates] = useState<boolean[]>(
     new Array(estimates.length).fill(false)

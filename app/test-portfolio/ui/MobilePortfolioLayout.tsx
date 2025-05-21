@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { mockProjects, mockRequests } from "../mockData";
 import ProjectList from "./ProjectList";
 import RequestList from "./RequestList";
 import { ProfileProjectDetail } from "../../../presentation/atoms/profile-project/profile-project-detail";
@@ -12,7 +11,7 @@ const REQUEST_TABS = ["Requests", "Projects"];
 
 type Props = {
   requestTab: string;
-  setRequestTab: (tab: string) => void;
+  onTabChange: (tab: string) => void;
   selectedRequest: string | null;
   setSelectedRequest: (id: string | null) => void;
   selectedProject: string | null;
@@ -29,14 +28,27 @@ type Props = {
   estimateShowDeclineReasons: boolean[];
   setEstimateShowDeclineReasons: (v: boolean[]) => void;
   estimateDeclineMessages: string[];
-  setEstimateDeclineMessages: (v: string[]) => void;
+  setDeclineMessages: (v: string[]) => void;
   invoiceOpenStates: boolean[];
   setInvoiceOpenStates: (v: boolean[]) => void;
+  // NUEVOS PROPS PARA DATOS Y LOADING
+  requests: any[];
+  projects: any[];
+  loadingRequests: boolean;
+  loadingProjects: boolean;
+  requestDetail: any;
+  loadingRequestDetail: boolean;
+  requestEstimate: any;
+  loadingRequestEstimate: boolean;
+  requestInvoice: any;
+  loadingRequestInvoice: boolean;
+  projectDetail: any;
+  loadingProjectDetail: boolean;
 };
 
 export default function MobilePortfolioLayout({
   requestTab,
-  setRequestTab,
+  onTabChange,
   selectedRequest,
   selectedProject,
   chatComponent,
@@ -50,50 +62,106 @@ export default function MobilePortfolioLayout({
   estimateShowDeclineReasons,
   setEstimateShowDeclineReasons,
   estimateDeclineMessages,
-  setEstimateDeclineMessages,
+  setDeclineMessages,
   invoiceOpenStates,
   setInvoiceOpenStates,
+  requests,
+  projects,
+  loadingRequests,
+  loadingProjects,
+  requestDetail,
+  loadingRequestDetail,
+  requestEstimate,
+  loadingRequestEstimate,
+  requestInvoice,
+  loadingRequestInvoice,
+  projectDetail: projectDetail,
+  loadingProjectDetail,
 }: Props) {
   const [projectDetailTab, setProjectDetailTab] = useState("Chat");
 
-  // Navegación: si hay seleccionado, mostrar detalle, si no, lista
+  // --- COMPONENTES AUXILIARES INTERNOS ---
+  function TabButtons({
+    tabs,
+    activeTab,
+    onTabChange,
+  }: {
+    tabs: string[];
+    activeTab: string;
+    onTabChange: (tab: string) => void;
+  }) {
+    return (
+      <div className="flex gap-2 mb-2">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
+              activeTab === tab
+                ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
+                : "bg-transparent text-[#99CC33] border-[#99CC33]"
+            }`}
+            onClick={() => onTabChange(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  // --- RENDER PRINCIPAL ---
   if (requestTab === "Projects" && selectedProject) {
-    const project = mockProjects.find((p) => p.id === selectedProject);
-    if (!project) return null;
+    if (loadingProjectDetail) {
+      return (
+        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
+          <TabButtons
+            tabs={["Chat", "Documents"]}
+            activeTab={projectDetailTab}
+            onTabChange={setProjectDetailTab}
+          />
+          <div className="flex-1 min-h-0 h-full">
+            {projectDetailTab === "Chat" &&
+              chatComponent &&
+              React.cloneElement(chatComponent as React.ReactElement<any>, {
+                isLoadingHistory: true,
+              })}
+            {projectDetailTab === "Documents" && (
+              <div className="flex flex-col gap-4 flex-1 min-h-0 h-full overflow-y-auto pr-2">
+                {[...Array(2)].map((_, idx) => (
+                  <ProfileProjectDetail key={idx} description="" documents={[]} loading={true} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+    if (!projectDetail) return null;
     return (
       <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
         <div className="flex flex-col gap-2 h-full min-h-0">
-          <h2 className="font-bold text-xl mb-2">{project.name}</h2>
-          <div className="flex gap-2 mb-2 flex-shrink-0">
-            {["Chat", "Documents"].map((t) => (
-              <button
-                key={t}
-                className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
-                  projectDetailTab === t
-                    ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
-                    : "bg-transparent text-[#99CC33] border-[#99CC33]"
-                }`}
-                onClick={() => setProjectDetailTab(t)}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
+          <h2 className="font-bold text-xl mb-2">{projectDetail.name}</h2>
+          <TabButtons
+            tabs={["Chat", "Documents"]}
+            activeTab={projectDetailTab}
+            onTabChange={setProjectDetailTab}
+          />
           <div className="flex-1 min-h-0 h-full">
             {projectDetailTab === "Chat" ? (
               chatComponent
             ) : (
               <div className="flex flex-col gap-4 flex-1 min-h-0 h-full overflow-y-auto pr-2">
-                {(project.details || []).map((detail: any, idx: number) => (
+                {(projectDetail.details || []).map((detail: any, idx: number) => (
                   <ProfileProjectDetail
                     key={idx}
                     description={detail.description}
                     documents={detail.documents.map((doc: any, j: number) => ({
-                      id: `${project.id}-${idx}-${j}`,
+                      id: `${projectDetail.id}-${idx}-${j}`,
                       name: doc.name,
                       url: `/docs/${doc.name}`,
                     }))}
                     date={detail.date ? new Date(detail.date) : undefined}
+                    loading={false}
                   />
                 ))}
               </div>
@@ -104,38 +172,47 @@ export default function MobilePortfolioLayout({
     );
   }
   if (requestTab === "Requests" && selectedRequest) {
-    const request = mockRequests.find((r) => r.id === selectedRequest);
-    if (!request) return null;
+    if (loadingRequestDetail) {
+      return (
+        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
+          <RequestDetail
+            requestName=""
+            associatedService=""
+            companyPlan=""
+            description=""
+            leadStatus=""
+            loading={true}
+          />
+          <TabButtons tabs={getChatTabs("Requests")} activeTab={chatTab} onTabChange={setChatTab} />
+          <div className="flex-1 min-h-0">
+            {chatTab === "Chat" &&
+              chatComponent &&
+              React.cloneElement(chatComponent as React.ReactElement<any>, {
+                isLoadingHistory: true,
+              })}
+            {chatTab === "Estimated value" && <EstimatedValue estimates={[]} loading={true} />}
+            {chatTab === "Invoices" && <Invoice invoices={[]} loading={true} />}
+          </div>
+        </div>
+      );
+    }
+    if (!requestDetail) return null;
     return (
       <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto">
         <RequestDetail
-          requestName={request.name}
-          associatedService={request.service}
-          companyPlan={request.plan}
-          description={request.description}
-          leadStatus={request.status}
+          requestName={requestDetail.name}
+          associatedService={requestDetail.service}
+          companyPlan={requestDetail.plan}
+          description={requestDetail.description}
+          leadStatus={requestDetail.status}
+          loading={false}
         />
-        {/* Tabs para request: Chat, Estimated value, Invoices */}
-        <div className="flex gap-2 mb-2">
-          {getChatTabs("Requests").map((tab) => (
-            <button
-              key={tab}
-              className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
-                chatTab === tab
-                  ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
-                  : "bg-transparent text-[#99CC33] border-[#99CC33]"
-              }`}
-              onClick={() => setChatTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        <TabButtons tabs={getChatTabs("Requests")} activeTab={chatTab} onTabChange={setChatTab} />
         <div className="flex-1 min-h-0">
           {chatTab === "Chat" && chatComponent}
-          {chatTab === "Estimated value" && request.estimate && (
+          {chatTab === "Estimated value" && (
             <EstimatedValue
-              estimates={[request.estimate]}
+              estimates={requestEstimate ? [requestEstimate] : []}
               currencySymbol="$"
               onAccept={() => alert(`Estimate accepted!`)}
               onDecline={(_, reason) =>
@@ -146,18 +223,20 @@ export default function MobilePortfolioLayout({
               showDeclineReasons={estimateShowDeclineReasons}
               setShowDeclineReasons={setEstimateShowDeclineReasons}
               declineMessages={estimateDeclineMessages}
-              setDeclineMessages={setEstimateDeclineMessages}
+              setDeclineMessages={setDeclineMessages}
+              loading={loadingRequestEstimate}
             />
           )}
-          {chatTab === "Invoices" && request.invoice && (
+          {chatTab === "Invoices" && (
             <Invoice
-              invoices={[request.invoice]}
+              invoices={requestInvoice ? [requestInvoice] : []}
               currencySymbol="$"
               onGoToPayment={() =>
-                alert(`Redirecting to payment for Invoice #${request.invoice.invoiceNumber}`)
+                alert(`Redirecting to payment for Invoice #${requestInvoice?.invoiceNumber}`)
               }
               openStates={invoiceOpenStates}
               setOpenStates={setInvoiceOpenStates}
+              loading={loadingRequestInvoice}
             />
           )}
         </div>
@@ -167,35 +246,21 @@ export default function MobilePortfolioLayout({
   // Lista principal
   return (
     <div className="flex flex-col gap-4 w-full h-full min-h-0 flex-1 overflow-y-auto">
-      <div className="flex gap-2 mb-2">
-        {REQUEST_TABS.map((t) => (
-          <button
-            key={t}
-            className={`px-3 py-1 rounded-full font-bold border-2 transition-colors text-[14px] h-8 ${
-              requestTab === t
-                ? "bg-[#99CC33] text-[#13103A] border-[#99CC33]"
-                : "bg-transparent text-[#99CC33] border-[#99CC33]"
-            }`}
-            onClick={() => {
-              setRequestTab(t);
-            }}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+      <TabButtons tabs={REQUEST_TABS} activeTab={requestTab} onTabChange={onTabChange} />
       <div className="flex-1 min-h-0 overflow-y-auto">
         {requestTab === "Projects" ? (
           <ProjectList
-            projects={mockProjects}
+            projects={projects}
             selectedId={selectedProject}
             onSelect={handleSelectProject}
+            loading={loadingProjects}
           />
         ) : (
           <RequestList
-            requests={mockRequests}
+            requests={requests}
             selectedId={selectedRequest}
             onSelect={handleSelectRequest}
+            loading={loadingRequests}
           />
         )}
       </div>
