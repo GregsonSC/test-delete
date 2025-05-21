@@ -13,9 +13,11 @@ import { Button } from "@/presentation/atoms/button/button";
 import { Planner } from "@/presentation/organisms/planner/planner";
 import { ContactUsViewModel, GetHoursViewModel } from "./contact-usViewmodel";
 import { useUser } from "@/context/UserContext";
-import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
+import AuthViewModel from "@/presentation/pages/auth/AuthViewModel"; // Import AuthViewModel
+
 const formSchema = z.object({
+
   name: z
     .string()
     .min(2, { message: "Type a valid name" })
@@ -38,14 +40,17 @@ const formSchema = z.object({
   timeRange: z.string().nonempty({ message: "Time range is required" }),
 });
 
-// !CH010 [ADD] funcionamiento del endpoint del calendario para citas
+
+
 export function ContactUs() {
+  const { logout: authLogout } = AuthViewModel();
   const { toast } = useToast();
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
   const router = useRouter();
   const { createCalendarEvent } = ContactUsViewModel();
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,14 +66,6 @@ export function ContactUs() {
     },
   });
 
-  useEffect(() => {
-    const storedData = sessionStorage.getItem("contactData");
-    if (storedData) {
-      console.log("Información guardada en sessionStorage:", JSON.parse(storedData));
-    } else {
-      console.log("No hay información en sessionStorage");
-    }
-  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (isLoggedIn && !values.timeRange) {
@@ -186,7 +183,21 @@ export function ContactUs() {
                   </div>
                 </CardContent>
                 <CardFooter className="pb-3 pl-3">
-                  <Button className="rounded-full text-xs bg-[#0A1248] text-white hover:bg-[#04081e]">
+                  <Button
+                    className="rounded-full text-xs bg-[#0A1248] text-white hover:bg-[#04081e]"
+                    onClick={async () => {
+                      try {
+                        await authLogout();
+                        router.push('/login');
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "No se pudo cerrar la sesión correctamente",
+                          variant: "destructive"
+                        });
+                      }
+                    }}
+                  >
                     Log in with another profile
                   </Button>
                 </CardFooter>
