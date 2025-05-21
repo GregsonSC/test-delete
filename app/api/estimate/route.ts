@@ -32,8 +32,8 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
  *               - invoiceReference
  *             properties:
  *               estimatedTime:
- *                 type: integer
- *                 example: 30
+ *                 type: string
+ *                 example: "30"
  *               description:
  *                 type: string
  *                 example: Initial software development estimate
@@ -82,9 +82,27 @@ const validState = ["CREATED", "PROCESSING", "INREVIEW", "REJECTED", "ACCEPTED",
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { estimatedTime, description, state, lead_id, plan_id, totalValue, deadLineToPay, invoiceDateCreated,invoiceReference } = data;
+    const {
+      estimatedTime,
+      description,
+      state,
+      lead_id,
+      plan_id,
+      totalValue,
+      deadLineToPay,
+      invoiceDateCreated,
+      invoiceReference,
+    } = data;
 
-    if (!estimatedTime || !description || !state || !totalValue || !lead_id || !plan_id|| ! deadLineToPay|| ! invoiceDateCreated|| !invoiceReference) {
+    if (
+      !estimatedTime ||
+      !description ||
+      !state ||
+      !totalValue /*|| !lead_id || !plan_id*/ ||
+      !deadLineToPay ||
+      !invoiceDateCreated ||
+      !invoiceReference
+    ) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -93,14 +111,18 @@ export async function POST(request: Request) {
       });
     }
     // Validate that the Lead exists
-    const lead = await db.lead.findUnique({ where: { id: lead_id } });
-    if (!lead) {
-      return createResponse({ success: false, message: "Lead not found.", status: 400 });
+    if (lead_id) {
+      const lead = await db.lead.findUnique({ where: { id: lead_id } });
+      if (!lead) {
+        return createResponse({ success: false, message: "Lead not found.", status: 400 });
+      }
     }
     // Validate that the Plan exists
-    const plan = await db.plan.findUnique({ where: { id: plan_id } });
-    if (!plan) {
-      return createResponse({ success: false, message: "Plan not found.", status: 400 });
+    if (plan_id) {
+      const plan = await db.plan.findUnique({ where: { id: plan_id } });
+      if (!plan) {
+        return createResponse({ success: false, message: "Plan not found.", status: 400 });
+      }
     }
 
     if (!validState.includes(state)) {
@@ -325,7 +347,7 @@ export async function PATCH(request: Request) {
         return createResponse({ success: false, message: "Lead not found.", status: 400 });
       }
     }
-    
+
     // Validate that the Plan exists
     if (data.plan_id) {
       const plan = await db.plan.findUnique({ where: { id: data.plan_id } });

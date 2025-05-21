@@ -4,6 +4,7 @@ import { Logo } from "@/presentation/atoms/logo/logo";
 import { Button } from "@/presentation/atoms/button/button";
 import { EmailForm } from "@/presentation/molecules/email-form/email-form";
 import { inter600 } from "@/styles/font";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -143,9 +144,9 @@ export function Footer() {
           </p>
           <div className="flex space-x-2">
             {/* ! CH007 [ADD] Agregar los reconocimientos de Senavia */}
-            <div className="bg-[#99CC33] w-20 h-12"></div>
-            <div className="bg-[#99CC33] w-20 h-12"></div>
-            <div className="bg-[#99CC33] w-20 h-12"></div>
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
           </div>
         </div>
       </div>

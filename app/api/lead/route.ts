@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/prisma";
 import { authMiddleware } from "@/middleware/SecureJWT-middleware";
-
+import { createResponse, handleError } from "@/app/api/utils/handlers";
+const validState = ["SEND", "PROCESSING", "ESTIMATING", "FINISHED"];
 /**
  * @swagger
  * tags:
@@ -20,6 +21,12 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - state
+ *               - description
+ *               - startDate
+ *               - endDate
+ *               - clientAddress
  *             properties:
  *               clientName:
  *                 type: string
@@ -37,17 +44,18 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                 type: string
  *                 description: Address of the client.
  *                 example: 123 Main St, Springfield
- *               name:
- *                 type: string
- *                 description: Name of the lead.
- *                 example: Lead Name
  *               description:
  *                 type: string
  *                 description: Detailed description of the lead.
  *                 example: This lead is interested in our premium services.
  *               state:
  *                 type: string
- *                 description: State of the lead (required), SEND, PROCESSING, ESTIMATING OR FINISHED.
+ *                 description: |
+ *                   State of the lead. Must be one of:
+ *                   - SEND
+ *                   - PROCESSING
+ *                   - ESTIMATING
+ *                   - FINISHED
  *                 example: SEND
  *               startDate:
  *                 type: string
@@ -71,6 +79,7 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                 type: integer
  *                 description: ID of the associated work team.
  *                 example: 5
+ *
  *     responses:
  *       201:
  *         description: Lead created successfully.
@@ -83,10 +92,8 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     description: The created lead object.
+ *                   type: object
+ *                   description: The created lead object.
  *                 message:
  *                   type: string
  *                   example: Lead created successfully
@@ -96,54 +103,23 @@ import { authMiddleware } from "@/middleware/SecureJWT-middleware";
  *                     type: string
  *       400:
  *         description: Bad request, missing or invalid fields.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                 message:
- *                   type: string
- *                   example: Lead state is required in capital
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
  *       401:
  *         description: Unauthorized. Missing or invalid JWT token.
  *       500:
  *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                 message:
- *                   type: string
- *                   example: Error creating lead
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: string
  */
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.state) {
+    if (
+      !data.state ||
+      !data.description ||
+      !data.startDate ||
+      !data.endDate ||
+      !data.clientAddress
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -153,6 +129,36 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
+    }
+    if (data.userId) {
+      // Validate that the User exists
+      const user = await db.user.findUnique({ where: { id: data.userId } });
+      if (!user) {
+        return createResponse({ success: false, message: "User not found.", status: 400 });
+      }
+    }
+    if (data.serviceId) {
+      // Validate that the Service exists
+      const service = await db.service.findUnique({ where: { id: data.serviceId } });
+      if (!service) {
+        return createResponse({ success: false, message: "Service not found.", status: 400 });
+      }
+    }
+    if (data.workTeamId) {
+      // Validate that the WorkTeam exists
+      const workTeam = await db.workTeam.findUnique({ where: { id: data.workTeamId } });
+      if (!workTeam) {
+        return createResponse({ success: false, message: "WorkTeam not found.", status: 400 });
+      }
+    }
+
+    if (!validState.includes(data.state)) {
+      return createResponse({
+        success: false,
+        message: "Invalid State.",
+        errors: [`State must be one of: ${validState.join(", ")}`],
+        status: 400,
+      });
     }
 
     const newLead = await db.lead.create({
@@ -234,9 +240,6 @@ export async function POST(request: NextRequest) {
  *                       clientAddress:
  *                         type: string
  *                         example: "456 Elm Street, Springfield"
- *                       name:
- *                         type: string
- *                         example: "Lead Name"
  *                       description:
  *                         type: string
  *                         example: "Description of the lead"
@@ -363,7 +366,6 @@ export async function GET(request: NextRequest) {
           clientName: true,
           clientEmail: true,
           clientPhone: true,
-          name: true,
           description: true,
           state: true,
           startDate: true,
@@ -477,10 +479,6 @@ export async function GET(request: NextRequest) {
  *                 type: string
  *                 description: Updated address of the client.
  *                 example: "456 Elm Street, Springfield"
- *               name:
- *                 type: string
- *                 description: Updated name of the lead.
- *                 example: Updated Lead Name
  *               description:
  *                 type: string
  *                 description: Updated description of the lead.
@@ -628,7 +626,37 @@ export async function PATCH(request: Request) {
         { status: 400 }
       );
     }
-
+    if (data.userId) {
+      // Validate that the User exists
+      const user = await db.user.findUnique({ where: { id: data.userId } });
+      if (!user) {
+        return createResponse({ success: false, message: "User not found.", status: 400 });
+      }
+    }
+    if (data.serviceId) {
+      // Validate that the Service exists
+      const service = await db.service.findUnique({ where: { id: data.serviceId } });
+      if (!service) {
+        return createResponse({ success: false, message: "Service not found.", status: 400 });
+      }
+    }
+    if (data.workTeamId) {
+      // Validate that the WorkTeam exists
+      const workTeam = await db.workTeam.findUnique({ where: { id: data.workTeamId } });
+      if (!workTeam) {
+        return createResponse({ success: false, message: "WorkTeam not found.", status: 400 });
+      }
+    }
+    if (data.state) {
+      if (!validState.includes(data.state)) {
+        return createResponse({
+          success: false,
+          message: "Invalid State.",
+          errors: [`State must be one of: ${validState.join(", ")}`],
+          status: 400,
+        });
+      }
+    }
     const lead = await db.lead.findUnique({ where: { id } });
 
     if (!lead) {
