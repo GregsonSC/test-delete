@@ -6,8 +6,6 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/presentation/atoms/button/button";
 import { cn } from "@/lib/utils";
 import {
-  Menu,
-  X,
   ChevronDown,
   Instagram,
   Facebook,
@@ -20,15 +18,6 @@ import {
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { NavCard } from "@/presentation/atoms/nav-card/nav-card";
 import { NavAreaCard } from "@/presentation/atoms/nav-card/nav-area-card";
-import Image from "next/image";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
 import { useUser } from "@/context/UserContext";
 import AuthViewModel from "@/presentation/pages/auth/AuthViewModel"; // Import AuthViewModel
 import { navItems } from "./navItems";
@@ -118,12 +107,17 @@ const DesktopAuthButtons = ({
   isLoggedIn,
   user,
   handleLogout,
+  drawerOpen,
+  setDrawerOpen,
+  onOpenDrawer,
 }: {
   isLoggedIn: boolean;
   user: any;
   handleLogout: () => void;
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
+  onOpenDrawer: () => void;
 }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   if (!isLoggedIn) {
     return (
       <>
@@ -145,8 +139,8 @@ const DesktopAuthButtons = ({
   return (
     <>
       <div
-        className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent h-8 min-h-0 group"
-        onClick={() => setDrawerOpen(true)}
+        className="hidden sm:flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent h-8 min-h-0 group"
+        onClick={onOpenDrawer}
       >
         <div className="w-9 h-9 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
         <span className="text-white font-semibold text-[14px]">{user?.name || "User"}</span>
@@ -450,6 +444,7 @@ export function Navbar({ className }: NavbarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
   const [areaDropdowns, setAreaDropdowns] = useState<Record<string, boolean>>({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser();
   const { logout: authLogout } = AuthViewModel();
@@ -503,6 +498,14 @@ export function Navbar({ className }: NavbarProps) {
     }
   };
 
+  // Nueva función para abrir el drawer y cerrar los dropdowns
+  const handleOpenDrawer = () => {
+    setActiveDropdown(null);
+    setMobileDropdowns({});
+    setAreaDropdowns({});
+    setDrawerOpen(true);
+  };
+
   return (
     <>
       <header
@@ -524,7 +527,14 @@ export function Navbar({ className }: NavbarProps) {
             />
 
             <div className="flex items-center gap-[20px] lg:gap-3">
-              <DesktopAuthButtons isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
+              <DesktopAuthButtons
+                isLoggedIn={isLoggedIn}
+                user={user}
+                handleLogout={handleLogout}
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+                onOpenDrawer={handleOpenDrawer}
+              />
               {/* Botón hamburguesa animado clásico */}
               <HamburgerButton isOpen={isMenuOpen} onClick={() => setIsMenuOpen((open) => !open)} />
             </div>

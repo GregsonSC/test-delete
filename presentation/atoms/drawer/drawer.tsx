@@ -35,9 +35,9 @@ export function ProfileDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose} direction="right">
-      <DrawerContent className="h-full w-[320px] right-0 left-auto fixed rounded-none bg-white">
+      <DrawerContent className="h-full w-[320px] right-0 left-auto fixed rounded-none bg-white z-[100] border-none shadow-none">
         <div className="flex flex-col items-center justify-between h-full py-8">
-          <DrawerHeader className="flex flex-col items-center relative">
+          <DrawerHeader className="flex flex-col items-center relative border-none shadow-none before:hidden after:hidden">
             <div className="w-40 h-40 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] mb-4"></div>
             <DrawerClose asChild>
               <Button
