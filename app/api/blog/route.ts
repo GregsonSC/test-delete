@@ -100,19 +100,29 @@ export async function POST(request: Request) {
     const topic = formData.get("topic")?.toString();
     const publicationDate = formData.get("publicationDate")?.toString();
     const SubTitle = formData.get("SubTitle")?.toString();
-    const ImageSubTitle = formData.get("ImageSubTitle")?.toString();
-    const ImageReference = formData.get("ImageReference")?.toString();
+
+    const ImageSubTitle = formData.get("ImageSubTitle")?.toString().trim() || "";
+    const ImageReference = formData.get("ImageReference")?.toString().trim() || "";
 
     const ContentImageUrlForm = formData.get("ContentImageUrl");
     const imageUrlForm = formData.get("imageUrl");
+
+    let ContentImageUrl: string | undefined = "";
 
     const userId = formData.get("userId")
       ? parseInt(formData.get("userId")!.toString(), 10)
       : undefined;
 
+    if (userId) {
+      // Validate that the User exists
+      const user = await db.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return createResponse({ success: false, message: "User not found.", status: 400 });
+      }
+    }
+
     const rawContent = formData.get("content")?.toString();
 
-    // ✅ Validar y parsear el JSON content
     let content:
       | {
           content1: string;
@@ -151,7 +161,9 @@ export async function POST(request: Request) {
     }
 
     const imageUrl = await createImage(imageUrlForm);
-    const ContentImageUrl = await createImage(ContentImageUrlForm);
+    if (ContentImageUrlForm) {
+      ContentImageUrl = await createImage(ContentImageUrlForm);
+    }
 
     if (
       !title ||
@@ -161,9 +173,7 @@ export async function POST(request: Request) {
       !publicationDate ||
       !imageUrl ||
       !SubTitle ||
-      !ImageSubTitle ||
-      !ContentImageUrl ||
-      !ImageReference
+      !userId
     ) {
       return createResponse({
         success: false,

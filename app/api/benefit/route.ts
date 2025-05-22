@@ -37,19 +37,25 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *         description: Server error.
  */
 
-
 export async function POST(request: Request) {
   try {
     const data = await request.json();
     const { title, description, serviceAreaId } = data;
 
-    if (!title || !description ||! serviceAreaId) {
+    if (!title || !description || !serviceAreaId) {
       return createResponse({
         success: false,
         message: "All fields are required.",
         errors: ["Missing one or more required fields."],
         status: 400,
       });
+    }
+    if (serviceAreaId) {
+      // Validate that the serviceArea exists
+      const serviceArea = await db.serviceArea.findUnique({ where: { id: serviceAreaId } });
+      if (!serviceArea) {
+        return createResponse({ success: false, message: "serviceArea not found.", status: 400 });
+      }
     }
 
     const newBenefit = await db.benefit.create({ data });

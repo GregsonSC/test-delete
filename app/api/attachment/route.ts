@@ -13,8 +13,8 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *       - Attachment
  *     summary: Create a new attachment
  *     description: >
- *       Creates a new attachment associated with an activity, ticket, product, and project update.  
- *       The `type` must be one of: "IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS".  
+ *       Creates a new attachment associated with an activity, ticket, product, and project update.
+ *       The `type` must be one of: "IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS".
  *       A valid file must be provided in the `url` field.
  *     requestBody:
  *       required: true
@@ -61,7 +61,6 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *         description: Server error.
  */
 
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -95,12 +94,11 @@ export async function POST(request: Request) {
     }
     const url = await createImage(urlForm);
 
-    if (!name || !description || !type || !url || !activityId || !ticketId||!productId||!projectupdate_id
-    ) {
+    if (!name || !type || !url) {
       return createResponse({
         success: false,
-        message: "All fields are required.",
-        errors: ["Missing one or more required fields."],
+        message: "All required fields must be provided.",
+        errors: ["The fields 'name', 'type', and 'url' are required and cannot be empty."],
         status: 400,
       });
     }
@@ -113,6 +111,34 @@ export async function POST(request: Request) {
       });
     }
 
+    if (activityId) {
+      // Validate that the Activity exists
+      const activity = await db.activity.findUnique({ where: { id: activityId } });
+      if (!activity) {
+        return createResponse({ success: false, message: "Activity not found.", status: 400 });
+      }
+    }
+    if (activityId) {
+      // Validate that the Ticket exists
+      const ticket = await db.ticket.findUnique({ where: { id: ticketId } });
+      if (!ticket) {
+        return createResponse({ success: false, message: "Ticket not found.", status: 400 });
+      }
+    }
+    if (productId) {
+      // Validate that the Product exists
+      const product = await db.product.findUnique({ where: { id: productId } });
+      if (!product) {
+        return createResponse({ success: false, message: "Product not found.", status: 400 });
+      }
+    }
+    if (projectupdate_id) {
+      // Validate that the ProjectUpdate exists
+      const projectUpdate = await db.projectUpdate.findUnique({ where: { id: projectupdate_id } });
+      if (!projectUpdate) {
+        return createResponse({ success: false, message: "ProjectUpdate not found.", status: 400 });
+      }
+    }
     const newAttachment = await db.attachment.create({
       data: {
         name,
@@ -122,7 +148,7 @@ export async function POST(request: Request) {
         activityId,
         ticketId,
         productId,
-        projectupdate_id
+        projectupdate_id,
       },
     });
 
@@ -217,8 +243,8 @@ export async function GET(req: Request) {
  *       - Attachment
  *     summary: Update an existing attachment
  *     description: >
- *       Updates fields of an existing attachment.  
- *       The `type` must be one of: "IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS".  
+ *       Updates fields of an existing attachment.
+ *       The `type` must be one of: "IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS".
  *       At least one field must be provided. The file in `url` is optional and replaces the existing file if provided.
  *     parameters:
  *       - in: query

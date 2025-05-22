@@ -36,14 +36,7 @@ export async function POST(request: Request) {
     const data = await request.json();
     const { name } = data;
 
-    if (!name) {
-      return createResponse({
-        success: false,
-        message: "All fields are required.",
-        errors: ["Missing one or more required fields."],
-        status: 400,
-      });
-    }
+   
 
     const newTag = await db.tag.create({ data });
     return createResponse({

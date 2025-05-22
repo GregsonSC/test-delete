@@ -61,11 +61,11 @@ export async function POST(request: Request) {
     const data = await request.json();
     const { name, description, action, active, serviceAssociated } = data;
 
-    if (!name || !description || !action || active === undefined || !serviceAssociated) {
+    if (!name  || !action || active === undefined || !serviceAssociated) {
       return createResponse({
         success: false,
-        message: "Missing required fields.",
-        errors: ["All fields are required."],
+        message: "All required fields must be provided.",
+        errors: ["The fields 'name', 'action', 'active', and 'serviceAssociated' are required and cannot be empty."],
         status: 400,
       });
     }

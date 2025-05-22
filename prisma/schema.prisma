@@ -41,56 +41,59 @@ model User {
 model Permission {
   id                Int               @id @default(autoincrement())
   name              String
-  description       String
+  description       String?
   action            Action
   active            Boolean
   serviceAssociated ServiceAssociated
+
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+  
   RolePermission    RolePermission[]
   UserPermission    UserPermission[]
 }
 
 model Project {
-  id               Int          @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   name             String
   description      String
   expectedDuration String
   startDate        String
-  endDate          String
-  estimate_id      Int?
-  estimate         Estimate?    @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
-  currentPhase     CurrentPhase
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  imagePreviewUrl  String
-  Phase            Phase[]
+  endDate          String?
+  imagePreviewUrl  String?
+
+  estimate_id Int?
+  estimate    Estimate? @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Phase     Phase[]
 }
 
 model Estimate {
-  id            Int           @id @default(autoincrement())
-  estimatedTime String
-  description   String
-  state         EstimateState
-  lead_id       Int?
-  lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
-  plan_id       Int?
-  plan          Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
-  totalValue    Decimal
-  Project       Project[]
-  costs         Cost[]
-  comments      Comment[]
+  id                 Int           @id @default(autoincrement())
+  estimatedTime      String?
+  description        String?
+  state              EstimateState
+  lead_id            Int
+  lead               Lead          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  plan_id            Int?
+  plan               Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+  totalValue         Decimal?
+  deadLineToPay      String?
+  invoiceDateCreated String?
+  invoiceReference   String?
 
-  deadLineToPay      String
-  invoiceDateCreated String
-  invoiceReference   String
+  Project  Project[]
+  costs    Cost[]
+  comments Comment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Blog {
-  id              Int      @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   title           String
   resume          String
   content         Json
@@ -98,17 +101,18 @@ model Blog {
   publicationDate String
   imageUrl        String
   SubTitle        String
-  ImageSubTitle   String
-  ContentImageUrl String
-  ImageReference  String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  User            User?    @relation(fields: [userId], references: [id])
-  userId          Int?
+  ImageSubTitle   String?
+  ContentImageUrl String?
+  ImageReference  String?
+  userId          Int
+  User            User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ServiceArea {
-  id               Int       @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   name             String
   description      String
   active           Boolean
@@ -116,20 +120,23 @@ model ServiceArea {
   heroImageUrl     String
   benefitsImageUrl String
   testimonialEmbed String
-  MainTitle        String
-  SubTitle         String
-  service_id       Int?
-  service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  Benefit          Benefit[]
+  mainTitle        String
+  subTitle         String
+
+  service_id Int
+  service    Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Benefit   Benefit[]
 }
 
 model Service {
-  id          Int           @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
-  description String
+  description String?
   active      Boolean
+
   ServiceArea ServiceArea[]
   plans       Plan[]
   leads       Lead[]
@@ -206,20 +213,19 @@ model RolePermission {
 model Lead {
   id Int @id @default(autoincrement())
 
-  clientName  String?
-  clientEmail String?
-  clientPhone String?
-
+  clientName    String?
+  clientEmail   String?
+  clientPhone   String?
   clientAddress String?
-  description   String
   state         LeadState
   startDate     String
-  endDate       String
+  endDate       String?
+  description   String
 
   userId     Int?
   user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serviceId  Int?
-  service    Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId  Int
+  service    Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   workTeamId Int?
   WorkTeam   WorkTeam? @relation(fields: [workTeamId], references: [id])
 
@@ -263,19 +269,21 @@ model Product {
 
 model Phase {
   id               Int             @id @default(autoincrement())
+
   name             PhaseName
-  description      String
+  description      String?
   expectedDuration String
   startDate        String
-  endDate          String
-  project_id       Int?
-  project          Project?        @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  endDate          String?
   state            PhaseState
+  project_id       Int
+  project          Project         @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  
   Comment          Comment[]
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
   Activity         Activity[]
   ProjectUpdate    ProjectUpdate[]
+  updatedAt        DateTime        @updatedAt
+  createdAt        DateTime        @default(now())
 }
 
 enum PhaseName {
@@ -293,17 +301,17 @@ enum PhaseState {
 }
 
 model Activity {
-  id               Int    @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   name             String
-  description      String
-  expectedDuration String
+  description      String?
+  expectedDuration String?
   startDate        String
-  endDate          String
+  endDate          String?
+  state            StateActivity
+  priority         Priority?
 
-  phase_id Int?
-  phase    Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
-  state    StateActivity
-  priority Priority
+  phase_id Int
+  phase    Phase @relation(fields: [phase_id], references: [id], onDelete: Cascade)
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -438,11 +446,12 @@ enum TicketStatus {
 }
 
 model Attachment {
-  id               Int            @id @default(autoincrement())
-  name             String
-  description      String
-  type             TypeAttachment
-  url              String
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String?
+  type        TypeAttachment
+  url         String
+
   activityId       Int?
   activity         Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
   ticketId         Int?
@@ -460,8 +469,8 @@ model Benefit {
   id            Int          @id @default(autoincrement())
   title         String
   description   String
-  serviceAreaId Int?
-  serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
+  serviceAreaId Int
+  serviceArea   ServiceArea @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -477,14 +486,16 @@ enum TypeAttachment {
 
 model WorkTeam {
   id           Int            @id @default(autoincrement())
+  
   name         String
-  description  String
+  description  String?
   state        StateWorkTeam
   area         AreaWorkTeam
+  
   leads        Lead[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
   UserWorkTeam UserWorkTeam[]
+  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime       @default(now())
 }
 
 enum StateWorkTeam {
@@ -515,10 +526,11 @@ model UserWorkTeam {
 }
 
 model StudyCase {
-  id        Int      @id @default(autoincrement())
-  title     String
-  resume    String
-  videoUrl  String
+  id       Int    @id @default(autoincrement())
+  title    String
+  resume   String
+  videoUrl String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -529,8 +541,8 @@ model ProjectUpdate {
   content String
   date    String
 
-  phaseId Int?
-  phase   Phase? @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  phaseId Int
+  phase   Phase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -538,8 +550,8 @@ model ProjectUpdate {
 }
 
 model Tag {
-  id   Int    @id @default(autoincrement())
-  name String
+  id   Int     @id @default(autoincrement())
+  name String?
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt

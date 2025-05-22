@@ -42,11 +42,11 @@ export async function POST(request: Request) {
     const data = await request.json();
     const { name, description, active } = data;
 
-    if (!name || !description || !active) {
+    if (!name || !active) {
       return createResponse({
         success: false,
-        message: "All fields are required.",
-        errors: ["Missing one or more required fields."],
+        message: "All required fields must be provided.",
+        errors: ["The fields 'name' and 'active' are required and cannot be empty."],
         status: 400,
       });
     }

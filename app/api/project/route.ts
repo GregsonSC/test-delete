@@ -4,10 +4,8 @@ import db from "@/lib/prisma";
 import { CurrentPhase } from "@prisma/client";
 import { createImage } from "../cloudinary/upload/route";
 
-
 import { authMiddleware } from "@/middleware/SecureJWT-middleware";
 import { NextRequest } from "next/server";
-
 
 const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
 /**
@@ -78,55 +76,62 @@ export async function POST(request: Request) {
     const description = formData.get("description")?.toString();
     const expectedDuration = formData.get("expectedDuration")?.toString();
     const startDate = formData.get("startDate")?.toString();
-    const endDate = formData.get("endDate")?.toString();
-    const currentPhase = formData.get("currentPhase")?.toString();
-    const estimate_id = formData.get("estimate_id") ? parseInt(formData.get("estimate_id")!.toString(), 10) : undefined;
+    const endDate = formData.get("endDate")?.toString().trim() || "";
 
+    const estimate_id = formData.get("estimate_id")
+      ? parseInt(formData.get("estimate_id")!.toString(), 10)
+      : undefined;
     const imagePreviewFile = formData.get("imagePreviewUrl");
-    const imagePreviewUrl = imagePreviewFile instanceof File ? await createImage(imagePreviewFile) : undefined;
- 
+
+    let imagePreviewUrl: string | undefined = "";
+
+    if (imagePreviewFile) {
+      if (!(imagePreviewFile instanceof File)) {
+        return createResponse({
+          success: false,
+          message: "The image must be valid file.",
+          errors: ["Must be uploaded as file."],
+          status: 400,
+        });
+      }
+      imagePreviewUrl = await createImage(imagePreviewFile);
+    }
+
     // Validate that the Estimate exists
-    const estimate = await db.estimate.findUnique({ where: { id: estimate_id } });
-    if (!estimate) {
-      return createResponse({ success: false, message: "Estimate not found.", status: 400 });
+    if (estimate_id) {
+      const estimate = await db.estimate.findUnique({ where: { id: estimate_id } });
+      if (!estimate) {
+        return createResponse({ success: false, message: "Estimate not found.", status: 400 });
+      }
     }
 
-
-    if (
-      !name ||
-      !description ||
-      !expectedDuration ||
-      !startDate ||
-      !endDate ||
-      !currentPhase ||
-      !imagePreviewUrl
-      || !estimate_id
-    ) {
+    if (!name || !description || !expectedDuration || !startDate) {
       return createResponse({
         success: false,
-        message: "Missing required fields.",
-        errors: ["All fields are required."],
-        status: 400,
-      });
-    }
-
-    if (!validCurrentPhase.includes(currentPhase)) {
-      return createResponse({
-        success: false,
-        message: "Invalid current phase.",
-        errors: [`Current phase must be one of: ${validCurrentPhase.join(", ")}`],
+        message: "All required fields must be provided.",
+        errors: ["The fields 'name', 'description', 'expectedDuration', and 'startDate' are required and cannot be empty."],
         status: 400,
       });
     }
 
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+    if (!dateRegex.test(startDate)) {
       return createResponse({
         success: false,
         message: "Invalid date format.",
-        errors: ["Use YYYY-MM-DD format for startDate and endDate."],
+        errors: ["Use YYYY-MM-DD format for startDate."],
         status: 400,
       });
+    }
+    if (endDate) {
+      if (!dateRegex.test(endDate)) {
+        return createResponse({
+          success: false,
+          message: "Invalid date format.",
+          errors: ["Use YYYY-MM-DD format for endDate."],
+          status: 400,
+        });
+      }
     }
 
     const newProject = await db.project.create({
@@ -136,7 +141,6 @@ export async function POST(request: Request) {
         expectedDuration,
         startDate,
         endDate,
-        currentPhase: currentPhase as CurrentPhase,
         imagePreviewUrl,
         estimate_id,
       },
@@ -240,9 +244,9 @@ export async function GET(req: NextRequest) {
  *     summary: Update an existing project
  *     description: >
  *       Actualiza un proyecto existente según su ID. Al menos un campo debe ser enviado.
- *       
+ *
  *       - Los campos `startDate` y `endDate` deben tener formato `YYYY-MM-DD`.
- *       - El campo `currentPhase` debe tener uno de los siguientes valores permitidos: 
+ *       - El campo `currentPhase` debe tener uno de los siguientes valores permitidos:
  *         ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY.
  *     parameters:
  *       - name: id
@@ -323,14 +327,13 @@ export async function PATCH(request: Request) {
     const estimate_id = formData.get("estimate_id")
       ? parseInt(formData.get("estimate_id")!.toString(), 10)
       : undefined;
-    
-   // Validate that the Estimate exists
+
+    // Validate that the Estimate exists
     if (estimate_id) {
       const estimate = await db.estimate.findUnique({ where: { id: estimate_id } });
       if (!estimate) {
         return createResponse({ success: false, message: "Estimate not found.", status: 400 });
       }
-
     }
     if (
       !name &&
@@ -350,7 +353,6 @@ export async function PATCH(request: Request) {
       });
     }
 
-
     const project = await db.project.findUnique({ where: { id } });
     if (!project) {
       return createResponse({
@@ -361,9 +363,7 @@ export async function PATCH(request: Request) {
       });
     }
 
-
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
 
     if ((startDate && !dateRegex.test(startDate)) || (endDate && !dateRegex.test(endDate))) {
       return createResponse({
