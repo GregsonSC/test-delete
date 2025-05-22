@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
     const imageUrlForm = form.get("imageUrl");
-    const serviceId = form.get("serviceId")?.toString(); 
+    const serviceId = form.get("serviceId")?.toString();
 
     if (!(imageUrlForm instanceof File)) {
       return createResponse({
@@ -105,7 +105,6 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
 
 /**
  * @swagger
@@ -178,15 +177,30 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
+    const serviceId = searchParams.get("serviceId");
 
     const offset = Number(searchParams.get("offset")) || 0;
     const productsPerPage = 2;
 
-    // Get All
+    // Obtener todos o filtrado por Service
     if (!requestId) {
+      const whereClause = serviceId ? { serviceId: Number(serviceId) } : undefined;
+
+      if (serviceId && isNaN(Number(serviceId))) {
+        return NextResponse.json(
+          {
+            success: false,
+            data: [],
+            message: "The serviceId must be a valid number",
+            errors: ["Invalid serviceId"],
+          },
+          { status: 400 }
+        );
+      }
+
       const [products, totalProducts] = await Promise.all([
-        //Promise products
         db.product.findMany({
+          where: whereClause,
           skip: offset,
           take: productsPerPage,
           include: {
@@ -197,9 +211,9 @@ export async function GET(request: Request) {
             },
           },
         }),
-
-        //Promise totalProducts
-        db.product.count(),
+        db.product.count({
+          where: whereClause,
+        }),
       ]);
 
       return NextResponse.json({
@@ -215,7 +229,7 @@ export async function GET(request: Request) {
       });
     }
 
-    // Get By ID
+    // Obtener por ID
     const id = Number(requestId);
     if (isNaN(id)) {
       return NextResponse.json(
@@ -269,6 +283,7 @@ export async function GET(request: Request) {
     );
   }
 }
+
 /**
  * @swagger
  * /api/product:
@@ -276,7 +291,7 @@ export async function GET(request: Request) {
  *     tags:
  *       - Product
  *     summary: Update a product
- *     description: Updates a product by ID. Accepts name, description, siteUrl, and a new image file. At least one field must be provided.
+ *     description: Updates a product by ID. Accepts name, description, siteUrl, serviceId, and a new image file. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
@@ -303,6 +318,9 @@ export async function GET(request: Request) {
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               serviceId:  # Added serviceId property
+ *                 type: integer
+ *                 example: 1  # Example serviceId
  *     responses:
  *       200:
  *         description: Product updated successfully.
@@ -313,7 +331,6 @@ export async function GET(request: Request) {
  *       500:
  *         description: Server error while updating product.
  */
-
 
 export async function PATCH(request: Request) {
   try {
@@ -337,11 +354,12 @@ export async function PATCH(request: Request) {
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
+    const serviceId = form.get("serviceId")?.toString();
 
     const imageUrlForm = form.get("imageUrl");
     const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
-    if (!name && !description && !imageUrl && !siteUrl) {
+    if (!name && !description && !imageUrl && !siteUrl && !serviceId) {
       return NextResponse.json(
         {
           success: false,
@@ -464,11 +482,9 @@ export async function DELETE(request: Request) {
   }
 }
 
-
-
 //que raro ,la unica que no te funciona es esa o mas ?
 //creo que lead pero por lo mismo
-//pera lo pruebo en mi 
+//pera lo pruebo en mi
 //listo,no hubo necesidad de resetiar entonces por ejemplo si necesitas volver a modificarlo pues pruebas primero el generate y ya luego el migrate dev --name tal cosa y ya
 //Ya quedo fino
 //vale gracias,dale
