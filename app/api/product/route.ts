@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
     const imageUrlForm = form.get("imageUrl");
-    const serviceId = form.get("serviceId")?.toString(); // Obtener el serviceId
+    const serviceId = form.get("serviceId")?.toString(); 
 
     if (!(imageUrlForm instanceof File)) {
       return createResponse({
