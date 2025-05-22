@@ -10,7 +10,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *     tags:
  *       - Product
  *     summary: Create a new product
- *     description: Creates a new product by uploading an image and providing name, description and siteUrl.
+ *     description: Creates a new product by uploading an image and providing name, description, siteUrl, and serviceId.
  *     requestBody:
  *       required: true
  *       content:
@@ -22,6 +22,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - description
  *               - siteUrl
  *               - imageUrl
+ *               - serviceId  # Added serviceId as a required field
  *             properties:
  *               name:
  *                 type: string
@@ -35,6 +36,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               serviceId:  # Added serviceId property
+ *                 type: integer
+ *                 example: 1  # Example serviceId
  *     responses:
  *       201:
  *         description: Product created successfully.
@@ -51,18 +55,19 @@ export async function POST(request: NextRequest) {
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
     const imageUrlForm = form.get("imageUrl");
+    const serviceId = form.get("serviceId")?.toString(); // Obtener el serviceId
 
     if (!(imageUrlForm instanceof File)) {
       return createResponse({
         success: false,
-        message: "The image must be valid file.",
-        errors: ["Must be uploaded as file."],
+        message: "The image must be a valid file.",
+        errors: ["Must be uploaded as a file."],
         status: 400,
       });
     }
     const imageUrl = await createImage(imageUrlForm);
 
-    if (!name || !description || !imageUrl || !siteUrl) {
+    if (!name || !description || !imageUrl || !siteUrl || !serviceId) {
       return NextResponse.json(
         {
           success: false,
@@ -75,7 +80,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newProduct = await db.product.create({
-      data: { name, description, imageUrl, siteUrl },
+      data: { name, description, imageUrl, siteUrl, serviceId: parseInt(serviceId) }, // Asegúrate de convertir serviceId a número
     });
 
     return NextResponse.json(
@@ -100,6 +105,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 
 /**
  * @swagger

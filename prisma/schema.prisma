@@ -15,15 +15,15 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  phone    String
-  imageUrl String?
-  address  String
-  role   Role @relation(fields: [roleId], references: [id],onDelete: Cascade) //Relacion con rol
-  roleId Int 
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String?
+  address      String
+  role         Role             @relation(fields: [roleId], references: [id], onDelete: Cascade) //Relacion con rol
+  roleId       Int
   leads        Lead[] // Relación Uno a Muchos con Lead
   permissions  UserPermission[]
   Comment      Comment[]
@@ -66,23 +66,23 @@ model Project {
 }
 
 model Estimate {
-  id            Int           @id @default(autoincrement())
-  estimatedTime String
-  description   String
-  state         EstimateState
-  lead_id       Int?
-  lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
-  plan_id       Int?
-  plan          Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
-  totalValue    Decimal
-  Project       Project[]
-  costs         Cost[]
-  comments      Comment[]
+  id                 Int           @id @default(autoincrement())
+  estimatedTime      String
+  description        String
+  state              EstimateState
+  lead_id            Int?
+  lead               Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  plan_id            Int?
+  plan               Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+  totalValue         Decimal
+  Project            Project[]
+  costs              Cost[]
+  comments           Comment[]
   deadLineToPay      String
   invoiceDateCreated String
   invoiceReference   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 }
 
 model Blog {
@@ -129,6 +129,7 @@ model Service {
   ServiceArea ServiceArea[]
   plans       Plan[]
   leads       Lead[]
+  products    Product[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -250,10 +251,11 @@ model Product {
   description String
   imageUrl    String
   siteUrl     String
-
-  Attachment Attachment[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  Attachment  Attachment[]
+  serviceId   Int
+  service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   ProductTag ProductTag[]
 }
@@ -352,18 +354,18 @@ enum CostType {
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   content    String
   sendDate   String
   sendTime   String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
   estimateId Int?
   estimate   Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
   phaseId    Int?
   phase      Phase?    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Plan {
@@ -584,7 +586,7 @@ model Contract {
   userId            Int
   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   leadId            Int?
-  lead              Lead?             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead              Lead?            @relation(fields: [leadId], references: [id], onDelete: Cascade)
   clauses           ContractClause[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
