@@ -95,6 +95,14 @@ export async function POST(request: Request) {
         });
       }
       imagePreviewUrl = await createImage(imagePreviewFile);
+      if (!imagePreviewUrl) {
+        return createResponse({
+          success: false,
+          message: "The image was not uploaded to cloudinary",
+          errors: ["Error cloudinary."],
+          status: 400,
+        });
+      }
     }
 
     // Validate that the Estimate exists
@@ -142,8 +150,9 @@ export async function POST(request: Request) {
         startDate,
         endDate,
         imagePreviewUrl,
-        estimate_id,
-      },
+        ...(estimate_id !== undefined && { estimate_id })
+      }
+
     });
 
     return createResponse({
