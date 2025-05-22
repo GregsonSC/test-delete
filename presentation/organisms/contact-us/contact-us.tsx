@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText } from "lucide-react";
+import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText, Loader2, MapPinned  } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -29,6 +29,10 @@ const formSchema = z.object({
   email: z
     .string()
     .email({ message: "Please enter a valid email address." }),
+  address: z
+    .string()
+    .min(1, { message: "Enter a valid address" })
+    .max(100, { message: "Enter a valid address" }),
   service: z
     .string()
     .nonempty({ message: "Please select a service." }),
@@ -48,8 +52,10 @@ export function ContactUs() {
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser(); // <-- Use context
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { createCalendarEvent } = ContactUsViewModel();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,6 +64,7 @@ export function ContactUs() {
       name: "",
       phone: "",
       email: "",
+      address: "",
       service: "",
       about: "",
       timezone: "",
@@ -68,90 +75,133 @@ export function ContactUs() {
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isLoggedIn && !values.timeRange) {
-      toast({
-        title: "Time Range Required",
-        description: "Please select a time range to schedule your event.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Obtener timeStart y timeFinish formateados correctamente
-    const { timeStart, timeFinish } = GetHoursViewModel(values.date.toISOString(), values.timeRange);
-
-    // Guardar toda la información en sessionStorage
-    const contactData = {
-      name: values.name,
-      phone: values.phone,
-      email: values.email,
-      service: values.service,
-      about: values.about,
-      timezone: values.timezone,
-      date: values.date.toISOString(),
-      timeRange: values.timeRange,
-      timeStart: timeStart,
-      timeFinish: timeFinish,
-    };
-
-    sessionStorage.setItem("contactData", JSON.stringify(contactData));
-
-    if (isLoggedIn) {
-      try {
-        // Crear el objeto con el formato esperado por la API
-        const eventData = {
-          name: user?.name || '',
-          email: user?.email || '',
-          timeStart: timeStart,
-          timeFinish: timeFinish,
-          isLoggedIn: isLoggedIn
-        };
-
-        // Enviar al API utilizando el ViewModel
-        const result = await createCalendarEvent(eventData);
-
-        if (result.success) {
-          // Continuar con la navegación solo si el envío fue exitoso
-          router.push("/post-schedule");
-          form.reset();
-        }
-      } catch (error) {
-        console.error("Error al enviar datos al API:", error);
-        // Navegar de todos modos ya que los datos se guardaron en sessionStorage
-        router.push("/post-schedule");
-        form.reset();
+    setIsSubmitting(true);
+    try {
+      if (isLoggedIn && !values.timeRange) {
+        toast({
+          title: "Time Range Required",
+          description: "Please select a time range to schedule your event.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
       }
-    }
-    else {
-      try {
-        // Crear el objeto con el formato esperado por la API
-        const eventData = {
-          name: values.name,
-          phone: values.phone,
-          email: values.email,
-          service: values.service,
-          about: values.about,
-          timeStart: timeStart,
-          timeFinish: timeFinish,
-          isLoggedIn: isLoggedIn
-        };
 
-        // Enviar al API utilizando el ViewModel
-        const result = await createCalendarEvent(eventData);
+      // Obtener timeStart y timeFinish formateados correctamente
+      const { timeStart, timeFinish } = GetHoursViewModel(values.date.toISOString(), values.timeRange);
 
-        if (result.success) {
-          // Continuar con la navegación solo si el envío fue exitoso
-          router.push("/post-schedule");
-          form.reset();
+      // Guardar toda la información en sessionStorage
+      const contactData = {
+        name: values.name,
+        phone: values.phone,
+        email: values.email,
+        service: values.service,
+        about: values.about,
+        timezone: values.timezone,
+        date: values.date.toISOString(),
+        timeRange: values.timeRange,
+        timeStart: timeStart,
+        timeFinish: timeFinish,
+      };
+
+      sessionStorage.setItem("contactData", JSON.stringify(contactData));
+
+      if (isLoggedIn) {
+        try {
+          // Crear el objeto con el formato esperado por la API
+          const eventData = {
+            name: user?.name || '',
+            email: user?.email || '',
+            service: values.service,
+            about: values.about,
+            timeStart: timeStart,
+            timeFinish: timeFinish,
+            isLoggedIn: isLoggedIn
+          };
+
+          // Enviar al API utilizando el ViewModel
+          const [eventResult] = await Promise.all([
+            createCalendarEvent(eventData),
+            /* WORK IN PROGRESS - LEAD IMPLEMENTATION
+            createLead({
+              clientName: user?.name || '',
+              clientEmail: user?.email || '',
+              clientPhone: '',
+              clientAddress: '',
+              description: values.about,
+              startDate: timeStart,
+              endDate: timeFinish,
+              state: "SEND",
+              userId: "1",
+              serviceId: "2",
+              workTeamId: "5"
+            })
+            */
+          ]);
+
+          if (eventResult.success) {
+            router.push("/post-schedule");
+            form.reset();
+          }
+        } catch (error) {
+          console.error("Error al enviar datos al API:", error);
+          toast({
+            title: "Error",
+            description: "Hubo un problema al procesar tu solicitud. Por favor, intenta nuevamente.",
+            variant: "destructive"
+          });
         }
-      } catch (error) {
-        console.error("Error al enviar datos al API:", error);
-        // Navegar de todos modos ya que los datos se guardaron en sessionStorage
-        router.push("/post-schedule");
-        form.reset();
-      }
-    }
+      } else {
+        try {
+          // Crear el objeto con el formato esperado por la API
+          const eventData = {
+            name: values.name,
+            phone: values.phone,
+            email: values.email,
+            address: values.address,
+            service: values.service,
+            about: values.about,
+            timeStart: timeStart,
+            timeFinish: timeFinish,
+            isLoggedIn: isLoggedIn
+          };
 
+          // Enviar al API utilizando el ViewModel
+          const [eventResult] = await Promise.all([
+            createCalendarEvent(eventData),
+            /* WORK IN PROGRESS - LEAD IMPLEMENTATION
+            createLead({
+              clientName: values.name,
+              clientEmail: values.email,
+              clientPhone: values.phone,
+              clientAddress: values.address,
+              description: values.about,
+              startDate: timeStart,
+              endDate: timeFinish,
+              state: "SEND",
+              userId: "1",
+              serviceId: "2",
+              workTeamId: "5"
+            })
+            */
+          ]);
+
+          if (eventResult.success) {
+            router.push("/post-schedule");
+            form.reset();
+          }
+        } catch (error) {
+          console.error("Error al enviar datos al API:", error);
+          toast({
+            title: "Error",
+            description: "Hubo un problema al procesar tu solicitud. Por favor, intenta nuevamente.",
+            variant: "destructive"
+          });
+        }
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -184,9 +234,10 @@ export function ContactUs() {
                 </CardContent>
                 <CardFooter className="pb-3 pl-3">
                   <Button
-                    className="rounded-full text-xs bg-[#0A1248] text-white hover:bg-[#04081e]"
+                    className="rounded-full text-xs bg-[#0A1248] text-white hover:bg-[#04081e] disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={async () => {
                       try {
+                        setIsLoggingOut(true);
                         await authLogout();
                         router.push('/login');
                       } catch (error) {
@@ -195,10 +246,20 @@ export function ContactUs() {
                           description: "No se pudo cerrar la sesión correctamente",
                           variant: "destructive"
                         });
+                      } finally {
+                        setIsLoggingOut(false);
                       }
                     }}
+                    disabled={isLoggingOut}
                   >
-                    Log in with another profile
+                    {isLoggingOut ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging out...
+                      </>
+                    ) : (
+                      'Log in with another profile'
+                    )}
                   </Button>
                 </CardFooter>
               </Card>
@@ -223,7 +284,7 @@ export function ContactUs() {
                             />
                             <CircleUser
                               color="#0A1248"
-                              className="absolute top-4 md:top-[30px] left-2 opacity-60"
+                              className="absolute top-3 md:top-[30px] left-2 "
                             />
                           </div>
                         </FormControl>
@@ -244,7 +305,7 @@ export function ContactUs() {
                               type="tel"
                             />
                             <Phone
-                              color="#636A9C"
+                              color="#0A1248"
                               className="absolute top-2  left-2"
                             />
                           </div>
@@ -266,7 +327,29 @@ export function ContactUs() {
                               type="email"
                             />
                             <Mail
-                              color="#636A9C"
+                              color="#0A1248"
+                              className="absolute top-3 md:top-2 left-2"
+                            />
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    name="address"
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                        <div className="relative w-[320px]">
+                            <input
+                              {...field}
+                              placeholder="address"
+                              className="md:text-sm text-lg   text-[#636A9C] bg-[#EBEDF2] rounded-sm placeholder-[#636A9C] py-2 px-4 pl-10 w-full mb-2"
+                              type="address"
+                            />
+                            <MapPinned
+                              color="#0A1248"
                               className="absolute top-2 left-2"
                             />
                           </div>
@@ -303,28 +386,27 @@ export function ContactUs() {
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
-                            <ConciergeBell color="#636A9C" className="absolute inset-y-3 md:inset-y-2 left-2" />
+                            <ConciergeBell color="#0A1248" className="absolute inset-y-3 md:inset-y-2 left-2" />
                           </div>
                         </FormControl>
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     name="about"
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <div className="w-full h-36 bg-[#EBEDF2] px-0 pt-2 rounded-sm">
+                        <div className="w-full h-36 bg-[#EBEDF2] px-0 pt-2 mt-2 rounded-sm">
                           <Label htmlFor="about" className="px-2 mb-1 mt-0 flex text-center font-normal items-center text-[#636A9C] text-xl md:text-sm ">
-                            <MessageSquareText className="mr-2" color="#636A9C" />
+                            <MessageSquareText className="mr-2" color="#0A1248" />
                             Tell us about your project
                           </Label>
                           <FormControl>
                             <textarea
                               {...field}
                               id="about"
-                              className="w-[96%] m-auto flex rounded-sm bg-white text-[#636A9C] py-2 px-8 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto"
+                              className="w-[96%] m-auto flex rounded-sm bg-white text-[#0A1248] py-2 px-8 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto"
                               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                               placeholder="Describe your project..."
                             />
@@ -347,7 +429,7 @@ export function ContactUs() {
                 </form>
               </Form>
             )}
-            <div className="">
+            <div className="mt-5">
               <Planner
                 onDateSelected={(date: Date) => {
                   setSelectedDate(date);
@@ -365,7 +447,8 @@ export function ContactUs() {
             <Button
               type="submit"
               form="contact-form"
-              className="rounded-full bg-secondary text-white mt-5 text-base px-6 py-5 font-normal hover:bg-[#04081e]"
+              className="rounded-full bg-secondary text-white mt-5 text-base px-6 py-5 font-normal hover:bg-[#04081e] disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
               onClick={() => {
                 if (isLoggedIn) {
                   // Si está logueado, usar los datos del usuario
@@ -379,7 +462,14 @@ export function ContactUs() {
                 }
               }}
             >
-              Schedule event
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Schedule event'
+              )}
             </Button>
           </div>
         </div>
@@ -387,4 +477,3 @@ export function ContactUs() {
     </Card>
   );
 }
-

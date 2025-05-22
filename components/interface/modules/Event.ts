@@ -2,8 +2,9 @@ export interface Event {
     name: string;
     phone?: string;
     email: string;
-    service?: string;
-    about?: string;
+    address?: string;
+    service: string;
+    about: string;
     timeStart: string;
     timeFinish: string;
     isLoggedIn?: boolean;

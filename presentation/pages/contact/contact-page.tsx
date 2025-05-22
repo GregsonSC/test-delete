@@ -6,6 +6,7 @@ import { PhoneCall, Mail } from "lucide-react";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
 import { reviewItems } from "@/lib/constants2";
+import Image from "next/image";
 
 export function ContactPage() {
 
@@ -27,10 +28,10 @@ export function ContactPage() {
             </div>
           </div>
           <h1 className="text-3xl font-semibold text-[#0A1248] mb-8 mt-14 ml-11 mr-11">Our Partnerships</h1>
-          <div className="flex space-x-1 ml-11 mr-11">
-            <div className="bg-[#99CC33] w-20 h-12"></div>
-            <div className="bg-[#99CC33] w-20 h-12"></div>
-            <div className="bg-[#99CC33] w-20 h-12"></div>
+          <div className="flex space-x-1 ml-11 mr-16">
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
+            <Image src="fotos-prueba/certificate_generic-thumb.webp" width={80} height={48} alt="Certificate" />
           </div>
         </div>
 

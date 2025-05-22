@@ -2,16 +2,57 @@ import { useEffect, useState } from "react";
 import { useFetch, endpoints } from "@/lib/services/endpoints";
 import { ApiResponse, Event } from "@/components/interface/modules/Event";
 import { toast } from "sonner";
+import {Lead, ApiResponse as LeadApiResponse} from "@/components/interface/modules/Lead";
+
+
 
 export const ContactUsViewModel = () => {
     const { fetchData } = useFetch();
     const [submissionStatus, setSubmissionStatus] = useState<string>("");
+
+    const createLead = async (leadData: Lead) => {
+        const payload: Lead = {
+            clientName: leadData.clientName,
+            clientEmail: leadData.clientEmail,
+            clientPhone: leadData.clientPhone,
+            clientAddress: leadData.clientAddress,
+            description: leadData.description,
+            state: "SEND",
+            startDate: leadData.startDate,
+            endDate: leadData.endDate,
+            userId: "1",
+            serviceId: "2",
+            workTeamId: "5"
+        };
+
+        const { response, status, errorLogs } = await fetchData<LeadApiResponse<Lead>>(
+            endpoints.lead.createLead,
+            "post",
+            payload
+        );
+
+        if (status === 200 || status === 201) {
+            if (response) {
+                toast.success("Lead created successfully");
+                return { success: true, message: "Lead created successfully" };
+            } else {
+                console.error("No data returned:", errorLogs);
+                toast.error("Error creating lead");
+                return { success: false, message: "Error creating lead" };
+            }
+        } else {
+            console.error("HTTP error:", status, errorLogs);
+            toast.error(`Error ${status}: Could not create lead`);
+            return { success: false, message: `Error ${status}: Could not create lead` };
+        }
+    };
 
     const createCalendarEvent = async (event: Event) => {
         const payload = {
             name: event.name,
             phone: event.phone,
             email: event.email,
+            address: event.address,
             service: event.service,
             about: event.about,
             timeStart: event.timeStart,
@@ -49,7 +90,7 @@ export const ContactUsViewModel = () => {
         }
     };
 
-    return { submissionStatus, createCalendarEvent };
+    return { submissionStatus, createCalendarEvent, createLead };
 };
 
 export const GetHoursViewModel = (date: string, timeRange: string) => {
