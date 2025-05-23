@@ -30,6 +30,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         id: decoded.id || "",
         email: decoded.email || "",
         name: decoded.name || "",
+        phone: decoded.phone || "",
+        address: decoded.address || "",
         // Add other fields as needed
       };
       console.log("Initial User:", initialUser);

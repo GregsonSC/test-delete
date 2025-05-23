@@ -20,9 +20,9 @@ export const ContactUsViewModel = () => {
             state: "SEND",
             startDate: leadData.startDate,
             endDate: leadData.endDate,
-            userId: "1",
-            serviceId: "2",
-            workTeamId: "5"
+            userId: 1,
+            serviceId: 2,
+            workTeamId: 5
         };
 
         const { response, status, errorLogs } = await fetchData<LeadApiResponse<Lead>>(

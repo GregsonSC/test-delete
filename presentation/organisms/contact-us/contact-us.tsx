@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText, Loader2, MapPinned  } from "lucide-react";
+import { CircleUser, Phone, Mail, ConciergeBell, MessageSquareText, Loader2, MapPinned, User } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -54,8 +54,9 @@ export function ContactUs() {
   const [hourSelection, setHourSelection] = useState<{ timezone: string; hour: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { createCalendarEvent } = ContactUsViewModel();
+  const { createCalendarEvent, createLead } = ContactUsViewModel();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -112,6 +113,8 @@ export function ContactUs() {
           const eventData = {
             name: user?.name || '',
             email: user?.email || '',
+            phone: user?.phone || '',
+            address: user?.address || '',
             service: values.service,
             about: values.about,
             timeStart: timeStart,
@@ -122,21 +125,21 @@ export function ContactUs() {
           // Enviar al API utilizando el ViewModel
           const [eventResult] = await Promise.all([
             createCalendarEvent(eventData),
-            /* WORK IN PROGRESS - LEAD IMPLEMENTATION
+
             createLead({
               clientName: user?.name || '',
               clientEmail: user?.email || '',
-              clientPhone: '',
-              clientAddress: '',
+              clientPhone: user?.phone || '35577744414',
+              clientAddress: user?.address || 'Rr. ekspresit, Tirana',
               description: values.about,
               startDate: timeStart,
               endDate: timeFinish,
               state: "SEND",
-              userId: "1",
-              serviceId: "2",
-              workTeamId: "5"
+              userId: 1,
+              serviceId: 2,
+              workTeamId: 5
             })
-            */
+
           ]);
 
           if (eventResult.success) {
@@ -169,7 +172,6 @@ export function ContactUs() {
           // Enviar al API utilizando el ViewModel
           const [eventResult] = await Promise.all([
             createCalendarEvent(eventData),
-            /* WORK IN PROGRESS - LEAD IMPLEMENTATION
             createLead({
               clientName: values.name,
               clientEmail: values.email,
@@ -179,11 +181,11 @@ export function ContactUs() {
               startDate: timeStart,
               endDate: timeFinish,
               state: "SEND",
-              userId: "1",
-              serviceId: "2",
-              workTeamId: "5"
+              userId: 1,
+              serviceId: 2,
+              workTeamId: 5
             })
-            */
+
           ]);
 
           if (eventResult.success) {
@@ -219,50 +221,118 @@ export function ContactUs() {
           {/* Bloque del formulario o del perfil */}
           <div className="md:ml-12 justify-center md:flex-row md:flex md:gap-2 align-center">
             {isLoggedIn ? (
-              <Card className="bg-white border border-[#E4E4E7] mb-3 md:pt-11 md:w-96 md:h-[306px]">
-                <CardHeader>
-                  <CardTitle className="text-[#0A1248] font-normal text-base">
-                    My profile
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-row">
-                  <div className="w-16 h-16 mr-3 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]"></div>
-                  <div className="flex flex-col text-left justify-center">
-                    <span className="font-normal text-[#060B20]">{user?.name}</span>
-                    <span className="text-sm text-gray-500">{user?.email}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="pb-3 pl-3">
-                  <Button
-                    className="rounded-full text-xs bg-[#0A1248] text-white hover:bg-[#04081e] disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={async () => {
-                      try {
-                        setIsLoggingOut(true);
-                        await authLogout();
-                        router.push('/login');
-                      } catch (error) {
-                        toast({
-                          title: "Error",
-                          description: "No se pudo cerrar la sesión correctamente",
-                          variant: "destructive"
-                        });
-                      } finally {
-                        setIsLoggingOut(false);
-                      }
-                    }}
-                    disabled={isLoggingOut}
+              <div>
+                <Card className="bg-white border border-[#E4E4E7] mb-3 md:pt-11 md:w-96 md:h-[306px] md:mt-5">
+                  <CardHeader>
+                    <CardTitle className="text-[#0A1248] font-normal text-base">
+                      My profile
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-row">
+                    <div className="w-16 h-16 mr-3 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]"></div>
+                    <div className="flex flex-col text-left justify-center">
+                      <span className="font-normal text-[#060B20]">{user?.name}</span>
+                      <span className="text-sm text-gray-500">{user?.email}</span>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pb-3 pl-3">
+                    <Button
+                      className="rounded-full text-xs bg-[#0A1248] text-white hover:bg-[#04081e] disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={async () => {
+                        try {
+                          setIsLoggingOut(true);
+                          await authLogout();
+                          router.push('/login');
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "No se pudo cerrar la sesión correctamente",
+                            variant: "destructive"
+                          });
+                        } finally {
+                          setIsLoggingOut(false);
+                        }
+                      }}
+                      disabled={isLoggingOut}
+                    >
+                      {isLoggingOut ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Logging out...
+                        </>
+                      ) : (
+                        'Log in with another profile'
+                      )}
+                    </Button>
+                  </CardFooter>
+                </Card>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    id="contact-form"
+                    className="md:justify-center md:items-center mr-4"
                   >
-                    {isLoggingOut ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Logging out...
-                      </>
-                    ) : (
-                      'Log in with another profile'
-                    )}
-                  </Button>
-                </CardFooter>
-              </Card>
+                    <FormField
+                      name="service"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="relative md:w-96">
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                value={field.value}
+                              >
+                                <SelectTrigger className="text-[#636A9C] bg-[#EBEDF2] border-0 mb-5 rounded-sm placeholder-[#636A9C] py-6 pl-10 md:py-0 text-lg md:text-sm md:pl-10 md:mb-1">
+                                  <SelectValue placeholder="Select a service" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectItem value="Web Design">
+                                      Web Design
+                                    </SelectItem>
+                                    <SelectItem value="Digital Marketing">
+                                      Digital Marketing
+                                    </SelectItem>
+                                    <SelectItem value="Graphic Design">
+                                      Graphic Design
+                                    </SelectItem>
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                              <ConciergeBell color="#0A1248" className="absolute inset-y-3 md:inset-y-2 left-2" />
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="about"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="w-full h-36 bg-[#EBEDF2] px-0 pt-2 mt-2 rounded-sm">
+                            <Label htmlFor="about" className="px-2 mb-1 mt-0 flex text-center font-normal items-center text-[#636A9C] text-xl md:text-sm ">
+                              <MessageSquareText className="mr-2" color="#0A1248" />
+                              Tell us about your project
+                            </Label>
+                            <FormControl>
+                              <textarea
+                                {...field}
+                                id="about"
+                                className="w-[96%] m-auto flex rounded-sm bg-white text-[#0A1248] py-2 px-8 text-lg md:text-sm placeholder-[#636A9C] md:h-[100px] h-24 resize-none overflow-auto"
+                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                placeholder="Describe your project..."
+                              />
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </form>
+                </Form>
+              </div>
             ) : (
               <Form {...form}>
                 <form
@@ -341,7 +411,7 @@ export function ContactUs() {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                        <div className="relative w-[320px]">
+                          <div className="relative w-[320px]">
                             <input
                               {...field}
                               placeholder="address"
@@ -455,8 +525,13 @@ export function ContactUs() {
                   const userData = {
                     name: user?.name || '',
                     email: user?.email || '',
+                    phone: user?.phone || '',
+                    address: user?.address || '',
+                    service: form.getValues('service'),
+                    about: form.getValues('about'),
                     date: form.getValues('date'),
-                    timeRange: form.getValues('timeRange')
+                    timeRange: form.getValues('timeRange'),
+                    timezone: form.getValues('timezone')
                   };
                   onSubmit(userData as any);
                 }

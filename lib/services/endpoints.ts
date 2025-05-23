@@ -60,7 +60,7 @@ export const endpoints = {
   },
 
   contact_us:{
-    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook-test/4e962737-09f2-461d-9f4b-5264f424ea39`,
+    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook/4e962737-09f2-461d-9f4b-5264f424ea39`,
 
   },
   lead:{

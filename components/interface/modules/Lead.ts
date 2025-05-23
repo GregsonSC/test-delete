@@ -7,9 +7,9 @@ export interface Lead {
     state: "SEND"
     startDate: string;
     endDate: string;
-    userId: "1",
-    serviceId: "2",
-    workTeamId: "5"
+    userId: number,
+    serviceId: number,
+    workTeamId: number
 }
 export interface ApiResponse<T> {
     success: boolean;
