@@ -1,7 +1,6 @@
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 import db from "@/lib/prisma";
 
-import { CurrentPhase } from "@prisma/client";
 import { createImage } from "../cloudinary/upload/route";
 
 import { authMiddleware } from "@/middleware/SecureJWT-middleware";
@@ -18,7 +17,7 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *     tags:
  *       - Project
  *     summary: Create a new project
- *     description: Create a new project with name, description, duration, dates, current phase, image preview, and related estimate ID.
+ *     description: Create a new project with name, description, duration, dates, and optional image preview or related estimate ID.
  *     requestBody:
  *       required: true
  *       content:
@@ -30,33 +29,33 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *               - description
  *               - expectedDuration
  *               - startDate
- *               - endDate
- *               - currentPhase
- *               - imagePreviewUrl
- *               - estimate_id
  *             properties:
  *               name:
  *                 type: string
+ *                 description: Project name
  *               description:
  *                 type: string
+ *                 description: Project description
  *               expectedDuration:
  *                 type: integer
+ *                 description: Estimated duration in days
  *               startDate:
  *                 type: string
  *                 format: date
  *                 example: 2025-04-01
+ *                 description: Project start date
  *               endDate:
  *                 type: string
  *                 format: date
  *                 example: 2025-04-30
- *               currentPhase:
- *                 type: string
- *                 enum: [ANALYSIS, DESIGN, DEVELOPMENT, DEPLOY]
+ *                 description: Optional project end date
  *               imagePreviewUrl:
  *                 type: string
  *                 format: binary
+ *                 description: Optional image file to upload as project preview
  *               estimate_id:
  *                 type: integer
+ *                 description: Optional ID of the related estimate
  *     responses:
  *       201:
  *         description: Project created successfully.
@@ -67,6 +66,7 @@ const validCurrentPhase = ["ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY"];
  *       500:
  *         description: Server error.
  */
+
 
 export async function POST(request: Request) {
   try {
@@ -400,7 +400,6 @@ export async function PATCH(request: Request) {
         ...(expectedDuration && { expectedDuration }),
         ...(startDate && { startDate }),
         ...(endDate && { endDate }),
-        ...(currentPhase && { currentPhase: currentPhase as CurrentPhase }),
         ...(imagePreviewUrl && { imagePreviewUrl }),
         ...(estimate_id && { estimate_id }),
       },

@@ -27,10 +27,6 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *               - description
  *               - type
  *               - url
- *               - activityId
- *               - ticketId
- *               - productId
- *               - projectupdate_id
  *             properties:
  *               name:
  *                 type: string
@@ -46,12 +42,16 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *                 description: File to upload
  *               activityId:
  *                 type: integer
+ *                 description: Optional activity ID
  *               ticketId:
  *                 type: integer
+ *                 description: Optional ticket ID
  *               productId:
  *                 type: integer
+ *                 description: Optional product ID
  *               projectupdate_id:
  *                 type: integer
+ *                 description: Optional project update ID
  *     responses:
  *       201:
  *         description: Attachment created successfully.
@@ -60,6 +60,7 @@ const validType = ["IMAGE", "DOCUMENT", "URL", "VIDEO", "OTHERS"];
  *       500:
  *         description: Server error.
  */
+
 
 export async function POST(request: Request) {
   try {

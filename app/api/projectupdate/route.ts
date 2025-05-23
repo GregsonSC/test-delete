@@ -32,10 +32,6 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *                 type: string
  *                 format: date
  *                 description: Date in YYYY-MM-DD format.
- *               projectId:
- *                 type: integer
- *                 nullable: true
- *                 description: Associated project ID.
  *               phaseId:
  *                 type: integer
  *                 nullable: true
@@ -67,10 +63,6 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *                       type: string
  *                       format: date
  *                       example: 2025-04-30
- *                     projectId:
- *                       type: integer
- *                       nullable: true
- *                       example: null
  *                     phaseId:
  *                       type: integer
  *                       nullable: true
@@ -121,9 +113,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { title, content, date, phase_id } = data;
+    const { title, content, date, phaseId } = data;
 
-    if (!title || !content || !date || !phase_id) {
+    if (!title || !content || !date || !phaseId) {
       return createResponse({
         success: false,
         message: "All fields are required.",
@@ -131,9 +123,9 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-    if (phase_id) {
+    if (phaseId) {
       // Validate that the Phase exists
-      const phase = await db.phase.findUnique({ where: { id: phase_id } });
+      const phase = await db.phase.findUnique({ where: { id: phaseId } });
       if (!phase) {
         return createResponse({ success: false, message: "Phase not found.", status: 400 });
       }
@@ -200,9 +192,6 @@ export async function POST(request: Request) {
  *                           date:
  *                             type: string
  *                             format: date
- *                           projectId:
- *                             type: integer
- *                             nullable: true
  *                           phaseId:
  *                             type: integer
  *                             nullable: true
@@ -212,7 +201,6 @@ export async function POST(request: Request) {
  *                         title: Finalización de la f de desarrollo
  *                         content: Se completó el desarrollo de todas las funcionalidades clave. El equipo iniciará prueba
  *                         date: 2025-04-30
- *                         projectId: null
  *                         phaseId: null
  *                 message:
  *                   type: string
@@ -345,9 +333,6 @@ export async function GET(req: Request) {
  *               date:
  *                 type: string
  *                 format: date
- *               projectId:
- *                 type: integer
- *                 nullable: true
  *               phaseId:
  *                 type: integer
  *                 nullable: true
@@ -369,7 +354,6 @@ export async function GET(req: Request) {
  *                     title: Finalización de la f de desarrollo
  *                     content: Se completó el desarrollo de todas las funcionalidades clave. El equipo iniciará prueba
  *                     date: 2025-04-30
- *                     projectId: null
  *                     phaseId: null
  *                 message:
  *                   type: string

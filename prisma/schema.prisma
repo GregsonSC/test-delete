@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,26 +9,24 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  phone    String
-  imageUrl String?
-  address  String
-
-  role   Role @relation(fields: [roleId], references: [id]) //Relacion con rol
-  roleId Int //Dato para hacer la relacion
-
-  leads        Lead[] // Relación Uno a Muchos con Lead
-  permissions  UserPermission[]
-  Comment      Comment[]
-  tickets      UserTicket[]
-  blogs        Blog[]
-  contracts    Contract[]
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String?
   createdAt    DateTime         @default(now())
+  roleId       Int
   updatedAt    DateTime         @updatedAt
+  address      String
+  blogs        Blog[]
+  Comment      Comment[]
+  contracts    Contract[]
+  leads        Lead[]
+  role         Role             @relation(fields: [roleId], references: [id], onDelete: Cascade)
   UserActivity UserActivity[]
+  permissions  UserPermission[]
+  tickets      UserTicket[]
   UserWorkTeam UserWorkTeam[]
 }
 
@@ -46,11 +38,11 @@ model Permission {
   active            Boolean
   serviceAssociated ServiceAssociated
 
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  
-  RolePermission    RolePermission[]
-  UserPermission    UserPermission[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  RolePermission RolePermission[]
+  UserPermission UserPermission[]
 }
 
 model Project {
@@ -142,72 +134,27 @@ model Service {
   leads       Lead[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-}
-
-enum County {
-  MIAMI_DATE
-  BROWARD
-  WEST_PALM_BEACH
-}
-
-enum Topic {
-  WEBDESIGN
-  DIGITALMARKETING
-}
-
-enum Action {
-  GET
-  CREATE
-  UPDATE
-  DELETE
-}
-
-enum ServiceAssociated {
-  NORMALUSERS
-  ADMINUSERS
-  LEADS
-  ESTIMATES
-  PROJECTS
-  BLOGS
-  PRODUCTS
-  SERVICEAREAS
-}
-
-enum CurrentPhase {
-  ANALYSIS
-  DESIGN
-  DEVELOPMENT
-  DEPLOY
-}
-
-enum EstimateState {
-  CREATED
-  PROCESSING
-  INREVIEW
-  REJECTED
-  ACCEPTED
-  INVOICE
-  PAID
+  Product     Product[]
 }
 
 model Role {
   id          Int              @id @default(autoincrement())
   name        String
-  description String
-  user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
-  permissions RolePermission[]
+  description String?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  active      Boolean
+  permissions RolePermission[]
+  user        User[]
 }
 
 model RolePermission {
   roleId       Int
   permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId]) // Clave primaria compuesta
+  @@id([roleId, permissionId])
 }
 
 model Lead {
@@ -235,21 +182,13 @@ model Lead {
   contracts Contract[]
 }
 
-enum LeadState {
-  SEND
-  PROCESSING
-  ESTIMATING
-  FINISHED
-}
-
 model UserPermission {
   userId       Int
   permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
 
-  user       User       @relation(fields: [userId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
-
-  @@id([userId, permissionId]) // Clave primaria compuesta
+  @@id([userId, permissionId])
 }
 
 model Product {
@@ -259,16 +198,18 @@ model Product {
   description String
   imageUrl    String
   siteUrl     String
+  
+  serviceId   Int
+  service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  Attachment Attachment[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-
+  Attachment  Attachment[]
   ProductTag ProductTag[]
 }
 
 model Phase {
-  id               Int             @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   name             PhaseName
   description      String?
@@ -277,27 +218,13 @@ model Phase {
   endDate          String?
   state            PhaseState
   project_id       Int
-  project          Project         @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  
-  Comment          Comment[]
-  Activity         Activity[]
-  ProjectUpdate    ProjectUpdate[]
-  updatedAt        DateTime        @updatedAt
-  createdAt        DateTime        @default(now())
-}
+  project          Project    @relation(fields: [project_id], references: [id], onDelete: Cascade)
 
-enum PhaseName {
-  ANALYSIS
-  DESIGN
-  DEVELOPMENT
-  DEPLOY
-}
-
-enum PhaseState {
-  PLANNING
-  INPROCESS
-  TESTING
-  FINISHED
+  Comment       Comment[]
+  Activity      Activity[]
+  ProjectUpdate ProjectUpdate[]
+  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime        @default(now())
 }
 
 model Activity {
@@ -319,26 +246,11 @@ model Activity {
   Attachment   Attachment[]
 }
 
-enum Priority {
-  LOW
-  NORMAL
-  HIGH
-  URGENT
-}
-
-enum StateActivity {
-  PENDING
-  ASSIGNED
-  INPROCESS
-  REVIEWING
-  FINISHED
-}
-
 model UserActivity {
   user_id     Int
   activity_id Int
-  user        User     @relation(fields: [user_id], references: [id])
   activity    Activity @relation(fields: [activity_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 
   @@id([user_id, activity_id])
 }
@@ -346,73 +258,60 @@ model UserActivity {
 model Cost {
   id          Int      @id @default(autoincrement())
   name        String
-  description String
+  description String?
   type        CostType
   value       Float
-  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
   estimateId  Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-enum CostType {
-  MANPOWER
-  TECHNOLOGIES
-  LICENSE
-  OTHERS
+  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   content    String
   sendDate   String
   sendTime   String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
-  estimateId Int
-  estimate   Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
-  phaseId    Int
-  phase      Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  estimateId Int?
+  phaseId    Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  estimate   Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phase      Phase?    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Plan {
   id          Int        @id @default(autoincrement())
   name        String
-  description String
+  description String?
   type        PlanType
-  variants    Variant[] // Relación uno-a-muchos con Variant
   serviceId   Int
-  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   Estimate    Estimate[]
+  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  variants    Variant[]
 }
 
 model Variant {
   id          Int      @id @default(autoincrement())
   name        String
-  description String
+  description String?
   benefits    String
   price       Float
   planId      Int
-  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-enum PlanType {
-  MONTHLY
-  SINGLEPAYMENT
+  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
 }
 
 model UserTicket {
   userId   Int
   ticketId Int
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, ticketId])
 }
@@ -421,28 +320,12 @@ model Ticket {
   id          Int          @id @default(autoincrement())
   title       String
   type        TicketPlan
-  description String
+  description String?
   status      TicketStatus
-  users       UserTicket[]
-  Attachment  Attachment[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-}
-
-enum TicketPlan {
-  BUG
-  REQUEST
-  REVIEW
-  OTHER
-}
-
-enum TicketStatus {
-  PENDING
-  ASSIGNED
-  INPROCESS
-  UNDERREVIEW
-  SOLVED
-  CLOSED
+  Attachment  Attachment[]
+  users       UserTicket[]
 }
 
 model Attachment {
@@ -466,7 +349,7 @@ model Attachment {
 }
 
 model Benefit {
-  id            Int          @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   title         String
   description   String
   serviceAreaId Int
@@ -476,44 +359,18 @@ model Benefit {
   updatedAt DateTime @updatedAt
 }
 
-enum TypeAttachment {
-  IMAGE
-  DOCUMENT
-  URL
-  VIDEO
-  OTHERS
-}
-
 model WorkTeam {
-  id           Int            @id @default(autoincrement())
-  
-  name         String
-  description  String?
-  state        StateWorkTeam
-  area         AreaWorkTeam
-  
+  id Int @id @default(autoincrement())
+
+  name        String
+  description String?
+  state       StateWorkTeam
+  area        AreaWorkTeam
+
   leads        Lead[]
   UserWorkTeam UserWorkTeam[]
   updatedAt    DateTime       @updatedAt
   createdAt    DateTime       @default(now())
-}
-
-enum StateWorkTeam {
-  AVAILABLE
-  INACTIVE
-  ASSIGNED
-}
-
-enum AreaWorkTeam {
-  BACKEND
-  FRONTEND
-  DESIGN
-  MANAGEMENT
-  ADMINISTRATIVE
-  MARKETING
-  SALES
-  DEVOPS
-  SUPPORT
 }
 
 model UserWorkTeam {
@@ -551,7 +408,7 @@ model ProjectUpdate {
 
 model Tag {
   id   Int     @id @default(autoincrement())
-  name String?
+  name String
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -570,7 +427,7 @@ model ProductTag {
 model LoginAttempt {
   id          String   @id @default(uuid())
   ip          String
-  email       String? // El correo usado en el intento, puede ser null si no se envió,En algunos intentos, la IP podría golpear el endpoint sin enviar datos válidos. Esto evita que Prisma falle al guardar.
+  email       String?
   success     Boolean
   attemptedAt DateTime @default(now())
 }
@@ -579,9 +436,9 @@ model Clause {
   id          Int              @id @default(autoincrement())
   title       String
   description String
-  clauses     ContractClause[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  clauses     ContractClause[]
 }
 
 model Contract {
@@ -593,23 +450,152 @@ model Contract {
   companyPhone      String
   content           String
   ownerName         String
-  ownerSignDate     String
+  ownerSignDate     String?
   recipientName     String
-  recipientSignDate String
+  recipientSignDate String?
   userId            Int
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  leadId            Int
-  lead              Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  clauses           ContractClause[]
+  leadId            Int?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
+  lead              Lead?            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clauses           ContractClause[]
 }
 
 model ContractClause {
   contractId Int
   clauseId   Int
-  contract   Contract @relation(fields: [contractId], references: [id])
   clause     Clause   @relation(fields: [clauseId], references: [id])
+  contract   Contract @relation(fields: [contractId], references: [id])
 
-  @@id([contractId, clauseId]) // clave primaria compuesta
+  @@id([contractId, clauseId])
+}
+
+enum County {
+  MIAMI_DATE
+  BROWARD
+  WEST_PALM_BEACH
+}
+
+enum Topic {
+  WEBDESIGN
+  DIGITALMARKETING
+}
+
+enum Action {
+  GET
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ServiceAssociated {
+  NORMALUSERS
+  ADMINUSERS
+  LEADS
+  ESTIMATES
+  PROJECTS
+  BLOGS
+  PRODUCTS
+  SERVICEAREAS
+}
+
+enum EstimateState {
+  CREATED
+  PROCESSING
+  INREVIEW
+  REJECTED
+  ACCEPTED
+  INVOICE
+  PAID
+}
+
+enum LeadState {
+  SEND
+  PROCESSING
+  ESTIMATING
+  FINISHED
+}
+
+enum PhaseName {
+  ANALYSIS
+  DESIGN
+  DEVELOPMENT
+  DEPLOY
+}
+
+enum PhaseState {
+  PLANNING
+  INPROCESS
+  TESTING
+  FINISHED
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum StateActivity {
+  PENDING
+  ASSIGNED
+  INPROCESS
+  REVIEWING
+  FINISHED
+}
+
+enum CostType {
+  MANPOWER
+  TECHNOLOGIES
+  LICENSE
+  OTHERS
+}
+
+enum PlanType {
+  MONTHLY
+  SINGLEPAYMENT
+}
+
+enum TicketPlan {
+  BUG
+  REQUEST
+  REVIEW
+  OTHER
+}
+
+enum TicketStatus {
+  PENDING
+  ASSIGNED
+  INPROCESS
+  UNDERREVIEW
+  SOLVED
+  CLOSED
+}
+
+enum TypeAttachment {
+  IMAGE
+  DOCUMENT
+  URL
+  VIDEO
+  OTHERS
+}
+
+enum StateWorkTeam {
+  AVAILABLE
+  INACTIVE
+  ASSIGNED
+}
+
+enum AreaWorkTeam {
+  BACKEND
+  FRONTEND
+  DESIGN
+  MANAGEMENT
+  ADMINISTRATIVE
+  MARKETING
+  SALES
+  DEVOPS
+  SUPPORT
 }

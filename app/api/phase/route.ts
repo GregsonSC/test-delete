@@ -35,12 +35,15 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *               - project_id
  *             properties:
  *               name:
- *                 type: ANALYSIS
+ *                 type: string
  *                 description: Name of the phase (e.g., "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY")
+ *                 example: ANALYSIS
  *               description:
  *                 type: string
+ *                 example: Identificación de requerimientos y levantamiento de información.
  *               expectedDuration:
  *                 type: string
+ *                 example: 90 days
  *               startDate:
  *                 type: string
  *                 format: date
@@ -50,10 +53,12 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *                 format: date
  *                 example: 2025-06-01
  *               state:
- *                 type: PLANNING
+ *                 type: string
  *                 description: Current state of the phase (e.g., "PLANNING", "INPROCESS", "TESTING", "FINISHED")
+ *                 example: INPROCESS
  *               project_id:
  *                 type: integer
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Phase created successfully.
