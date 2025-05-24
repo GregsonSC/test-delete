@@ -99,8 +99,6 @@ export function ProfileDrawer({
                 <span>{phone}</span>
               </div>
               <Button
-                variant="ghost"
-                className="flex items-center gap-2 text-black hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-start text-left transition-colors w-full mt-6"
                 onClick={() => {
                   if (currentPath === "/dashboard") {
                     onClose();
@@ -108,6 +106,8 @@ export function ProfileDrawer({
                     router.push("/dashboard");
                   }
                 }}
+                variant="ghost"
+                className="flex items-center gap-2 text-black hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-center transition-colors w-full mt-6 mb-2 shadow-lg bg-white"
               >
                 <svg
                   className="h-4 w-4"
@@ -125,24 +125,24 @@ export function ProfileDrawer({
                 </svg>
                 Dashboard
               </Button>
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2 text-black hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-start text-left transition-colors w-full"
-                onClick={() => {
-                  if (currentPath === "/profile-settings") {
-                    onClose();
-                  } else {
-                    router.push("/profile-settings");
-                  }
-                }}
-              >
-                <Settings className="h-4 w-4" />
-                Settings
-              </Button>
             </div>
           </DrawerHeader>
 
           <div className="flex flex-col items-center gap-4 mt-auto">
+            <Button
+              onClick={() => {
+                if (currentPath === "/profile-settings") {
+                  onClose();
+                } else {
+                  router.push("/profile-settings");
+                }
+              }}
+              variant="ghost"
+              className="flex items-center gap-2 text-black hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-center transition-colors w-full"
+            >
+              <Settings className="h-4 w-4" />
+              Settings
+            </Button>
             <Button
               onClick={async () => {
                 const result = await logout();
@@ -151,7 +151,7 @@ export function ProfileDrawer({
                 }
               }}
               disabled={loading}
-              className="flex items-center gap-2 text-white hover:text-white rounded-full py-2 px-6 text-lg font-semibold justify-center shadow-md transition-colors bg-gradient-to-r from-[#8ECF0A] to-[#2EBAC6] hover:brightness-90"
+              className="flex items-center gap-2 text-white hover:text-white rounded-full py-2 px-6 text-lg font-semibold justify-center shadow-md transition-colors bg-gradient-to-r from-[#8ECF0A] to-[#2EBAC6] hover:brightness-90 w-full"
               style={{ background: "linear-gradient(135deg, #8ECF0A 0%, #2EBAC6 100%)" }}
             >
               {loading ? (

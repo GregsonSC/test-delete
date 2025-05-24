@@ -448,6 +448,7 @@ export function Navbar({ className }: NavbarProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser();
+  console.log("userNavbar", user);
   const { logout: authLogout } = AuthViewModel();
 
   useEffect(() => {
@@ -511,7 +512,7 @@ export function Navbar({ className }: NavbarProps) {
     <>
       <header
         className={cn(
-          "w-full py-4 bg-[#020301] shadow-lg lg:bg-transparent lg:shadow-none",
+          "w-full py-4 bg-[#020301] shadow-lg lg:bg-red-500 lg:shadow-none", //TODO: Aqui es el background del navbar
           "fixed top-0 left-0 z-50",
           className
         )}

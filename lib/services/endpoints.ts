@@ -21,7 +21,7 @@ export const endpoints = {
     submit: `${API}/contact`,
   },
   blog: {
-    getPosts: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
+    getPosts: `${API}/blog`,
     createPost: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
     updatePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
     deletePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
@@ -33,7 +33,7 @@ export const endpoints = {
     logoutUser: `${API}/auth/logOut`, // Endpoint for user logout (POST)
   },
   portfolio: {
-    getProducts: `https://681426c1225ff1af162804b1.mockapi.io/portaolio`,
+    getProducts: `${API}/product`,
   },
 
   // Test endpoint for checking API connectivity
@@ -52,15 +52,16 @@ export const endpoints = {
     getServiceAreas: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to get all service areas (GET)
     getServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
     createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
-    updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
+    updateServiceArea: (id: string) =>
+      `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
   },
 
   newsletter: {
     CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
   },
 
-  contact_us:{
-    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook-test/4e962737-09f2-461d-9f4b-5264f424ea39`,
+  contact_us: {
+    creatCalendarEvent: `https://n8n-ultimate-1.onrender.com/webhook-test/4e962737-09f2-461d-9f4b-5264f424ea39`,
   },
 };
 
@@ -123,7 +124,7 @@ export const useFetch = () => {
     body: object | null = null,
     typeConfig: "json" | "form" = "json",
     withCredentials: boolean = false, // <-- Move withCredentials here
-    formFiles?: object                // <-- Make formFiles last and optional
+    formFiles?: object // <-- Make formFiles last and optional
   ): Promise<FetchResponse<T>> => {
     let response: T | null = null;
     let loading = true;

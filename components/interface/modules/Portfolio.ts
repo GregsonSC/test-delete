@@ -1,22 +1,42 @@
 /**
  * Interface representing a single portfolio item.
  */
+export interface Tag {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductTag {
+  product_id: number;
+  tag_id: number;
+  tag: Tag;
+}
+
 export interface PortfolioItem {
-  id: string;
-  title: string;
+  id: number;
+  name: string;
   description: string;
-  image: string;
-  url: string;
-  success: boolean;
+  imageUrl: string;
+  siteUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  ProductTag: ProductTag[];
 }
 
 /**
  * Interface for the API response containing portfolio items.
  * Assuming a similar structure to the Blog API response.
  */
-export interface PortfolioApiResponse<T> {
+export interface PortfolioApiResponse {
   success: boolean;
   message: string;
-  data: T[]; // Array of portfolio items
+  data: PortfolioItem[];
   errors?: string[];
+  page: {
+    offset: number;
+    productsPerPage: number;
+    totalProducts: number;
+  };
 }
