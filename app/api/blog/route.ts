@@ -2,6 +2,7 @@ import db from "@/lib/prisma";
 import { createResponse, handleError } from "@/app/api/utils/handlers";
 import { createImage } from "../cloudinary/upload/route";
 import { Topic } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
 const validTopics = ["WEBDESIGN", "DIGITALMARKETING"];
 
@@ -229,24 +230,48 @@ export async function POST(request: Request) {
 }
 /**
  * @route GET /api/blog
- * @desc Obtener todos los blogs o uno por ID
  * @swagger
  * /api/blog:
  *   get:
  *     tags:
  *       - Blog
- *     summary: Get one or all blogs
- *     description: Returns a single blog by ID if query param `id` is provided. Otherwise, returns all blogs.
+ *     summary: Obtener uno o varios blogs, o una versión simplificada con paginación
+ *     description: |
+ *       Este endpoint permite:
+ *       - Obtener un blog único si se proporciona el parámetro `id`.
+ *       - Obtener una lista simplificada de blogs si `simpleBlog=true`, con soporte para paginación.
+ *       - Obtener todos los blogs si no se proporcionan parámetros.
  *     parameters:
  *       - in: query
  *         name: id
  *         schema:
  *           type: integer
  *         required: false
- *         description: "ID of the blog to retrieve."
+ *         description: ID del blog que se desea recuperar.
+ *       - in: query
+ *         name: simpleBlog
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         required: false
+ *         description: Si es "true", devuelve una lista simplificada de blogs.
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *         required: false
+ *         description: Número de elementos a omitir en la paginación (solo con simpleBlog=true).
+ *       - in: query
+ *         name: simpleBlogsPerPage
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Número de blogs por página (solo con simpleBlog=true). Valor predeterminado 10.
  *     responses:
  *       200:
- *         description: Blog(s) retrieved successfully.
+ *         description: Blog(s) recuperado(s) exitosamente.
  *         content:
  *           application/json:
  *             schema:
@@ -256,33 +281,107 @@ export async function POST(request: Request) {
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   type: object
- *                   description: "Blog object or list of blogs."
+ *                   oneOf:
+ *                     - $ref: '#/components/schemas/Blog'
+ *                     - type: array
+ *                       items:
+ *                         oneOf:
+ *                           - $ref: '#/components/schemas/Blog'
+ *                           - $ref: '#/components/schemas/SimpleBlog'
  *                 message:
  *                   type: string
  *                   example: Blog(s) retrieved successfully.
+ *                 page:
+ *                   type: object
+ *                   nullable: true
+ *                   description: Información de paginación (presente solo si simpleBlog=true o en la consulta general).
+ *                   properties:
+ *                     offset:
+ *                       type: integer
+ *                       example: 0
+ *                     simpleBlogsPerPage:
+ *                       type: integer
+ *                       example: 10
+ *                     totalBlogs:
+ *                       type: integer
+ *                       example: 100
  *       400:
- *         description: Invalid ID.
+ *         description: Parámetro `id` inválido.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       404:
- *         description: Blog not found.
+ *         description: No se encontró el blog con el ID especificado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
- *         description: Server error.
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const requestId = searchParams.get("id");
+    const simpleBlog = searchParams.get("simpleBlog");
 
+    const offset = Number(searchParams.get("offset")) || 0;
+    let simpleBlogsPerPage = Number(searchParams.get("simpleBlogsPerPage")) || 10;
+
+    //simpleBlogs
+    if (simpleBlog === "true") {
+      const [simpleBlogs, totalBlogs] = await Promise.all([
+        db.blog.findMany({
+          skip: offset,
+          take: simpleBlogsPerPage,
+          select: {
+            id: true,
+            title: true,
+            resume: true,
+            topic: true,
+            publicationDate: true,
+            imageUrl: true,
+          },
+        }),
+        db.blog.count(),
+      ]);
+      return NextResponse.json({
+        success: true,
+        data: simpleBlogs,
+        message: "SimpleBlogs retrieved successfully.",
+        status: 200,
+        errors: [],
+        page: {
+          offset,
+          simpleBlogsPerPage,
+          totalBlogs,
+        },
+      });
+    }
+    // Get all Blog
     if (!requestId) {
-      const blogs = await db.blog.findMany();
-      return createResponse({
+      const [blogs, totalBlogs] = await Promise.all([
+        db.blog.findMany({
+          skip: offset,
+          take: simpleBlogsPerPage,
+        }),
+        db.blog.count(),
+      ]);
+      return NextResponse.json({
         success: true,
         data: blogs,
         message: "Blogs retrieved successfully.",
         status: 200,
+        page: { offset, simpleBlogsPerPage, totalBlogs },
       });
     }
-
+    //validation
     const id = Number(requestId);
     if (isNaN(id)) {
       return createResponse({
@@ -292,7 +391,7 @@ export async function GET(req: Request) {
         status: 400,
       });
     }
-
+    //Get by id
     const blog = await db.blog.findUnique({ where: { id } });
 
     if (!blog) {

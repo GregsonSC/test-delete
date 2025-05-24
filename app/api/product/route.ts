@@ -10,7 +10,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *     tags:
  *       - Product
  *     summary: Create a new product
- *     description: Creates a new product by uploading an image and providing name, description and siteUrl.
+ *     description: Creates a new product by uploading an image and providing name, description, siteUrl, and serviceId.
  *     requestBody:
  *       required: true
  *       content:
@@ -22,6 +22,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - description
  *               - siteUrl
  *               - imageUrl
+ *               - serviceId
  *             properties:
  *               name:
  *                 type: string
@@ -35,6 +36,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               serviceId:
+ *                 type: integer
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Product created successfully.
@@ -43,6 +47,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *       500:
  *         description: Server error while creating product.
  */
+
 export async function POST(request: NextRequest) {
   try {
     const form = await request.formData();
@@ -51,6 +56,20 @@ export async function POST(request: NextRequest) {
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
     const imageUrlForm = form.get("imageUrl");
+    let serviceId = form.get("serviceId")
+      ? parseInt(form.get("serviceId")!.toString(), 10)
+      : undefined;
+
+    if (serviceId) {
+      // Validate that the Service exists
+      const service = await db.service.findUnique({ where: { id: serviceId } });
+      if (!service) {
+        return createResponse({ success: false, message: "Service not found.", status: 400 });
+      }
+    }
+    if (serviceId == undefined) {
+      return createResponse({ success: false, message: "Service not found.", status: 400 });
+    }
 
     if (!(imageUrlForm instanceof File)) {
       return createResponse({
@@ -62,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
     const imageUrl = await createImage(imageUrlForm);
 
-    if (!name || !description || !imageUrl || !siteUrl) {
+    if (!name || !description || !imageUrl || !siteUrl || !serviceId) {
       return NextResponse.json(
         {
           success: false,
@@ -75,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newProduct = await db.product.create({
-      data: { name, description, imageUrl, siteUrl },
+      data: { name, description, imageUrl, siteUrl, serviceId },
     });
 
     return NextResponse.json(
@@ -122,6 +141,12 @@ export async function POST(request: NextRequest) {
  *           type: integer
  *         required: false
  *         description: Índice desde el cual iniciar la paginación. Por defecto es 0.
+ *       - in: query
+ *         name: productsPerPage
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Número de productos por página. Por defecto es 10.
  *     responses:
  *       200:
  *         description: Productos obtenidos exitosamente.
@@ -174,7 +199,8 @@ export async function GET(request: Request) {
     const requestId = searchParams.get("id");
 
     const offset = Number(searchParams.get("offset")) || 0;
-    const productsPerPage = 2;
+    let productsPerPage = Number(searchParams.get("productsPerPage")) || 10;
+
 
     // Get All
     if (!requestId) {
@@ -307,7 +333,6 @@ export async function GET(request: Request) {
  *       500:
  *         description: Server error while updating product.
  */
-
 
 export async function PATCH(request: Request) {
   try {
@@ -458,11 +483,9 @@ export async function DELETE(request: Request) {
   }
 }
 
-
-
 //que raro ,la unica que no te funciona es esa o mas ?
 //creo que lead pero por lo mismo
-//pera lo pruebo en mi 
+//pera lo pruebo en mi
 //listo,no hubo necesidad de resetiar entonces por ejemplo si necesitas volver a modificarlo pues pruebas primero el generate y ya luego el migrate dev --name tal cosa y ya
 //Ya quedo fino
 //vale gracias,dale
