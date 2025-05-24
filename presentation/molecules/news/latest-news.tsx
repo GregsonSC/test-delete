@@ -102,7 +102,7 @@ export function LatestNews() {
   }
   // ! Cambiar el viewmodel de blogs porque usa mockapi
   return (
-    <div className="w-full py-12 text-white">
+    <div className="w-full py-12 text-white bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}>
       <div className="mx-auto max-w-[1400px] px-4">
         <div className="flex flex-col lg:flex-row justify-between items-center lg:items-center mb-8">
           <div className="text-center lg:text-left w-full lg:w-auto">
