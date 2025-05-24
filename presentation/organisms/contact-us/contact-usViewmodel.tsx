@@ -70,23 +70,39 @@ export const ContactUsViewModel = () => {
             if (response) {
                 setSubmissionStatus("success");
                 toast.success("Your appointment has been scheduled successfully");
-                return { success: true, message: "Appointment scheduled successfully" };
+                return { 
+                    success: true, 
+                    message: "Appointment scheduled successfully",
+                    status: status 
+                };
             } else {
                 console.error("No data returned:", errorLogs);
                 setSubmissionStatus("error");
                 toast.error("Error scheduling your appointment");
-                return { success: false, message: "Error scheduling appointment" };
+                return { 
+                    success: false, 
+                    message: "Error scheduling appointment",
+                    status: status 
+                };
             }
         }
         if (status === 409){
             setSubmissionStatus("error");
             toast.error("The selected time is already booked");
-            return { success: false, message: "The selected time is already booked" };
+            return { 
+                success: false, 
+                message: "The selected time is already booked",
+                status: status 
+            };
         } else {
             console.error("HTTP error:", status, errorLogs);
             setSubmissionStatus("error");
             toast.error(`Error ${status}: Could not schedule appointment`);
-            return { success: false, message: `Error ${status}: Could not schedule appointment` };
+            return { 
+                success: false, 
+                message: `Error ${status}: Could not schedule appointment`,
+                status: status 
+            };
         }
     };
 

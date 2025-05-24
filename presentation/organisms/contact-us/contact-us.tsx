@@ -56,7 +56,7 @@ export function ContactUs() {
   const router = useRouter();
   const { createCalendarEvent, createLead } = ContactUsViewModel();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  
+
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -123,10 +123,11 @@ export function ContactUs() {
           };
 
           // Enviar al API utilizando el ViewModel
-          const [eventResult] = await Promise.all([
-            createCalendarEvent(eventData),
+          const eventResult = await createCalendarEvent(eventData);
 
-            createLead({
+          if (eventResult.success && (eventResult.status === 200 || eventResult.status === 201)) {
+            // Solo crear el lead si el evento del calendario fue exitoso
+            await createLead({
               clientName: user?.name || '',
               clientEmail: user?.email || '',
               clientPhone: user?.phone || '35577744414',
@@ -138,11 +139,8 @@ export function ContactUs() {
               userId: 1,
               serviceId: 2,
               workTeamId: 5
-            })
+            });
 
-          ]);
-
-          if (eventResult.success) {
             router.push("/post-schedule");
             form.reset();
           }
@@ -170,9 +168,11 @@ export function ContactUs() {
           };
 
           // Enviar al API utilizando el ViewModel
-          const [eventResult] = await Promise.all([
-            createCalendarEvent(eventData),
-            createLead({
+          const eventResult = await createCalendarEvent(eventData);
+
+          if (eventResult.success && (eventResult.status === 200 || eventResult.status === 201)) {
+            // Solo crear el lead si el evento del calendario fue exitoso
+            await createLead({
               clientName: values.name,
               clientEmail: values.email,
               clientPhone: values.phone,
@@ -184,11 +184,8 @@ export function ContactUs() {
               userId: 1,
               serviceId: 2,
               workTeamId: 5
-            })
+            });
 
-          ]);
-
-          if (eventResult.success) {
             router.push("/post-schedule");
             form.reset();
           }

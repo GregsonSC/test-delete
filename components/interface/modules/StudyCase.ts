@@ -1,15 +1,15 @@
-interface StudyCase {
+export interface StudyCase {
     id: number;
     title: string;
     resume: string;
     videoUrl: string;
-}
+    createdAt: string;
+    updatedAt: string;
+  }
 
-export type { StudyCase };
-
-export interface ApiResponse<T> {
+  export interface ApiResponse<T> {
     success: boolean;
     data: T[];
     message: string;
-    errors: string[];
-    }
+    errors: string[];
+  }

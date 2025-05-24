@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,31 +9,31 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  phone    String
-  imageUrl String?
-  address  String
-  role   Role @relation(fields: [roleId], references: [id],onDelete: Cascade) //Relacion con rol
-  roleId Int 
-  leads        Lead[] // Relación Uno a Muchos con Lead
-  permissions  UserPermission[]
-  Comment      Comment[]
-  tickets      UserTicket[]
-  blogs        Blog[]
-  contracts    Contract[]
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String?
   createdAt    DateTime         @default(now())
+  roleId       Int
   updatedAt    DateTime         @updatedAt
+  address      String
+  blogs        Blog[]
+  Comment      Comment[]
+  contracts    Contract[]
+  leads        Lead[]
+  role         Role             @relation(fields: [roleId], references: [id], onDelete: Cascade)
   UserActivity UserActivity[]
+  permissions  UserPermission[]
+  tickets      UserTicket[]
   UserWorkTeam UserWorkTeam[]
 }
 
 model Permission {
   id                Int               @id @default(autoincrement())
   name              String
-  description       String
+  description       String?
   action            Action
   active            Boolean
   serviceAssociated ServiceAssociated
@@ -50,57 +44,56 @@ model Permission {
 }
 
 model Project {
-  id               Int          @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   name             String
   description      String
   expectedDuration String
   startDate        String
-  endDate          String
+  endDate          String?
   estimate_id      Int?
-  estimate         Estimate?    @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
-  currentPhase     CurrentPhase
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  imagePreviewUrl  String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  imagePreviewUrl  String?
   Phase            Phase[]
+  estimate         Estimate? @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
 }
 
 model Estimate {
-  id            Int           @id @default(autoincrement())
-  estimatedTime String
-  description   String
-  state         EstimateState
-  lead_id       Int?
-  lead          Lead?         @relation(fields: [lead_id], references: [id], onDelete: Cascade)
-  plan_id       Int?
-  plan          Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
-  totalValue    Decimal
-  Project       Project[]
-  costs         Cost[]
-  comments      Comment[]
-  deadLineToPay      String
-  invoiceDateCreated String
-  invoiceReference   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 Int           @id @default(autoincrement())
+  estimatedTime      String?
+  description        String?
+  state              EstimateState
+  lead_id            Int
+  totalValue         Decimal?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  plan_id            Int?
+  deadLineToPay      String?
+  invoiceDateCreated String?
+  invoiceReference   String?
+  comments           Comment[]
+  costs              Cost[]
+  lead               Lead          @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  plan               Plan?         @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+  Project            Project[]
 }
 
 model Blog {
   id              Int      @id @default(autoincrement())
   title           String
   resume          String
-  content         Json
   topic           Topic
   publicationDate String
   imageUrl        String
-  SubTitle        String
-  ImageSubTitle   String
-  ContentImageUrl String
-  ImageReference  String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  User            User?    @relation(fields: [userId], references: [id])
-  userId          Int?
+  ContentImageUrl String?
+  ImageReference  String?
+  ImageSubTitle   String?
+  SubTitle        String
+  userId          Int
+  content         Json
+  User            User     @relation(fields: [userId], references: [id])
 }
 
 model ServiceArea {
@@ -112,25 +105,341 @@ model ServiceArea {
   heroImageUrl     String
   benefitsImageUrl String
   testimonialEmbed String
-  MainTitle        String
-  SubTitle         String
-  service_id       Int?
-  service          Service?  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  service_id       Int
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  mainTitle        String
+  subTitle         String
   Benefit          Benefit[]
+  service          Service   @relation(fields: [service_id], references: [id], onDelete: Cascade)
 }
 
 model Service {
   id          Int           @id @default(autoincrement())
+  active      Boolean
+  createdAt   DateTime      @default(now())
+  description String?
+  name        String
+  updatedAt   DateTime      @updatedAt
+  leads       Lead[]
+  plans       Plan[]
+  Product     Product[]
+  ServiceArea ServiceArea[]
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  active      Boolean
+  permissions RolePermission[]
+  user        User[]
+}
+
+model RolePermission {
+  roleId       Int
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Lead {
+  id            Int        @id @default(autoincrement())
+  clientName    String?
+  clientEmail   String?
+  clientPhone   String?
+  description   String
+  state         LeadState
+  endDate       String?
+  userId        Int?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  serviceId     Int
+  startDate     String
+  workTeamId    Int?
+  clientAddress String?
+  contracts     Contract[]
+  Estimate      Estimate[]
+  service       Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  WorkTeam      WorkTeam?  @relation(fields: [workTeamId], references: [id])
+}
+
+model UserPermission {
+  userId       Int
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+
+  @@id([userId, permissionId])
+}
+
+model Product {
+  id          Int          @id @default(autoincrement())
   name        String
   description String
-  active      Boolean
-  ServiceArea ServiceArea[]
-  plans       Plan[]
-  leads       Lead[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  imageUrl    String
+  siteUrl     String
+  serviceId   Int
+  Attachment  Attachment[]
+  Service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  ProductTag  ProductTag[]
+}
+
+model Phase {
+  id               Int             @id @default(autoincrement())
+  name             PhaseName
+  description      String?
+  expectedDuration String
+  startDate        String
+  endDate          String?
+  project_id       Int
+  state            PhaseState
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Activity         Activity[]
+  Comment          Comment[]
+  project          Project         @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  ProjectUpdate    ProjectUpdate[]
+}
+
+model Activity {
+  id               Int            @id @default(autoincrement())
+  name             String
+  description      String?
+  expectedDuration String?
+  startDate        String
+  endDate          String?
+  phase_id         Int
+  state            StateActivity
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  priority         Priority?
+  phase            Phase          @relation(fields: [phase_id], references: [id], onDelete: Cascade)
+  Attachment       Attachment[]
+  UserActivity     UserActivity[]
+}
+
+model UserActivity {
+  user_id     Int
+  activity_id Int
+  activity    Activity @relation(fields: [activity_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@id([user_id, activity_id])
+}
+
+model Cost {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  type        CostType
+  value       Float
+  estimateId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id         Int       @id @default(autoincrement())
+  content    String
+  sendDate   String
+  sendTime   String
+  userId     Int
+  estimateId Int?
+  phaseId    Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  estimate   Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  phase      Phase?    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Plan {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  type        PlanType
+  serviceId   Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Estimate    Estimate[]
+  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  variants    Variant[]
+}
+
+model Variant {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  benefits    String
+  price       Float
+  planId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+}
+
+model UserTicket {
+  userId   Int
+  ticketId Int
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, ticketId])
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  title       String
+  type        TicketPlan
+  description String?
+  status      TicketStatus
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  Attachment  Attachment[]
+  users       UserTicket[]
+}
+
+model Attachment {
+  id               Int            @id @default(autoincrement())
+  name             String
+  description      String?
+  type             TypeAttachment
+  url              String
+  activityId       Int?
+  ticketId         Int?
+  productId        Int?
+  createdAt        DateTime       @default(now())
+  projectupdate_id Int?
+  updatedAt        DateTime       @updatedAt
+  activity         Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  product          Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  projectupdate    ProjectUpdate? @relation(fields: [projectupdate_id], references: [id], onDelete: Cascade)
+  ticket           Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+model Benefit {
+  id            Int         @id @default(autoincrement())
+  title         String
+  description   String
+  serviceAreaId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  serviceArea   ServiceArea @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
+}
+
+model WorkTeam {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String?
+  state        StateWorkTeam
+  area         AreaWorkTeam
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  leads        Lead[]
+  UserWorkTeam UserWorkTeam[]
+}
+
+model UserWorkTeam {
+  user_id     Int
+  workTeam_id Int
+  user        User     @relation(fields: [user_id], references: [id])
+  workTeam    WorkTeam @relation(fields: [workTeam_id], references: [id])
+
+  @@id([user_id, workTeam_id])
+}
+
+model StudyCase {
+  id        Int      @id @default(autoincrement())
+  title     String
+  resume    String
+  videoUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectUpdate {
+  id         Int          @id @default(autoincrement())
+  title      String
+  content    String
+  date       String
+  phaseId    Int
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attachment Attachment[]
+  phase      Phase        @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id         Int          @id @default(autoincrement())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  ProductTag ProductTag[]
+}
+
+model ProductTag {
+  product_id Int
+  tag_id     Int
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  tag        Tag     @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@id([product_id, tag_id])
+}
+
+model LoginAttempt {
+  id          String   @id @default(uuid())
+  ip          String
+  email       String?
+  success     Boolean
+  attemptedAt DateTime @default(now())
+}
+
+model Clause {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  clauses     ContractClause[]
+}
+
+model Contract {
+  id                Int              @id @default(autoincrement())
+  title             String
+  signedDate        String
+  companyEmail      String
+  companyAdd        String
+  companyPhone      String
+  content           String
+  ownerName         String
+  ownerSignDate     String?
+  recipientName     String
+  recipientSignDate String?
+  userId            Int
+  leadId            Int?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  lead              Lead?            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clauses           ContractClause[]
+}
+
+model ContractClause {
+  contractId Int
+  clauseId   Int
+  clause     Clause   @relation(fields: [clauseId], references: [id])
+  contract   Contract @relation(fields: [contractId], references: [id])
+
+  @@id([contractId, clauseId])
 }
 
 enum County {
@@ -162,13 +471,6 @@ enum ServiceAssociated {
   SERVICEAREAS
 }
 
-enum CurrentPhase {
-  ANALYSIS
-  DESIGN
-  DEVELOPMENT
-  DEPLOY
-}
-
 enum EstimateState {
   CREATED
   PROCESSING
@@ -179,100 +481,11 @@ enum EstimateState {
   PAID
 }
 
-model Role {
-  id          Int              @id @default(autoincrement())
-  name        String
-  description String?
-  active      Boolean
-  user        User[] //Aqui nos referimos que este puede tener multiples usuarios 
-  permissions RolePermission[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model RolePermission {
-  roleId       Int
-  permissionId Int
-
-  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId]) // Clave primaria compuesta
-}
-
-model Lead {
-  id Int @id @default(autoincrement())
-
-  clientName  String?
-  clientEmail String?
-  clientPhone String?
-
-  clientAddress String?
-  description   String
-  state         LeadState
-  startDate     String
-  endDate       String
-
-  userId     Int?
-  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  serviceId  Int?
-  service    Service?  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  workTeamId Int?
-  WorkTeam   WorkTeam? @relation(fields: [workTeamId], references: [id])
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Estimate  Estimate[]
-  contracts Contract[]
-}
-
 enum LeadState {
   SEND
   PROCESSING
   ESTIMATING
   FINISHED
-}
-
-model UserPermission {
-  userId       Int
-  permissionId Int
-
-  user       User       @relation(fields: [userId], references: [id])
-  permission Permission @relation(fields: [permissionId], references: [id])
-
-  @@id([userId, permissionId]) // Clave primaria compuesta
-}
-
-model Product {
-  id Int @id @default(autoincrement())
-
-  name        String
-  description String
-  imageUrl    String
-  siteUrl     String
-
-  Attachment Attachment[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-
-  ProductTag ProductTag[]
-}
-
-model Phase {
-  id               Int             @id @default(autoincrement())
-  name             PhaseName
-  description      String
-  expectedDuration String
-  startDate        String
-  endDate          String
-  project_id       Int?
-  project          Project?        @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  state            PhaseState
-  Comment          Comment[]
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  Activity         Activity[]
-  ProjectUpdate    ProjectUpdate[]
 }
 
 enum PhaseName {
@@ -287,25 +500,6 @@ enum PhaseState {
   INPROCESS
   TESTING
   FINISHED
-}
-
-model Activity {
-  id               Int    @id @default(autoincrement())
-  name             String
-  description      String
-  expectedDuration String
-  startDate        String
-  endDate          String
-
-  phase_id Int?
-  phase    Phase?        @relation(fields: [phase_id], references: [id], onDelete: Cascade)
-  state    StateActivity
-  priority Priority
-
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  UserActivity UserActivity[]
-  Attachment   Attachment[]
 }
 
 enum Priority {
@@ -323,27 +517,6 @@ enum StateActivity {
   FINISHED
 }
 
-model UserActivity {
-  user_id     Int
-  activity_id Int
-  user        User     @relation(fields: [user_id], references: [id])
-  activity    Activity @relation(fields: [activity_id], references: [id])
-
-  @@id([user_id, activity_id])
-}
-
-model Cost {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  type        CostType
-  value       Float
-  estimate    Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
-  estimateId  Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 enum CostType {
   MANPOWER
   TECHNOLOGIES
@@ -351,71 +524,9 @@ enum CostType {
   OTHERS
 }
 
-model Comment {
-  id         Int      @id @default(autoincrement())
-  content    String
-  sendDate   String
-  sendTime   String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  estimateId Int?
-  estimate   Estimate? @relation(fields: [estimateId], references: [id], onDelete: Cascade)
-  phaseId    Int?
-  phase      Phase?    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-model Plan {
-  id          Int        @id @default(autoincrement())
-  name        String
-  description String?
-  type        PlanType
-  variants    Variant[] // Relación uno-a-muchos con Variant
-  serviceId   Int
-  service     Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  Estimate    Estimate[]
-}
-
-model Variant {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  benefits    String
-  price       Float
-  planId      Int
-  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade) // Relación con Plan
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 enum PlanType {
   MONTHLY
   SINGLEPAYMENT
-}
-
-model UserTicket {
-  userId   Int
-  ticketId Int
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  @@id([userId, ticketId])
-}
-
-model Ticket {
-  id          Int          @id @default(autoincrement())
-  title       String
-  type        TicketPlan
-  description String?
-  status      TicketStatus
-  users       UserTicket[]
-  Attachment  Attachment[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
 }
 
 enum TicketPlan {
@@ -434,54 +545,12 @@ enum TicketStatus {
   CLOSED
 }
 
-model Attachment {
-  id               Int            @id @default(autoincrement())
-  name             String
-  description      String
-  type             TypeAttachment
-  url              String
-  activityId       Int?
-  activity         Activity?      @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  ticketId         Int?
-  ticket           Ticket?        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  productId        Int?
-  product          Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  projectupdate_id Int?
-  projectupdate    ProjectUpdate? @relation(fields: [projectupdate_id], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Benefit {
-  id            Int          @id @default(autoincrement())
-  title         String
-  description   String
-  serviceAreaId Int?
-  serviceArea   ServiceArea? @relation(fields: [serviceAreaId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 enum TypeAttachment {
   IMAGE
   DOCUMENT
   URL
   VIDEO
   OTHERS
-}
-
-model WorkTeam {
-  id           Int            @id @default(autoincrement())
-  name         String
-  description  String
-  state        StateWorkTeam
-  area         AreaWorkTeam
-  leads        Lead[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  UserWorkTeam UserWorkTeam[]
 }
 
 enum StateWorkTeam {
@@ -500,101 +569,4 @@ enum AreaWorkTeam {
   SALES
   DEVOPS
   SUPPORT
-}
-
-model UserWorkTeam {
-  user_id     Int
-  workTeam_id Int
-  user        User     @relation(fields: [user_id], references: [id])
-  workTeam    WorkTeam @relation(fields: [workTeam_id], references: [id])
-
-  @@id([user_id, workTeam_id])
-}
-
-model StudyCase {
-  id        Int      @id @default(autoincrement())
-  title     String
-  resume    String
-  videoUrl  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ProjectUpdate {
-  id      Int    @id @default(autoincrement())
-  title   String
-  content String
-  date    String
-
-  phaseId Int?
-  phase   Phase? @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Attachment Attachment[]
-}
-
-model Tag {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  ProductTag ProductTag[]
-}
-
-model ProductTag {
-  product_id Int
-  tag_id     Int
-  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  tag        Tag     @relation(fields: [tag_id], references: [id], onDelete: Cascade)
-
-  @@id([product_id, tag_id])
-}
-
-model LoginAttempt {
-  id          String   @id @default(uuid())
-  ip          String
-  email       String? // El correo usado en el intento, puede ser null si no se envió,En algunos intentos, la IP podría golpear el endpoint sin enviar datos válidos. Esto evita que Prisma falle al guardar.
-  success     Boolean
-  attemptedAt DateTime @default(now())
-}
-
-model Clause {
-  id          Int              @id @default(autoincrement())
-  title       String
-  description String
-  clauses     ContractClause[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model Contract {
-  id                Int              @id @default(autoincrement())
-  title             String
-  signedDate        String
-  companyEmail      String
-  companyAdd        String
-  companyPhone      String
-  content           String
-  ownerName         String
-  ownerSignDate     String?
-  recipientName     String
-  recipientSignDate String?
-  userId            Int
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  leadId            Int?
-  lead              Lead?             @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  clauses           ContractClause[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-}
-
-model ContractClause {
-  contractId Int
-  clauseId   Int
-  contract   Contract @relation(fields: [contractId], references: [id])
-  clause     Clause   @relation(fields: [clauseId], references: [id])
-
-  @@id([contractId, clauseId]) // clave primaria compuesta
 }
