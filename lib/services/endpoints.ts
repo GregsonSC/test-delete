@@ -49,10 +49,10 @@ export const endpoints = {
 
   //ServiceArea endpoints
   servicearea: {
-    getServiceAreas: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to get all service areas (GET)
-    getServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
-    createServiceArea: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
-    updateServiceArea: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
+    getServiceAreas: `${API}/servicearea`, // Endpoint to get all service areas (GET)
+    getServiceArea: (id: string) => `${API}/servicearea?id=${id}`, // Endpoint to get a specific service area by ID (GET)
+    createServiceArea: `${API}/servicearea`, // Endpoint to create a new service area (POST)
+    updateServiceArea: (id: string) => `${API}/servicearea?id=${id}`, // Endpoint to update a specific service area by ID (PATCH)
   },
 
   newsletter: {
@@ -65,6 +65,13 @@ export const endpoints = {
   },
   lead:{
     createLead: `${API}/lead`,
+  },
+  benefit:{
+    getBenefits: `${API}/benefit`,
+    getBenefit: (id: string) => `${API}/benefit?id=${id}`,
+    createBenefit: `${API}/benefit`,
+    updateBenefit: (id: string) => `${API}/benefit?id=${id}`,
+    deleteBenefit: (id: string) => `${API}/benefit?id=${id}`,
   }
 };
 

@@ -5,8 +5,8 @@ interface ServiceArea {
     county: string;
     heroImageUrl: string;
     testimonialEmbed: string;
-    MainTitle: string;
-    SubTitle: string;
+    mainTitle: string;
+    subTitle: string;
     service_id: number;
     service: any[];
     createAt: string;
