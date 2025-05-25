@@ -16,13 +16,13 @@ async function validateToken(token) {
 export async function middleware(request) {
   // Get the pathname of the request
   const path = request.nextUrl.pathname;
-  
+
   // Check if the current path is login or register
   const isAuthPage = path === "/login" || path === "/register";
 
   // Check if the user is authenticated (using a token in cookies)
   const token = request.cookies.get("auth_token")?.value;
-  
+
   // Create a response object that we'll modify as needed
   let response = NextResponse.next();
 
@@ -46,7 +46,7 @@ export async function middleware(request) {
     if (!token) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    
+
     // Verify token for protected routes
     const { valid } = await validateToken(token);
     if (!valid) {
@@ -71,6 +71,7 @@ export const config = {
     "/register",
     // Protected routes that require authentication
     "/profile-settings",
+    "/dashboard",
     // Add other protected routes as needed
   ],
 };
