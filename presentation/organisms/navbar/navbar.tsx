@@ -6,8 +6,6 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/presentation/atoms/button/button";
 import { cn } from "@/lib/utils";
 import {
-  Menu,
-  X,
   ChevronDown,
   Instagram,
   Facebook,
@@ -20,18 +18,10 @@ import {
 import { Logo } from "@/presentation/atoms/logo/logo";
 import { NavCard } from "@/presentation/atoms/nav-card/nav-card";
 import { NavAreaCard } from "@/presentation/atoms/nav-card/nav-area-card";
-import Image from "next/image";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
 import { useUser } from "@/context/UserContext";
 import AuthViewModel from "@/presentation/pages/auth/AuthViewModel"; // Import AuthViewModel
 import { navItems } from "./navItems";
+import { ProfileDrawer } from "@/presentation/atoms/drawer/drawer";
 
 interface NavbarProps {
   className?: string;
@@ -55,19 +45,20 @@ const SocialLinks = () => (
   </div>
 );
 
-const MobileUserProfile = ({ user }: { user: any }) => (
-  <div className="sm:hidden">
-    {user && (
+const MobileUserProfile = ({ user, isMenuOpen }: { user: any; isMenuOpen: boolean }) => {
+  if (!user || !isMenuOpen) return null;
+  return (
+    <div className="sm:hidden">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all" />
+        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center " />
         <div className="flex flex-col text-left">
           <span className="font-semibold text-[#060B20]">{user.name}</span>
           <span className="text-sm text-gray-500">{user.email}</span>
         </div>
       </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 const MobileAuthButtons = ({
   isLoggedIn,
@@ -117,13 +108,19 @@ const DesktopAuthButtons = ({
   isLoggedIn,
   user,
   handleLogout,
+  drawerOpen,
+  setDrawerOpen,
+  onOpenDrawer,
 }: {
   isLoggedIn: boolean;
   user: any;
   handleLogout: () => void;
-}) => (
-  <div className="hidden sm:flex gap-[20px]">
-    {!isLoggedIn ? (
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
+  onOpenDrawer: () => void;
+}) => {
+  if (!isLoggedIn) {
+    return (
       <>
         <Link href="/register">
           <Button className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center">
@@ -137,35 +134,28 @@ const DesktopAuthButtons = ({
           Log In
         </Link>
       </>
-    ) : (
-      <Menubar className="border-0 bg-transparent">
-        <MenubarMenu>
-          <MenubarTrigger className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus:bg-transparent data-[state=open]:bg-transparent h-8 min-h-0 group">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
-            <span className="text-white font-semibold text-[14px]">{user?.name || "User"}</span>
-          </MenubarTrigger>
-          <MenubarContent className="rounded-md border-0 shadow-md">
-            <Link
-              href="/profile-settings"
-              className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:text-black px-2 py-2"
-            >
-              <User className="h-4 w-4" />
-              Profile
-            </Link>
-            <MenubarSeparator />
-            <MenubarItem
-              className="flex items-center gap-2 cursor-pointer hover:bg-red-600 hover:text-white focus:bg-red-600 focus:text-white"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
-    )}
-  </div>
-);
+    );
+  }
+  // Si está logueado, muestra solo el área de perfil clickeable
+  return (
+    <>
+      <div
+        className="hidden sm:flex items-center cursor-pointer bg-[#ebedf2] px-3 py-2 rounded-full gap-2 group"
+        onClick={onOpenDrawer}
+      >
+        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
+        <span className="text-[#13103A] font-semibold text-[13px]">{user?.name || "User"}</span>
+      </div>
+      <ProfileDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        profileName={user?.name}
+        email={user?.email}
+        phone={user?.phone}
+      />
+    </>
+  );
+};
 
 const DesktopNav = ({ navItems, activeDropdown, setActiveDropdown, pathname }: any) => (
   <nav className="hidden lg:flex gap-6 items-center">
@@ -374,7 +364,11 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
               <div
                 key={item.label}
                 className={cn(
-                  `grid grid-cols-${item.dropdownColumns} gap-8`,
+                  "grid gap-8",
+                  item.dropdownColumns === 1 && "grid-cols-1",
+                  item.dropdownColumns === 2 && "grid-cols-2",
+                  item.dropdownColumns === 3 && "grid-cols-3",
+                  item.dropdownColumns === 4 && "grid-cols-4",
                   activeDropdown === item.label ? "" : "hidden"
                 )}
               >
@@ -409,7 +403,7 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
 
         <div className="flex justify-end mt-8 mb-2">
           <Link href="/contact">
-            <Button className="rounded-full bg-[#99cc33] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(153,204,51,0.7)] px-8 py-3 font-bold text-lg transition-all">
+            <Button className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all">
               Get a free consultation!
             </Button>
           </Link>
@@ -451,8 +445,10 @@ export function Navbar({ className }: NavbarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
   const [areaDropdowns, setAreaDropdowns] = useState<Record<string, boolean>>({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser();
+  console.log("userNavbar", user);
   const { logout: authLogout } = AuthViewModel();
 
   useEffect(() => {
@@ -504,18 +500,25 @@ export function Navbar({ className }: NavbarProps) {
     }
   };
 
+  // Nueva función para abrir el drawer y cerrar los dropdowns
+  const handleOpenDrawer = () => {
+    setActiveDropdown(null);
+    setMobileDropdowns({});
+    setAreaDropdowns({});
+    setDrawerOpen(true);
+  };
+
   return (
     <>
       <header
         className={cn(
-          "w-full py-4 bg-[#020301]",
+          "w-full py-4 bg-[#020301] shadow-lg lg:bg-red-500 lg:shadow-none", //TODO: Aqui es el background del navbar
           "fixed top-0 left-0 z-50",
-          "shadow-lg",
           className
         )}
       >
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between px-0 lg:px-8 py-0 lg:py-1.5 h-[40px]">
+        <div className="w-full px-4 lg:px-8">
+          <div className="flex items-center justify-between py-0 h-[40px]">
             <Logo />
 
             <DesktopNav
@@ -526,7 +529,14 @@ export function Navbar({ className }: NavbarProps) {
             />
 
             <div className="flex items-center gap-[20px] lg:gap-3">
-              <DesktopAuthButtons isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
+              <DesktopAuthButtons
+                isLoggedIn={isLoggedIn}
+                user={user}
+                handleLogout={handleLogout}
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+                onOpenDrawer={handleOpenDrawer}
+              />
               {/* Botón hamburguesa animado clásico */}
               <HamburgerButton isOpen={isMenuOpen} onClick={() => setIsMenuOpen((open) => !open)} />
             </div>
@@ -540,48 +550,42 @@ export function Navbar({ className }: NavbarProps) {
         setActiveDropdown={setActiveDropdown}
       />
 
-      {/* Overlay y panel móvil sin animación/transición */}
-      <div
-        className={cn(
-          "fixed left-0 right-0 z-[70] lg:hidden flex pt-0",
-          isMenuOpen
-            ? "top-[72px] h-[calc(100vh-72px)] bg-black/80 backdrop-blur-sm visible"
-            : "top-0 h-0 invisible"
-        )}
-        style={{}}
-      >
-        <div
-          className={cn(
-            "bg-[#14171b] h-full p-4 md:p-8",
-            "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
-          )}
-        >
-          <div className="hidden md:block opacity-65">
-            <Logo className="mb-8" />
+      {/* Overlay y panel móvil solo se montan si isMenuOpen es true */}
+      {isMenuOpen && (
+        <div className="fixed left-0 right-0 z-[70] lg:hidden flex pt-0 top-[72px] h-[calc(100vh-72px)] bg-black/80 backdrop-blur-sm visible">
+          <div
+            className={cn(
+              "bg-[#14171b] h-full p-4 md:p-8",
+              "w-[30%] max-[500px]:w-[20%] md:w-auto md:min-w-[200px]"
+            )}
+          >
+            <div className="hidden md:block opacity-65">
+              <Logo className="mb-8" />
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
+              "w-[70%] max-[500px]:w-[80%] md:flex-1"
+            )}
+          >
+            <MobileUserProfile user={user} isMenuOpen={isMenuOpen} />
+
+            <MobileNav
+              navItems={navItems}
+              mobileDropdowns={mobileDropdowns}
+              toggleMobileDropdown={toggleMobileDropdown}
+              areaDropdowns={areaDropdowns}
+              toggleAreaDropdown={toggleAreaDropdown}
+            />
+
+            <MobileAuthButtons isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+
+            <SocialLinks />
           </div>
         </div>
-
-        <div
-          className={cn(
-            "bg-white h-full relative p-8 flex flex-col justify-between overflow-y-auto",
-            "w-[70%] max-[500px]:w-[80%] md:flex-1"
-          )}
-        >
-          <MobileUserProfile user={user} />
-
-          <MobileNav
-            navItems={navItems}
-            mobileDropdowns={mobileDropdowns}
-            toggleMobileDropdown={toggleMobileDropdown}
-            areaDropdowns={areaDropdowns}
-            toggleAreaDropdown={toggleAreaDropdown}
-          />
-
-          <MobileAuthButtons isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-
-          <SocialLinks />
-        </div>
-      </div>
+      )}
     </>
   );
 }

@@ -72,6 +72,22 @@ export const mockRequests = [
     ],
     description: "Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
     date: "2024-05-12",
+    estimate: {
+      title: "Estimate for Request Uno",
+      items: [
+        { name: "UI/UX Design", value: 1200 },
+        { name: "Frontend Development", value: 1800 },
+      ],
+    },
+    invoice: {
+      title: "Invoice for Request Uno",
+      invoiceNumber: "INV-2023-101",
+      dueDate: "2024-06-01",
+      items: [
+        { name: "UI/UX Design", value: 1200 },
+        { name: "Frontend Development", value: 1800 },
+      ],
+    },
   },
   {
     id: "b",
@@ -85,19 +101,54 @@ export const mockRequests = [
     ],
     description: "Duis aute irure dolor in reprehenderit in voluptate velit.",
     date: "2024-05-11",
+    estimate: {
+      title: "Estimate for Request Dos",
+      items: [
+        { name: "SEO Audit", value: 900 },
+        { name: "Keyword Research", value: 600 },
+      ],
+    },
+    invoice: {
+      title: "Invoice for Request Dos",
+      invoiceNumber: "INV-2023-102",
+      dueDate: "2024-06-02",
+      items: [
+        { name: "SEO Audit", value: 900 },
+        { name: "Keyword Research", value: 600 },
+      ],
+    },
   },
   // 8 más
-  ...Array.from({ length: 8 }, (_, i) => ({
-    id: String.fromCharCode(99 + i),
-    name: `Request ${String.fromCharCode(67 + i)}`,
-    status: "Lead",
-    service: i % 2 === 0 ? "Branding" : "SEO",
-    plan: i % 2 === 0 ? "Standard" : "Premium",
-    chat: [
-      { from: "user", text: `Mensaje de usuario en Request ${String.fromCharCode(67 + i)}` },
-      { from: "admin", text: `Respuesta admin en Request ${String.fromCharCode(67 + i)}` },
-    ],
-    description: `Descripción del request ${String.fromCharCode(67 + i)}.`,
-    date: `2024-05-${13 + i}`,
-  })),
+  ...Array.from({ length: 8 }, (_, i) => {
+    const char = String.fromCharCode(99 + i);
+    return {
+      id: char,
+      name: `Request ${String.fromCharCode(67 + i)}`,
+      status: "Lead",
+      service: i % 2 === 0 ? "Branding" : "SEO",
+      plan: i % 2 === 0 ? "Standard" : "Premium",
+      chat: [
+        { from: "user", text: `Mensaje de usuario en Request ${String.fromCharCode(67 + i)}` },
+        { from: "admin", text: `Respuesta admin en Request ${String.fromCharCode(67 + i)}` },
+      ],
+      description: `Descripción del request ${String.fromCharCode(67 + i)}.`,
+      date: `2024-05-${13 + i}`,
+      estimate: {
+        title: `Estimate for Request ${String.fromCharCode(67 + i)}`,
+        items: [
+          { name: `Service A${i + 1}`, value: 1000 + i * 100 },
+          { name: `Service B${i + 1}`, value: 1500 + i * 120 },
+        ],
+      },
+      invoice: {
+        title: `Invoice for Request ${String.fromCharCode(67 + i)}`,
+        invoiceNumber: `INV-2023-10${i + 3}`,
+        dueDate: `2024-06-${3 + i}`,
+        items: [
+          { name: `Service A${i + 1}`, value: 1000 + i * 100 },
+          { name: `Service B${i + 1}`, value: 1500 + i * 120 },
+        ],
+      },
+    };
+  }),
 ];
