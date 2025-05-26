@@ -7,19 +7,30 @@ interface BlogPost {
   tag: string;
 }
 
-interface Blog {
+export interface BlogContent {
+  quote: string;
+  content1: string;
+  content2: string;
+}
+
+export interface Blog {
   id: number;
   title: string;
   resume: string;
-  content: string;
+  content: BlogContent;
   topic: string;
   publicationDate: string;
   imageUrl: string;
+  SubTitle: string;
+  ImageSubTitle: string;
+  ContentImageUrl: string;
+  ImageReference: string;
   createdAt: string;
   updatedAt: string;
+  userId: number;
 }
 
-export type { BlogPost, Blog };
+export type { BlogPost };
 
 export interface ApiResponse<T> {
   success: boolean;

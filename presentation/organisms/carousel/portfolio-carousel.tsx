@@ -11,14 +11,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-
-export interface PortfolioItem {
-  title: string;
-  description: string;
-  imageUrl: string;
-  href: string;
-  tags?: string[];
-}
+import { PortfolioItem } from "@/components/interface/modules/Portfolio";
 
 interface PortfolioCarouselProps {
   items: PortfolioItem[];
@@ -42,11 +35,11 @@ export function PortfolioCarousel({ items, className }: PortfolioCarouselProps) 
             <CarouselItem key={index} className="md:basis-full lg:basis-full">
               <div className="p-1">
                 <PortfolioCard
-                  title={item.title}
+                  title={item.name}
                   description={item.description}
                   imageUrl={item.imageUrl}
-                  href={item.href}
-                  tags={item.tags}
+                  href={item.siteUrl}
+                  tags={item.ProductTag.map((pt) => pt.tag.name)}
                 />
               </div>
             </CarouselItem>

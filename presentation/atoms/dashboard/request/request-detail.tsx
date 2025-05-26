@@ -7,6 +7,26 @@ interface RequestDetailProps {
   description: string;
   leadStatus: string;
   className?: string;
+  loading?: boolean;
+}
+
+function SkeletonDetail() {
+  return (
+    <div className="relative p-[6px] rounded-lg bg-[#181B29] animate-pulse">
+      <div className="flex flex-col justify-between gap-y-2 p-4 rounded-md bg-[#100e34] h-[200px]">
+        <div className="space-y-2">
+          <div className="h-7 w-2/3 bg-gray-400/30 rounded mb-1" /> {/* Título */}
+          <div className="h-5 w-1/3 bg-gray-400/20 rounded mb-1" /> {/* Servicio */}
+          <div className="h-5 w-1/4 bg-gray-400/20 rounded mb-1" /> {/* Plan */}
+          <div className="h-4 w-full bg-gray-400/10 rounded mt-2" /> {/* Descripción */}
+          <div className="h-4 w-3/4 bg-gray-400/10 rounded" />
+        </div>
+        <div className="mt-2 flex justify-start">
+          <div className="h-6 w-20 bg-gray-400/30 rounded-full" /> {/* Lead status */}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function RequestDetail({
@@ -16,7 +36,9 @@ export function RequestDetail({
   description,
   leadStatus,
   className,
+  loading = false,
 }: RequestDetailProps) {
+  if (loading) return <SkeletonDetail />;
   return (
     // Outer container for gradient border
     <div

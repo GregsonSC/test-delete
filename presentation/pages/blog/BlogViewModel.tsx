@@ -3,37 +3,47 @@ import { useFetch } from "@/lib/services/endpoints";
 import { endpoints } from "@/lib/services/endpoints";
 import { ApiResponse, Blog } from "@/components/interface/modules/Blog";
 
-
 export const BlogViewModel = () => {
   const { fetchData } = useFetch();
   const [posts, setPosts] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getAllPosts();
   }, []);
 
   const getAllPosts = async () => {
-    const { response, status, errorLogs } = await fetchData(
-      endpoints.blog.getPosts,
-      "get"
-    );
-  
-    if (status === 200) {
-      if (response) {
-        // Aquí response es Blog[]
-        setPosts(response as unknown as Blog[]);
+    setLoading(true);
+    setError(null);
+    try {
+      const { response, status, errorLogs } = await fetchData<ApiResponse<Blog>>(
+        endpoints.blog.getPosts,
+        "get"
+      );
+      if (status === 200 && response && response.success) {
+        setPosts(response.data);
       } else {
-        console.error("No hay datos:", errorLogs);
-        alert("Error al cargar los posts del blog");
+        const errorMessage =
+          errorLogs?.message ||
+          response?.message ||
+          `Failed to fetch blog posts (Status: ${status})`;
+        setError(errorMessage);
+        setPosts([]);
       }
-    } else {
-      console.error("HTTP error:", status, errorLogs);
-      alert("Error al cargar los posts del blog");
+    } catch (err: any) {
+      const errorMessage = err.message || "An unexpected error occurred while fetching blog posts.";
+      setError(errorMessage);
+      setPosts([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     posts,
+    loading,
+    error,
   };
 };
 
