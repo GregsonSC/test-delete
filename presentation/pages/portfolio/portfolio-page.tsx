@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { GoogleReviewCard } from "@/presentation/molecules/review-card/review-card";
 import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review-card-user";
@@ -10,7 +10,6 @@ import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info"
 import { PortfolioCardSmall } from "@/presentation/atoms/portfolio-card/portfolio-card-small";
 import { PortfolioCardSmallSkeleton } from "@/presentation/atoms/portfolio-card/portfolio-card-small-skeleton";
 import { reviewItems } from "@/lib/constants2";
-import { blogItems, caseItems } from "@/lib/constants";
 import PortfolioViewModel from "./PortfolioViewModel";
 import { Button } from "@/presentation/atoms/button/button"; // Import Button component
 
@@ -46,34 +45,38 @@ export function PortfolioPage() {
               ))
             ) : error ? (
               // Show error message if fetch failed
-              <p className="text-red-500 col-span-full text-center">Error loading portfolio: {error}</p>
+              <p className="text-red-500 col-span-full text-center">
+                Error loading portfolio: {error}
+              </p>
             ) : portfolioItems.length === 0 ? (
               // Show message if no items are found
               <p className="text-gray-400 col-span-full text-center">No portfolio items found.</p>
             ) : (
               // Render portfolio items once loaded - slice based on visible count
-              portfolioItems.slice(0, visibleItemsCount).map((item) => (
-                <PortfolioCardSmall
-                  key={item.id}
-                  title={item.title}
-                  description={item.description}
-                  imageUrl={item.image}
-                  href={item.url}
-                  className="w-full h-auto aspect-square"
-                />
-              ))
+              portfolioItems
+                .slice(0, visibleItemsCount)
+                .map((item) => (
+                  <PortfolioCardSmall
+                    key={item.id}
+                    {...item}
+                    className="w-full h-auto aspect-square"
+                  />
+                ))
             )}
           </div>
 
           {/* Load More Button */}
           {!loading && !error && portfolioItems.length > visibleItemsCount && (
             <div className="flex justify-center mt-12">
-              <Button variant="outline" className="rounded-full text-white border-white hover:bg-white hover:text-[#060B20]" onClick={handleLoadMore}>
+              <Button
+                variant="outline"
+                className="rounded-full text-white border-white hover:bg-white hover:text-[#060B20]"
+                onClick={handleLoadMore}
+              >
                 Load More Projects
               </Button>
             </div>
           )}
-
         </div>
       </section>
       {/* --- END NEW PORTFOLIO SECTION --- */}
@@ -92,7 +95,8 @@ export function PortfolioPage() {
                   See Why Clients Love Our Services!
                 </h3>
                 <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
-                  We aim to surpass our client’s expectations, becoming your trusted partner in achieving goals and identifying the best path forward for your business.
+                  We aim to surpass our client's expectations, becoming your trusted partner in
+                  achieving goals and identifying the best path forward for your business.
                 </p>
               </div>
 
@@ -127,7 +131,7 @@ export function PortfolioPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
-        <LatestNews blogItems={blogItems} caseItems={caseItems} />
+        <LatestNews />
       </section>
     </MainLayout>
   );

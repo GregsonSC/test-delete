@@ -37,29 +37,29 @@ export function NavCard({
                 <img src={iconUrl} alt="" className="w-8 h-8" />
               </div>
             </div>
-            
+
             {/* Contenido del título y descripción */}
             <div className="flex-1">
               <h3 className="text-lg font-bold text-gray-800 mb-1">{title}</h3>
               <p className="text-gray-600 text-sm">{description}</p>
             </div>
           </div>
-          
+
           {/* "Learn More" con flecha animada */}
           <div className="flex justify-end mt-auto pt-2">
             <div className="group inline-flex items-center">
               <span className="text-gray-700 font-medium text-sm transition-all duration-300 group-hover:text-[#3B82F6] mr-1">
                 Learn More
               </span>
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
                 strokeLinejoin="round"
                 className="transform translate-x-0 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 text-[#3B82F6]"
               >

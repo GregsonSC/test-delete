@@ -10,7 +10,7 @@ export function ScheduleFreeConsultation() {
                 <p className="text-lg font-semibold mb-12 xl:px-72">Let’s Create Something Amazing Together! Take your business to the next level with the best digital marketing services. Connect with one of our digital experts at Senavia to fast-track your business objectives.</p> 
             </div>
 
-                <ContactUs isLoggedIn={false} />
+                <ContactUs/>
 
         </section>
 

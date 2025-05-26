@@ -15,9 +15,22 @@ model User {
   password     String
   phone        String
   imageUrl     String?
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  password     String
+  phone        String
+  imageUrl     String?
   createdAt    DateTime         @default(now())
   roleId       Int
+  roleId       Int
   updatedAt    DateTime         @updatedAt
+  address      String
+  blogs        Blog[]
+  Comment      Comment[]
+  contracts    Contract[]
+  leads        Lead[]
+  role         Role             @relation(fields: [roleId], references: [id], onDelete: Cascade)
   address      String
   blogs        Blog[]
   Comment      Comment[]
@@ -27,12 +40,15 @@ model User {
   UserActivity UserActivity[]
   permissions  UserPermission[]
   tickets      UserTicket[]
+  permissions  UserPermission[]
+  tickets      UserTicket[]
   UserWorkTeam UserWorkTeam[]
 }
 
 model Permission {
   id                Int               @id @default(autoincrement())
   name              String
+  description       String?
   description       String?
   action            Action
   active            Boolean
@@ -51,6 +67,13 @@ model Project {
   description      String
   expectedDuration String
   startDate        String
+  endDate          String?
+  estimate_id      Int?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  imagePreviewUrl  String?
+  Phase            Phase[]
+  estimate         Estimate? @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
   endDate          String?
   imagePreviewUrl  String?
 
@@ -88,10 +111,18 @@ model Blog {
   id              Int     @id @default(autoincrement())
   title           String
   resume          String
-  content         Json
   topic           Topic
   publicationDate String
   imageUrl        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  ContentImageUrl String?
+  ImageReference  String?
+  ImageSubTitle   String?
+  SubTitle        String
+  userId          Int
+  content         Json
+  User            User     @relation(fields: [userId], references: [id])
   SubTitle        String
   ImageSubTitle   String?
   ContentImageUrl String?

@@ -135,8 +135,30 @@ export function ProfileChat({
         `}</style>
 
         {showLoadingIndicator && (
-          <div className="flex justify-center items-center h-full">
-            <div className="text-gray-500">Loading chat history...</div>
+          <div className="flex flex-col h-full justify-end">
+            <div className="flex flex-col gap-4 flex-1 justify-end py-4">
+              {/* Mensaje asistente */}
+              <div className="flex items-start">
+                <div className="w-10 h-10 rounded-full bg-gray-400/30 mr-4 flex-shrink-0" />
+                <div className="flex flex-col">
+                  <div className="px-4 py-2 rounded-md bg-gray-400/30 w-40 h-6 mb-2" />
+                </div>
+              </div>
+              {/* Mensaje usuario */}
+              <div className="flex justify-end items-end">
+                <div className="flex flex-col items-end">
+                  <div className="px-4 py-2 rounded-md bg-gray-400/20 w-32 h-6 mb-2" />
+                </div>
+                <div className="w-10 h-10 rounded-full bg-gray-400/30 ml-4 flex-shrink-0" />
+              </div>
+              {/* Mensaje asistente */}
+              <div className="flex items-start">
+                <div className="w-10 h-10 rounded-full bg-gray-400/30 mr-4 flex-shrink-0" />
+                <div className="flex flex-col">
+                  <div className="px-4 py-2 rounded-md bg-gray-400/30 w-28 h-6 mb-2" />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

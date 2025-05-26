@@ -6,6 +6,7 @@ import db from "@/lib/prisma";
  * tags:
  *   - name: Comment
  *     description: Comments made by users through the chat service available in their profile, regarding their Requests, Estimates, or Projects in progress.
+ * 
  * /api/comment:
  *   post:
  *     tags:
@@ -20,15 +21,34 @@ import db from "@/lib/prisma";
  *             type: object
  *             required:
  *               - content
+ *               - userId
+ *               - sendDate
+ *               - sendTime
  *             properties:
  *               content:
  *                 type: string
+ *                 example: "Este es un comentario de ejemplo."
+ *               sendDate:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-05-20"
+ *                 description: Fecha en que se envía el comentario (formato YYYY-MM-DD).
+ *               sendTime:
+ *                 type: string
+ *                 example: "14:45"
+ *                 description: Hora en que se envía el comentario (formato HH:mm).
  *               userId:
  *                 type: integer
+ *                 example: 1
+ *                 description: ID del usuario que envía el comentario.
  *               estimateId:
  *                 type: integer
+ *                 example: 2
+ *                 description: (Opcional) ID de la estimación asociada, si aplica.
  *               phaseId:
  *                 type: integer
+ *                 example: 3
+ *                 description: (Opcional) ID de la fase del proyecto asociada, si aplica.
  *     responses:
  *       201:
  *         description: Comentario creado exitosamente
@@ -37,6 +57,7 @@ import db from "@/lib/prisma";
  *       500:
  *         description: Error del servidor
  */
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();

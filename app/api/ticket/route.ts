@@ -10,8 +10,8 @@ import db from "@/lib/prisma";
  *   post:
  *     tags:
  *       - Ticket
- *     summary: Crear un nuevo ticket
- *     description: Crea un ticket con los datos enviados en el body.
+ *     summary: Create a new ticket
+ *     description: Creates a ticket with the data sent in the body.
  *     requestBody:
  *       required: true
  *       content:
@@ -25,29 +25,46 @@ import db from "@/lib/prisma";
  *                 type: string
  *               type:
  *                 type: string
+ *                 enum:
+ *                   - BUG
+ *                   - REQUEST
+ *                   - REVIEW
+ *                   - OTHER
  *               description:
  *                 type: string
  *               status:
  *                 type: string
+ *                 enum:
+ *                   - PENDING
+ *                   - ASSIGNED
+ *                   - INPROCESS
+ *                   - UNDERREVIEW
+ *                   - SOLVED
+ *                   - CLOSED
  *     responses:
  *       201:
- *         description: Ticket creado exitosamente
+ *         description: Ticket created successfully
  *       400:
- *         description: Título del ticket es requerido
+ *         description: Ticket title is required
  *       500:
- *         description: Error del servidor
+ *         description: Server error
  */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (!data.title) {
+    // Campos requeridos para crear un ticket
+    const requiredFields = ["title", "type", "status"];
+
+    const missingFields = requiredFields.filter((field) => !data[field]);
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Ticket title is required",
-          errors: ["Missing 'title' field"],
+          message: "Campos faltantes en la solicitud",
+          errors: missingFields.map((field) => `Falta el campo '${field}'`),
         },
         { status: 400 }
       );
@@ -59,25 +76,24 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: [newTicket],
-        message: "Ticket created successfully",
+        message: "Ticket creado exitosamente",
         errors: [],
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating ticket:", error);
+    console.error("Error creando ticket:", error);
     return NextResponse.json(
       {
         success: false,
         data: [],
-        message: "Error creating ticket",
-        errors: [error instanceof Error ? error.message : "Unknown error"],
+        message: "Error al crear el ticket",
+        errors: [error instanceof Error ? error.message : "Error desconocido"],
       },
       { status: 500 }
     );
   }
 }
-
 /**
  * @swagger
  * /api/ticket:
