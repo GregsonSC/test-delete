@@ -15,22 +15,9 @@ model User {
   password     String
   phone        String
   imageUrl     String?
-  id           Int              @id @default(autoincrement())
-  name         String
-  email        String           @unique
-  password     String
-  phone        String
-  imageUrl     String?
   createdAt    DateTime         @default(now())
   roleId       Int
-  roleId       Int
   updatedAt    DateTime         @updatedAt
-  address      String
-  blogs        Blog[]
-  Comment      Comment[]
-  contracts    Contract[]
-  leads        Lead[]
-  role         Role             @relation(fields: [roleId], references: [id], onDelete: Cascade)
   address      String
   blogs        Blog[]
   Comment      Comment[]
@@ -40,15 +27,12 @@ model User {
   UserActivity UserActivity[]
   permissions  UserPermission[]
   tickets      UserTicket[]
-  permissions  UserPermission[]
-  tickets      UserTicket[]
   UserWorkTeam UserWorkTeam[]
 }
 
 model Permission {
   id                Int               @id @default(autoincrement())
   name              String
-  description       String?
   description       String?
   action            Action
   active            Boolean
@@ -74,15 +58,6 @@ model Project {
   imagePreviewUrl  String?
   Phase            Phase[]
   estimate         Estimate? @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
-  endDate          String?
-  imagePreviewUrl  String?
-
-  estimate_id Int?
-  estimate    Estimate? @relation(fields: [estimate_id], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Phase     Phase[]
 }
 
 model Estimate {
@@ -123,15 +98,6 @@ model Blog {
   userId          Int
   content         Json
   User            User     @relation(fields: [userId], references: [id])
-  SubTitle        String
-  ImageSubTitle   String?
-  ContentImageUrl String?
-  ImageReference  String?
-  userId          Int
-  User            User    @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model ServiceArea {
