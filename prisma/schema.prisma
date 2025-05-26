@@ -123,7 +123,7 @@ model Service {
   updatedAt   DateTime      @updatedAt
   leads       Lead[]
   plans       Plan[]
-  Product     Product[]
+  products    Product[]
   ServiceArea ServiceArea[]
 }
 
@@ -188,7 +188,7 @@ model Product {
   siteUrl     String
   serviceId   Int
   Attachment  Attachment[]
-  Service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   ProductTag  ProductTag[]
 }
 
