@@ -55,6 +55,8 @@ interface LoginApiResponse {
     id: string;
     email: string;
     name: string;
+    phone: string;
+    address: string;
   };
   errors: string[];
 }
@@ -63,6 +65,8 @@ interface UserData {
   id: string;
   email: string;
   name: string;
+  phone: string;
+  address: string;
 }
 
 interface UserContextProps {

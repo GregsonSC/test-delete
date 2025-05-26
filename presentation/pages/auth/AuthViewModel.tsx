@@ -85,6 +85,8 @@ const AuthViewModel = () => {
           id: response.data.id,
           email: response.data.email,
           name: response.data.name,
+          phone: response.data.phone,
+          address: response.data.address,
         });
         setIsLoggedIn(true);
       }

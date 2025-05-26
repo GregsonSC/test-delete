@@ -23,13 +23,16 @@ export function MarketingPage() {
           <Heading level="h1" className="text-[36px] md:text-[48px] font-[700] mb-6">
             Boost Your Online Success
           </Heading>
-          <p className="text-[24px] md:text-[30px] font-[600] text-muted-foreground mb-8 max-w-4xl mx-auto">
-            Attract New Leads With a Personalized Marketing Strategy
+          <p className="text-[20px] md:text-[20px] font-[600] mb-8 max-w-4xl mx-auto font-white">
+            Would you like to have a constant and growing flow of clients interested in your services or products? We create highly effective advertising campaigns designed to deliver the best conversion rates. 
+          </p>
+          <p className="text-[20px] md:text-[20px] font-[600] mb-8 max-w-4xl mx-auto font-white">
+            Stop worrying about attracting clients—we make sure your business is always on the radar of those who need you most.
           </p>
           <Button
             asChild
             size="lg"
-            className="rounded-full px-8 text-[20px] font-[600]"
+            className="rounded-full px-8 py-8 text-3xl font-[600] text-[#0A1248]"
           >
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
@@ -39,7 +42,7 @@ export function MarketingPage() {
       {/* Second Section */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
@@ -90,7 +93,7 @@ export function MarketingPage() {
       <section className=" px-4 md:px-6 mx-auto relative">
         <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
           <img
-            src="/images/marketing/portfolio-background.png"
+            src="/images/marketing/portfolio-background.webp"
             alt="Portfolio background"
             className="h-full object-contain"
           />
@@ -156,12 +159,10 @@ export function MarketingPage() {
 
       {/* Fourth Section - Blog/Resources */}
       <section
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
+        className=" flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
-
-        <LatestNews blogItems={blogItems} caseItems={caseItems} />
-
+        <LatestNews/>
       </section>
 
     </MainLayout>

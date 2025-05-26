@@ -4,7 +4,7 @@ import argon2 from "argon2";
 import { signToken } from "@/lib/jwt";
 import { loginRateLimit } from "@/app/api/utils/login-rate-limit";
 import { isValidIP, isPrivateIP } from "@/middleware/validationIP";
-import { checkBlocked } from "@/middleware/BlockedIP"; 
+import { checkBlocked } from "@/middleware/BlockedIP";
 /**
  * @swagger
  * /api/auth/login:
@@ -198,7 +198,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const token = signToken({ id: user.id, email: user.email, name: user.name });
+  const token = signToken({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
+    address: user.address
+  });
 
   const response = NextResponse.json({
     success: true,
@@ -207,6 +213,8 @@ export async function POST(request: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      address: user.address,
     },
     errors: [],
   });
