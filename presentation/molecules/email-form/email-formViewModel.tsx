@@ -17,16 +17,16 @@ export const NewsletterViewModel = () => {
         if (status === 200 || status === 201) {
             if (response) {
                 setSubscriptionStatus("success");
-                return { success: true, message: "Email registrado exitosamente" };
+                return { success: true, message: "Email registered successfully" };
             } else {
-                console.error("No hay datos:", errorLogs);
+                console.error("No data:", errorLogs);
                 setSubscriptionStatus("error");
-                return { success: false, message: "Error al registrar el email" };
+                return { success: false, message: "Error registering email" };
             }
         } else {
             console.error("HTTP error:", status, errorLogs);
             setSubscriptionStatus("error");
-            return { success: false, message: `Error ${status}: No se pudo registrar` };
+            return { success: false, message: `Error ${status}: Registration failed` };
         }
     }
     return { subscriptionStatus, subscribeToNewsletter };

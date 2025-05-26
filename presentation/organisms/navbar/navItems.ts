@@ -156,7 +156,7 @@ export const navItems: NavItem[] = [
       },
       {
         label: "Study Cases",
-        href: "/study-cases",
+        href: "/testimonial",
         description: "Discover our success stories and case studies.",
       },
       {

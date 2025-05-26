@@ -49,9 +49,9 @@ export function ContactInfo(type: number) {
             muted
           />
           {/* Contenido encima del video */}
-          <div className="relative flex-row place-items-end xl:max-w-[1440px] z-10">
+          <div className="relative flex-row place-items-end 2xl:max-w-[1440px] z-10">
             {/* Texto */}
-            <div className="w-full xl:w-[804px] xl:flex xl:flex-col xl:items-end xl:text-right text-center xl:ml-[560px] xl:mr-20 xl:place-items-end">
+            <div className="w-full 2xl:w-[804px] 2xl:flex 2xl:flex-col 2xl:items-end 2xl:text-right text-center 2xl:ml-[560px] 2xl:mr-20 2xl:place-items-end">
               <Heading
                 level="h1"
                 className="text-3xl md:text-5xl font-bold mb-4 text-[#0A1248]"
@@ -69,7 +69,8 @@ export function ContactInfo(type: number) {
             </div>
             {/* Círculo blanco - solo visible en xl en adelante */}
             <div
-              className="hidden xl:block absolute bg-white rounded-full w-[464px] h-[464px] left-[35px] top-1/2 -translate-y-1/2"
+              className="hidden 2xl:block absolute bg-white rounded-full w-[464px] h-[464px] left-[35px] top-1/2 -translate-y-1/2"
+              // className="bg-white relative rounded-full w-[250px] h-[250px] md:w-[350px] md:h-[350px] xl:w-[464px] xl:h-[464px] mb-8 xl:mb-0 xl:mr-8 flex-shrink-0 order-1 xl:order-1"
             />
           </div>
         </section>

@@ -78,6 +78,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           toastOptions={{
             style: {
               background: "#04081E",
+              color: "white",
             },
           }}
         />

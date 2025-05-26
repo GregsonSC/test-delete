@@ -14,7 +14,8 @@ import { cn } from "@/lib/utils";
 import { PortfolioItem } from "@/components/interface/modules/Portfolio";
 
 interface PortfolioCarouselProps {
-  items: PortfolioItem[];
+  // items: PortfolioItem[];
+  items: any[];
   className?: string;
 }
 
@@ -39,7 +40,7 @@ export function PortfolioCarousel({ items, className }: PortfolioCarouselProps) 
                   description={item.description}
                   imageUrl={item.imageUrl}
                   href={item.siteUrl}
-                  tags={item.ProductTag.map((pt) => pt.tag.name)}
+                  tags={item.ProductTag.map((pt :any) => pt.tag.name)}
                 />
               </div>
             </CarouselItem>
