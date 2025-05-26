@@ -94,19 +94,11 @@ export async function POST(request: Request) {
       invoiceReference,
     } = data;
 
-    if (
-      !estimatedTime ||
-      !description ||
-      !state ||
-      !totalValue /*|| !lead_id || !plan_id*/ ||
-      !deadLineToPay ||
-      !invoiceDateCreated ||
-      !invoiceReference
-    ) {
+    if (!state || !lead_id) {
       return createResponse({
         success: false,
-        message: "All fields are required.",
-        errors: ["Missing one or more required fields."],
+        message: "All required fields must be provided.",
+        errors: ["The fields 'state' and 'lead_id' are required and cannot be empty."],
         status: 400,
       });
     }
@@ -133,16 +125,16 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-
-    if (isNaN(totalValue) || typeof totalValue !== "number") {
-      return createResponse({
-        success: false,
-        message: "Invalid totalValue.",
-        errors: ["totalValue must be a decimal number."],
-        status: 400,
-      });
+    if (totalValue) {
+      if (isNaN(totalValue) || typeof totalValue !== "number") {
+        return createResponse({
+          success: false,
+          message: "Invalid totalValue.",
+          errors: ["totalValue must be a decimal number."],
+          status: 400,
+        });
+      }
     }
-
     const newEstimate = await db.estimate.create({ data });
 
     return createResponse({

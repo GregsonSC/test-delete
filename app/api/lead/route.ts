@@ -113,19 +113,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
-    if (
-      !data.state ||
-      !data.description ||
-      !data.startDate ||
-      !data.endDate ||
-      !data.clientAddress
-    ) {
+    if (!data.state || !data.startDate || !data.serviceId || !data.description) {
       return NextResponse.json(
         {
           success: false,
           data: [],
-          message: "Lead state is required in capital",
-          errors: ["Missing 'state' field"],
+          message: "All required fields must be provided.",
+          errors: [
+            "The fields 'state', 'startDate', 'serviceId' and 'description' are required and cannot be empty.",
+          ],
         },
         { status: 400 }
       );

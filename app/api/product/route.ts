@@ -10,7 +10,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *     tags:
  *       - Product
  *     summary: Create a new product
- *     description: Creates a new product by uploading an image and providing name, description and siteUrl.
+ *     description: Creates a new product by uploading an image and providing name, description, siteUrl, and serviceId.
  *     requestBody:
  *       required: true
  *       content:
@@ -22,6 +22,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               - description
  *               - siteUrl
  *               - imageUrl
+ *               - serviceId  # Added serviceId as a required field
  *             properties:
  *               name:
  *                 type: string
@@ -35,6 +36,9 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               serviceId:  # Added serviceId property
+ *                 type: integer
+ *                 example: 1  # Example serviceId
  *     responses:
  *       201:
  *         description: Product created successfully.
@@ -43,6 +47,7 @@ import { createResponse, handleError } from "@/app/api/utils/handlers";
  *       500:
  *         description: Server error while creating product.
  */
+
 export async function POST(request: NextRequest) {
   try {
     const form = await request.formData();
@@ -51,18 +56,32 @@ export async function POST(request: NextRequest) {
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
     const imageUrlForm = form.get("imageUrl");
+    let serviceId = form.get("serviceId")
+      ? parseInt(form.get("serviceId")!.toString(), 10)
+      : undefined;
+
+    if (serviceId) {
+      // Validate that the Service exists
+      const service = await db.service.findUnique({ where: { id: serviceId } });
+      if (!service) {
+        return createResponse({ success: false, message: "Service not found.", status: 400 });
+      }
+    }
+    if (serviceId == undefined) {
+      return createResponse({ success: false, message: "Service not found.", status: 400 });
+    }
 
     if (!(imageUrlForm instanceof File)) {
       return createResponse({
         success: false,
-        message: "The image must be valid file.",
-        errors: ["Must be uploaded as file."],
+        message: "The image must be a valid file.",
+        errors: ["Must be uploaded as a file."],
         status: 400,
       });
     }
     const imageUrl = await createImage(imageUrlForm);
 
-    if (!name || !description || !imageUrl || !siteUrl) {
+    if (!name || !description || !imageUrl || !siteUrl || !serviceId) {
       return NextResponse.json(
         {
           success: false,
@@ -75,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newProduct = await db.product.create({
-      data: { name, description, imageUrl, siteUrl },
+      data: { name, description, imageUrl, siteUrl, serviceId: parseInt(serviceId) }, // Asegúrate de convertir serviceId a número
     });
 
     return NextResponse.json(
@@ -122,6 +141,12 @@ export async function POST(request: NextRequest) {
  *           type: integer
  *         required: false
  *         description: Índice desde el cual iniciar la paginación. Por defecto es 0.
+ *       - in: query
+ *         name: productsPerPage
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Número de productos por página. Por defecto es 10.
  *     responses:
  *       200:
  *         description: Productos obtenidos exitosamente.
@@ -172,15 +197,31 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const requestId = searchParams.get("id");
+    const serviceId = searchParams.get("serviceId");
 
     const offset = Number(searchParams.get("offset")) || 0;
-    const productsPerPage = 2;
+    let productsPerPage = Number(searchParams.get("productsPerPage")) || 10;
 
-    // Get All
+
+    // Obtener todos o filtrado por Service
     if (!requestId) {
+      const whereClause = serviceId ? { serviceId: Number(serviceId) } : undefined;
+
+      if (serviceId && isNaN(Number(serviceId))) {
+        return NextResponse.json(
+          {
+            success: false,
+            data: [],
+            message: "The serviceId must be a valid number",
+            errors: ["Invalid serviceId"],
+          },
+          { status: 400 }
+        );
+      }
+
       const [products, totalProducts] = await Promise.all([
-        //Promise products
         db.product.findMany({
+          where: whereClause,
           skip: offset,
           take: productsPerPage,
           include: {
@@ -191,9 +232,9 @@ export async function GET(request: Request) {
             },
           },
         }),
-
-        //Promise totalProducts
-        db.product.count(),
+        db.product.count({
+          where: whereClause,
+        }),
       ]);
 
       return NextResponse.json({
@@ -209,7 +250,7 @@ export async function GET(request: Request) {
       });
     }
 
-    // Get By ID
+    // Obtener por ID
     const id = Number(requestId);
     if (isNaN(id)) {
       return NextResponse.json(
@@ -263,6 +304,7 @@ export async function GET(request: Request) {
     );
   }
 }
+
 /**
  * @swagger
  * /api/product:
@@ -270,7 +312,7 @@ export async function GET(request: Request) {
  *     tags:
  *       - Product
  *     summary: Update a product
- *     description: Updates a product by ID. Accepts name, description, siteUrl, and a new image file. At least one field must be provided.
+ *     description: Updates a product by ID. Accepts name, description, siteUrl, serviceId, and a new image file. At least one field must be provided.
  *     parameters:
  *       - in: query
  *         name: id
@@ -297,6 +339,9 @@ export async function GET(request: Request) {
  *               imageUrl:
  *                 type: string
  *                 format: binary
+ *               serviceId:  # Added serviceId property
+ *                 type: integer
+ *                 example: 1  # Example serviceId
  *     responses:
  *       200:
  *         description: Product updated successfully.
@@ -307,7 +352,6 @@ export async function GET(request: Request) {
  *       500:
  *         description: Server error while updating product.
  */
-
 
 export async function PATCH(request: Request) {
   try {
@@ -331,11 +375,12 @@ export async function PATCH(request: Request) {
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
+    const serviceId = form.get("serviceId")?.toString();
 
     const imageUrlForm = form.get("imageUrl");
     const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
 
-    if (!name && !description && !imageUrl && !siteUrl) {
+    if (!name && !description && !imageUrl && !siteUrl && !serviceId) {
       return NextResponse.json(
         {
           success: false,
@@ -458,11 +503,9 @@ export async function DELETE(request: Request) {
   }
 }
 
-
-
 //que raro ,la unica que no te funciona es esa o mas ?
 //creo que lead pero por lo mismo
-//pera lo pruebo en mi 
+//pera lo pruebo en mi
 //listo,no hubo necesidad de resetiar entonces por ejemplo si necesitas volver a modificarlo pues pruebas primero el generate y ya luego el migrate dev --name tal cosa y ya
 //Ya quedo fino
 //vale gracias,dale
