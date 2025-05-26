@@ -16,8 +16,8 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *       - Phase
  *     summary: Create a new Phase
  *     description: >
- *       Creates a new phase for a specific project.  
- *       The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".  
+ *       Creates a new phase for a specific project.
+ *       The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".
  *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".
  *     requestBody:
  *       required: true
@@ -37,10 +37,13 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *               name:
  *                 type: string
  *                 description: Name of the phase (e.g., "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY")
+ *                 example: ANALYSIS
  *               description:
  *                 type: string
+ *                 example: Identificación de requerimientos y levantamiento de información.
  *               expectedDuration:
  *                 type: string
+ *                 example: 90 days
  *               startDate:
  *                 type: string
  *                 format: date
@@ -52,8 +55,10 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *               state:
  *                 type: string
  *                 description: Current state of the phase (e.g., "PLANNING", "INPROCESS", "TESTING", "FINISHED")
+ *                 example: INPROCESS
  *               project_id:
  *                 type: integer
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Phase created successfully.
@@ -63,19 +68,25 @@ const validState = ["PLANNING", "INPROCESS", "TESTING", "FINISHED"];
  *         description: Server error.
  */
 
-
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, description, expectedDuration, startDate, endDate, state,project_id } = data;
+    const { name, description, expectedDuration, startDate, endDate, state, project_id } = data;
 
-    if (!name || !description || !expectedDuration || !startDate || !endDate || !state||!project_id) {
+    if (!name || !expectedDuration || !startDate || !state || !project_id) {
       return createResponse({
         success: false,
-        message: "Missing required fields.",
-        errors: ["All fields are required."],
+        message: "All required fields must be provided.",
+        errors: ["The fields 'name', 'expectedDuration', 'startDate', 'state', and 'project_id' are required and cannot be empty."],
         status: 400,
       });
+    }
+     if (project_id) {
+      // Validate that the Project exists
+      const project = await db.project.findUnique({ where: { id: project_id } });
+      if (!project) {
+        return createResponse({ success: false, message: "Project not found.", status: 400 });
+      }
     }
     if (!validName.includes(name)) {
       return createResponse({
@@ -93,13 +104,23 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
       return createResponse({
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for startDate and endDate."],
         status: 400,
       });
+    }
+    if (endDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+        return createResponse({
+          success: false,
+          message: "Invalid date format.",
+          errors: ["Use YYYY-MM-DD format for startDate and endDate."],
+          status: 400,
+        });
+      }
     }
 
     const newPhase = await db.phase.create({ data });
@@ -199,8 +220,8 @@ export async function GET(req: Request) {
  *       - Phase
  *     summary: Update an existing Phase
  *     description: >
- *       Updates an existing phase of a project. The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".  
- *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".  
+ *       Updates an existing phase of a project. The `name` must be one of: "ANALYSIS", "DESIGN", "DEVELOPMENT", "DEPLOY".
+ *       The `state` must be one of: "PLANNING", "INPROCESS", "TESTING", "FINISHED".
  *       The phase is identified by the `id` parameter.
  *     parameters:
  *       - in: query

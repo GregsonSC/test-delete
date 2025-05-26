@@ -53,9 +53,9 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  *               service_id:
  *                 type: integer
  *                 nullable: true
- *               mainTitle:  
+ *               mainTitle:
  *                 type: string
- *               subTitle:   
+ *               subTitle:
  *                 type: string
  *     responses:
  *       201:
@@ -66,27 +66,24 @@ const validCounty = ["MIAMI_DATE", "BROWARD", "WEST_PALM_BEACH"];
  *         description: Server error.
  */
 
-
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
     const name = formData.get("name")?.toString();
     const description = formData.get("description")?.toString();
-    const county = formData.get("county")?.toString();
-    
-    const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
     const activeStr = formData.get("active")?.toString();
-    
-    const service_id = formData.get("service_id")?.toString() ? parseInt(formData.get("service_id")!.toString(), 10) : undefined;
-
-    // Nuevos campos MainTitle y SubTitle
+    const county = formData.get("county")?.toString();
+    const testimonialEmbed = formData.get("testimonialEmbed")?.toString();
+    const service_id = formData.get("service_id")?.toString()
+      ? parseInt(formData.get("service_id")!.toString(), 10)
+      : undefined;
     const mainTitle = formData.get("mainTitle")?.toString();
     const subTitle = formData.get("subTitle")?.toString();
-    
+
     const heroImageFile = formData.get("heroImageUrl");
     const benefitsImageFile = formData.get("benefitsImageUrl");
-    
+
     if (!(heroImageFile instanceof File) || !(benefitsImageFile instanceof File)) {
       return createResponse({
         success: false,
@@ -95,10 +92,10 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-    
+
     const heroImageUrl = await createImage(heroImageFile);
     const benefitsImageUrl = await createImage(benefitsImageFile);
-    
+
     const active = activeStr === "true";
 
     if (
@@ -110,8 +107,8 @@ export async function POST(request: Request) {
       !benefitsImageUrl ||
       !testimonialEmbed ||
       !service_id ||
-      !mainTitle || // Validación para MainTitle
-      !subTitle // Validación para SubTitle
+      !mainTitle ||
+      !subTitle
     ) {
       return createResponse({
         success: false,
@@ -119,6 +116,14 @@ export async function POST(request: Request) {
         errors: ["All fields are required."],
         status: 400,
       });
+    }
+    
+    if (service_id) {
+      // Validate that the Service exists
+      const service = await db.service.findUnique({ where: { id: service_id } });
+      if (!service) {
+        return createResponse({ success: false, message: "Service not found.", status: 400 });
+      }
     }
 
     if (!validCounty.includes(county)) {
@@ -140,8 +145,8 @@ export async function POST(request: Request) {
         benefitsImageUrl,
         testimonialEmbed,
         service_id,
-        mainTitle, // Agregar MainTitle
-        subTitle, // Agregar SubTitle
+        mainTitle,
+        subTitle,
       },
     });
 
@@ -327,8 +332,10 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const heroImageUrl =heroImageFile instanceof File ? await createImage(heroImageFile) : undefined;
-    const benefitsImageUrl =benefitsImageFile instanceof File ? await createImage(benefitsImageFile) : undefined;
+    const heroImageUrl =
+      heroImageFile instanceof File ? await createImage(heroImageFile) : undefined;
+    const benefitsImageUrl =
+      benefitsImageFile instanceof File ? await createImage(benefitsImageFile) : undefined;
 
     const active = activeStr !== undefined ? activeStr === "true" : undefined;
     const service_id = serviceIdStr ? parseInt(serviceIdStr, 10) : undefined;
@@ -367,7 +374,6 @@ export async function PATCH(request: Request) {
     return handleError(error, "PATCH ServiceArea");
   }
 }
-
 
 /**
  * @route DELETE /api/servicearea

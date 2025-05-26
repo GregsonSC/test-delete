@@ -85,19 +85,13 @@ export async function POST(request: Request) {
     const { name, description, expectedDuration, startDate, endDate, state, phase_id, priority } =
       data;
 
-    if (
-      !name ||
-      !description ||
-      !expectedDuration ||
-      !startDate ||
-      !endDate ||
-      !state ||
-      !priority
-    ) {
+    if (!name || !startDate || !state || !phase_id) {
       return createResponse({
         success: false,
-        message: "Missing required fields.",
-        errors: ["All fields are required."],
+        message: "All required fields must be provided.",
+        errors: [
+          "The fields 'name', 'startDate', 'state', and 'phase_id' are required and cannot be empty.",
+        ],
         status: 400,
       });
     }
@@ -117,22 +111,33 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-    if (!validPriotity.includes(priority)) {
-      return createResponse({
-        success: false,
-        message: "Invalid priority.",
-        errors: [`Priority must be one of: ${validPriotity.join(", ")}`],
-        status: 400,
-      });
+    if (priority) {
+      if (!validPriotity.includes(priority)) {
+        return createResponse({
+          success: false,
+          message: "Invalid priority.",
+          errors: [`Priority must be one of: ${validPriotity.join(", ")}`],
+          status: 400,
+        });
+      }
     }
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
       return createResponse({
         success: false,
         message: "Invalid date format.",
         errors: ["Use YYYY-MM-DD format for startDate and endDate."],
         status: 400,
       });
+    }
+    if (endDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+        return createResponse({
+          success: false,
+          message: "Invalid date format.",
+          errors: ["Use YYYY-MM-DD format for startDate and endDate."],
+          status: 400,
+        });
+      }
     }
 
     const newActivity = await db.activity.create({ data });

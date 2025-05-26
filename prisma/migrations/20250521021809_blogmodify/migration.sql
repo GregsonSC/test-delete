@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Blog" ALTER COLUMN "ContentImageUrl" DROP NOT NULL,
+ALTER COLUMN "ImageReference" DROP NOT NULL,
+ALTER COLUMN "ImageSubTitle" DROP NOT NULL;
