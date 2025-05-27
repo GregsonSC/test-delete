@@ -19,14 +19,27 @@ export function ServicePage() {
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams<{ service: string[] }>()
   const [county, city, serviceKey] = params.service ?? [] //Te retorna un array con los params del url
-  const ID_MAP: Record<string, Record<string, number>> = {
-    'miami-dade': { websites: 1, marketing: 2 },
-    broward: { websites: 3, marketing: 4 },
-    'west-palm-beach': { websites: 5, marketing: 6 },
+  const ID_MAP: Record<string, Record<string, Record<string, number>>> = {
+    'miami-dade': {
+      'sunny-isles-beach': { websites: 1, marketing: 2 },
+      'coral-gables': { websites: 3, marketing: 4 },
+      'key-biscayne': { websites: 5, marketing: 6 }
+    },
+    'broward': {
+      'fort-lauderdale': { websites: 7, marketing: 8 },
+      'lauderdale': { websites: 9, marketing: 10 },
+      'hollywood': { websites: 11, marketing: 12 }
+    },
+    'west-palm-beach': {
+      'west-palm-beach': { websites: 13, marketing: 14 },
+      'boca-raton': { websites: 15, marketing: 16 },
+      'delray-beach': { websites: 17, marketing: 18 }
+    }
   };
   type County = 'miami-dade' | 'broward' | 'west-palm-beach';
+  type City = 'sunny-isles-beach' | 'coral-gables' | 'key-biscayne' | 'fort-lauderdale' | 'lauderdale' | 'hollywood' | 'west-palm-beach' | 'boca-raton' | 'delray-beach';
   type ServiceKey = 'websites' | 'marketing';
-  const idToSearch = (ID_MAP[county as County]?.[serviceKey as ServiceKey]) ?? 0;
+  const idToSearch = (ID_MAP[county as County]?.[city as City]?.[serviceKey as ServiceKey]) ?? 0;
 
   useEffect(() => {
     const loadData = async () => {
@@ -35,8 +48,6 @@ export function ServicePage() {
         await getBenefitsForServiceArea(idToSearch);
         setIsLoading(false);
       } catch (error) {
-        console.error("Error loading service area:", error);
-        setIsLoading(false);
         notFound();
       }
     };
@@ -52,10 +63,8 @@ export function ServicePage() {
       console.log("ServiceAreas loaded:", serviceAreas);
       setIsLoading(false);
     }
+    console.log("idToSearch", idToSearch);
   }, [idToSearch]);
-  console.log("serviceAreas", serviceAreas);
-  console.log("idToSearch", idToSearch);
-  console.log("benefits", benefits);
   return (
     <MainLayout>
       <section>
@@ -92,19 +101,21 @@ export function ServicePage() {
                     <Skeleton className="h-14 w-72 mx-auto lg:mx-0 rounded-full" />
                   </>
                 ) : (
-                  <>
+                  <div className="items-start justify-start">
                     <h1 className="font-bold text-4xl mb-5 lg:text-7xl lg:text-start">
                       {serviceAreas[0]?.mainTitle}
                     </h1>
                     <p className="text-justify opacity-80 font-medium lg:text-start">
                       {serviceAreas[0]?.description}
                     </p>
-                    <Link href="/contact">
-                      <Button className="mt-5 rounded-full font-bold text-2xl px-10 py- lg:w-72 lg:h-14">
-                        Book A Call Now!
-                      </Button>
-                    </Link>
-                  </>
+                    <div className="flex justify-center lg:justify-start">
+                      <Link href="/contact">
+                        <Button className="mt-12 rounded-full font-bold text-2xl px-10 py- lg:w-72 lg:h-14">
+                          Book A Call Now!
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -112,16 +123,18 @@ export function ServicePage() {
         </section>
 
         {/* second section (Cards section) */}
-        <section className="p-0">
-          <div className="overflow-hidden relative h-full">
+        <section className="">
+          <div className="flex flex-row overflow-hidden relative h-full">
             {serviceAreas[0]?.benefitsImageUrl ? (
-              <Image 
-                src={serviceAreas[0].benefitsImageUrl} 
-                alt="benefits" 
-                width={1920} 
-                height={1080} 
-                className="hidden lg:block rounded-md absolute top-20 lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600px] object-cover" 
-              />
+              <div className=" xl:min-h-[680px] 2xl:min-h-[680px]">
+                <Image
+                  src={serviceAreas[0].benefitsImageUrl}
+                alt="benefits"
+                width={1920}
+                height={1080}
+                  className="hidden lg:block rounded-md absolute top-20 lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600px] object-cover"
+                />
+              </div>
             ) : (
               <div className="hidden lg:block rounded-md absolute top-20 lg:w-80 xl:w-[600px] lg:h-[800px] xl:h-[680px] 2xl:h-[600px] bg-green-500" />
             )}
@@ -143,9 +156,9 @@ export function ServicePage() {
                   ))}
                 </>
               ) : (
-                <>
+                <div>
                   <h1 className="font-bold text-4xl mb-5 lg:text-5xl lg:text-start">{serviceAreas[0]?.subTitle}</h1>
-                  <div>
+                  <div className="mt-10">
                     {benefits.map((card, i) => (
                       <Card
                         key={i}
@@ -167,16 +180,14 @@ export function ServicePage() {
                       </Card>
                     ))}
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>
         </section>
-
         <ReviewSummary />
-
+        {(idToSearch === 1 || idToSearch === 2 || idToSearch === 3 || idToSearch === 4 || idToSearch === 5 || idToSearch === 6) ? ContactInfo(2) : ContactInfo(1)}
       </section>
-      {ContactInfo(2)}
     </MainLayout>
   );
 }

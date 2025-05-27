@@ -63,10 +63,10 @@ export const endpoints = {
   },
 
   newsletter: {
-    CreateNewsletter: `https://n8n-ultimate-1.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
+    CreateNewsletter: `https://n8n-general.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
   },
   contact_us:{
-    creatCalendarEvent:`https://n8n-ultimate-1.onrender.com/webhook/4e962737-09f2-461d-9f4b-5264f424ea39`,
+    creatCalendarEvent:`https://n8n-general.onrender.com/webhook/4e962737-09f2-461d-9f4b-5264f424ea39`,
 
   },
   lead:{
