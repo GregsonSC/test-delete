@@ -15,15 +15,24 @@ import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info"
 import ExpandingColumns from "@/presentation/atoms/home/expanding-columns";
 import { reviewItems } from "@/lib/constants2"; // Removed portfolioItems from here
 import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel"; // Import the ViewModel
+import { motion, useInView } from "framer-motion";
 
 export function HomePage() {
+  // References for scroll animations
+  const ref1 = React.useRef(null);
+  const ref2 = React.useRef(null);
+  const isInView1 = useInView(ref1, { once: false, amount: 0.3 });
+  const isInView2 = useInView(ref2, { once: false, amount: 0.1 });
   // Fetch portfolio items using the ViewModel
   const { portfolioItems } = PortfolioViewModel();
 
   return (
     <MainLayout>
       {/* First Section - Hero */}
-      <section
+      <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
         style={{
           backgroundImage: "url('/images/home/hero-background.webp')",
@@ -32,7 +41,8 @@ export function HomePage() {
           opacity: 1,
         }}
       >
-        <div className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
+        <div
+          className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
           <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
             Web Design and Digital Marketing
             <br />
@@ -61,7 +71,7 @@ export function HomePage() {
             className="w-full h-auto "
           />
         </div>
-      </section>
+      </motion.div>
       {/* --- PARTNERS LOGOS SECTION --- */}
       <section className="w-full bg-white py-8 lg:h-[150px]">
         <div className="container mx-auto h-full flex items-center justify-center">
@@ -105,7 +115,13 @@ export function HomePage() {
           muted
         ></video>
 
-        <div className="relative z-2 text-center w-full max-w-4xl mx-auto px-4 mt-5 mb-8">
+        <motion.div
+          ref={ref1}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="relative z-2 text-center w-full max-w-4xl mx-auto px-4 mt-5 mb-8"
+        >
           <h1 className="text-3xl md:text-5xl font-bold text-[#181C3A] text-center mb-4 mt-4">
             5-Star Digital Marketing Agency
           </h1>
@@ -126,7 +142,7 @@ export function HomePage() {
               ></iframe>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
       {/* --- END HERO VIDEO SECTION --- */}
       {/* Second Section */}
@@ -134,7 +150,13 @@ export function HomePage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
-        <div className="container px-8 sm:px-4 md:px-6 mx-auto">
+        <motion.div
+          ref={ref2}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="container px-8 sm:px-4 md:px-6 mx-auto"
+        >
           <div className="max-w-5xl mx-auto">
             <Heading
               level="h2"
@@ -173,7 +195,7 @@ export function HomePage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
       {/* Portfolio Section */}
       <section className=" px-4 md:px-6 mx-auto relative">

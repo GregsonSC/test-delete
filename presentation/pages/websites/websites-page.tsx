@@ -154,7 +154,8 @@ export function WebsitesPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
-        <LatestNews blogItems={blogItems} caseItems={caseItems} />
+        {/* <LatestNews blogItems={blogItems} caseItems={caseItems} /> */}
+        <LatestNews />
       </section>
     </MainLayout>
   );

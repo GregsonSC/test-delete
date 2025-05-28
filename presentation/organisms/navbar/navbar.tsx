@@ -446,6 +446,7 @@ export function Navbar({ className }: NavbarProps) {
   const [mobileDropdowns, setMobileDropdowns] = useState<Record<string, boolean>>({});
   const [areaDropdowns, setAreaDropdowns] = useState<Record<string, boolean>>({});
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser();
   console.log("userNavbar", user);
@@ -473,6 +474,21 @@ export function Navbar({ className }: NavbarProps) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Detectar scroll para cambiar el fondo del navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      if (scrollPosition > 0 && !hasScrolled) {
+        setHasScrolled(true);
+      } else if (scrollPosition === 0 && hasScrolled) {
+        setHasScrolled(false);
+      }
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasScrolled]);
 
   const toggleMobileDropdown = (label: string) => {
     setMobileDropdowns((prev) => ({
@@ -512,7 +528,8 @@ export function Navbar({ className }: NavbarProps) {
     <>
       <header
         className={cn(
-          "w-full py-4 bg-[#020301] shadow-lg lg:bg-red-500 lg:shadow-none", //TODO: Aqui es el background del navbar
+          "w-full py-4 shadow-lg lg:shadow-none",
+          hasScrolled && "bg-[#020301de]",
           "fixed top-0 left-0 z-50",
           className
         )}
