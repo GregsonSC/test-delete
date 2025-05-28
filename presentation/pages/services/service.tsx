@@ -30,7 +30,7 @@ export function ServicePage() {
       'hollywood': { websites: 9, marketing: 10 },
       'pompano-beach': { websites: 11, marketing: 12 }
     },
-    'west-palm-beach': {
+    'palm-beach': {
       'west-palm-beach': { websites: 13, marketing: 14 },
       'boca-raton': { websites: 15, marketing: 16 },
       'delray-beach': { websites: 17, marketing: 18 }
