@@ -13,7 +13,7 @@ import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-
 import { BlogViewModel } from "@/presentation/pages/blog/BlogViewModel";
 import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
 import { StudyCaseViewModel } from "./StudyCaseViewModel";
-import { Blog } from "@/components/interface/modules/Blog";
+import { SimpleBlog } from "@/components/interface/modules/Blog";
 import { StudyCase } from "@/components/interface/modules/StudyCase";
 
 // Skeleton para StudyCases fuera del componente principal
@@ -35,12 +35,12 @@ function StudyCaseSkeleton() {
 }
 
 export function LatestNews() {
-  const { posts, loading } = BlogViewModel();
+  const { posts, loading } = BlogViewModel({ simpleBlog: true });
   const { StudyCases, loading: loadingCases, error: errorCases } = StudyCaseViewModel();
   const [activeTab, setActiveTab] = React.useState<string>("blog");
 
-  // Get the 6 most recent posts
-  const recentPosts: Blog[] = [...posts].slice(-6);
+  // Get the 6 most recent posts (SimpleBlog)
+  const recentPosts: SimpleBlog[] = Array.isArray(posts) ? [...posts].slice(-6) : [];
 
   // Last 6 items para casos de estudio
   const recentCases = [...StudyCases].slice(-6);
@@ -53,7 +53,10 @@ export function LatestNews() {
   const displayType = activeTab;
 
   return (
-    <div className="w-full py-12 text-white bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}>
+    <div
+      className="w-full py-12 text-white bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
+    >
       <div className="mx-auto max-w-[1400px] px-4">
         <div className="flex flex-col lg:flex-row justify-between items-center lg:items-center mb-8">
           <div className="text-center lg:text-left w-full lg:w-auto">
@@ -131,31 +134,36 @@ export function LatestNews() {
                         </div>
                       </CarouselItem>
                     ))
-                  : itemsToDisplay.map((item) => (
-                      <CarouselItem
-                        key={item.id}
-                        className={
-                          "basis-full lg:basis-1/2 xl:basis-1/3 flex justify-center px-0 sm:px-2"
-                        }
-                      >
-                        <div className="relative w-full h-full flex justify-center max-w-[319px]">
-                          <HoverCardImage
-                            image={(item as Blog).imageUrl}
-                            title={(item as Blog).title}
-                            content={(item as Blog).content.quote}
-                            date={(item as Blog).publicationDate.slice(0, 10)}
-                            tag={
-                              (item as Blog).topic === "WEBDESIGN"
-                                ? "Web Development"
-                                : (item as Blog).topic === "DIGITALMARKETING"
-                                  ? "Marketing"
-                                  : "Marketing"
+                  : itemsToDisplay.map((item) => {
+                      // Type guard para SimpleBlog
+                      if (
+                        "imageUrl" in item &&
+                        "resume" in item &&
+                        "publicationDate" in item &&
+                        "topic" in item
+                      ) {
+                        return (
+                          <CarouselItem
+                            key={item.id}
+                            className={
+                              "basis-full lg:basis-1/2 xl:basis-1/3 flex justify-center px-0 sm:px-2"
                             }
-                            href={`/blog/${item.id}`}
-                          />
-                        </div>
-                      </CarouselItem>
-                    )))}
+                          >
+                            <div className="relative w-full h-full flex justify-center max-w-[319px]">
+                              <HoverCardImage
+                                image={item.imageUrl}
+                                title={item.title}
+                                content={item.resume}
+                                date={item.publicationDate.slice(0, 10)}
+                                tag={item.topic}
+                                href={`/blog/${item.id}`}
+                              />
+                            </div>
+                          </CarouselItem>
+                        );
+                      }
+                      return null;
+                    }))}
               {displayType === "cases" &&
                 (loadingCases ? (
                   Array.from({ length: 3 }).map((_, idx) => (

@@ -38,3 +38,27 @@ export interface ApiResponse<T> {
   message: string;
   errors: string[];
 }
+
+// Interfaz para un blog simplificado según la respuesta de la API
+export interface SimpleBlog {
+  id: number;
+  title: string;
+  resume: string;
+  topic: string;
+  publicationDate: string;
+  imageUrl: string;
+}
+
+// Interfaz para la respuesta de la API de blogs simplificados
+export interface SimpleBlogApiResponse {
+  success: boolean;
+  data: SimpleBlog[];
+  message: string;
+  status: number;
+  errors: string[];
+  page: {
+    offset: number;
+    simpleBlogsPerPage: number;
+    totalBlogs: number;
+  };
+}
