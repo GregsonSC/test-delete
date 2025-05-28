@@ -4,6 +4,7 @@ import { endpoints } from "@/lib/services/endpoints";
 import { ApiResponse, ServiceArea } from "@/components/interface/modules/ServiceArea";
 import { Benefit } from "@/components/interface/modules/Benefit";
 
+
 export const ServiceAreaViewModel = () => {
     const { fetchData } = useFetch();
     const [serviceAreas, setServiceAreas] = useState<ServiceArea[]>([]);
@@ -31,6 +32,7 @@ export const ServiceAreaViewModel = () => {
                 console.log("errorMessage", errorMessage);
                 setError(errorMessage);
                 setServiceAreas([]);
+
             }
         } catch (err: any) {
             const errorMessage =

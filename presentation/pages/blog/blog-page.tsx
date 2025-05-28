@@ -72,13 +72,11 @@ export function BlogPage() {
                 <div key={index} className="w-full flex justify-center">
                   <HoverCardImage
                     title={post.title}
-                    content={post.content}
-                    // tag={post.tag}
+                    content={post.resume}
                     tag={index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"}
                     date={post.publicationDate.slice(0, 10)}
-                    // image={post.imageUrl || "fotos-prueba/webdevelpment.png"}
                     image={"/images/portfolio/portafolioTestImg.webp"}
-                    href="/"
+                    href={`/blog/${post.id}`}
                   />
                 </div>
               ))}

@@ -22,9 +22,10 @@ export const endpoints = {
   },
   blog: {
     getPosts: `${API}/blog`,
-    createPost: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog`,
-    updatePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
-    deletePost: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/blog${id}`,
+    getPost: (id: number) => `${API}/blog?id=${id}`,
+    createPost: `${API}/blog`,
+    updatePost: (id: number) => `${API}/blog?id=${id}`,
+    deletePost: (id: number) => `${API}/blog?id=${id}`,
   },
   // Add authentication endpoints
   auth: {

@@ -15,7 +15,7 @@ import { ReviewSummary } from "@/presentation/organisms/review-summary/review-su
 
 
 export function ServicePage() {
-  const { serviceAreas, getServiceArea, getBenefitsForServiceArea, benefits } = ServiceAreaViewModel();
+  const { serviceAreas, getServiceArea, getBenefitsForServiceArea, benefits, error } = ServiceAreaViewModel();
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams<{ service: string[] }>()
   const [county, city, serviceKey] = params.service ?? [] //Te retorna un array con los params del url
@@ -27,8 +27,8 @@ export function ServicePage() {
     },
     'broward': {
       'fort-lauderdale': { websites: 7, marketing: 8 },
-      'lauderdale': { websites: 9, marketing: 10 },
-      'hollywood': { websites: 11, marketing: 12 }
+      'hollywood': { websites: 9, marketing: 10 },
+      'pompano-beach': { websites: 11, marketing: 12 }
     },
     'west-palm-beach': {
       'west-palm-beach': { websites: 13, marketing: 14 },
@@ -48,10 +48,10 @@ export function ServicePage() {
         await getBenefitsForServiceArea(idToSearch);
         setIsLoading(false);
       } catch (error) {
+        console.log(error)
         notFound();
       }
     };
-
     if (idToSearch === 0) {
       notFound();
     }
