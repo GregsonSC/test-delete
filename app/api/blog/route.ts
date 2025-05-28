@@ -381,10 +381,9 @@ export async function GET(req: Request) {
           include: {
             User: {
               select: {
-                id: true,
                 name: true,
                 email: true,
-                address: true,
+                imageUrl: true,
               },
             },
           },
@@ -415,10 +414,9 @@ export async function GET(req: Request) {
   include: {
     User: {
       select: {
-        id: true,
         name: true,
         email: true,
-        address:true
+        imageUrl:true
       },
     },
   },
