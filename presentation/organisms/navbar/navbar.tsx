@@ -122,14 +122,14 @@ const DesktopAuthButtons = ({
   if (!isLoggedIn) {
     return (
       <>
-        <Link href="/register">
+        <Link href="/register" className="hidden sm:block">
           <Button className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center">
             Register
           </Button>
         </Link>
         <Link
           href="/login"
-          className="rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
+          className="hidden sm:block rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
         >
           Log In
         </Link>
@@ -402,11 +402,13 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
         )}
 
         <div className="flex justify-end mt-8 mb-2">
-          <Link href="/contact">
-            <Button className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all">
-              Get a free consultation!
-            </Button>
-          </Link>
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
+          >
+            <Link href="/contact">Get a free consultation!</Link>
+          </Button>
         </div>
       </div>
     </div>
@@ -485,7 +487,7 @@ export function Navbar({ className }: NavbarProps) {
         setHasScrolled(false);
       }
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasScrolled]);

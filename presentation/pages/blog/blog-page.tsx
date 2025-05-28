@@ -11,38 +11,34 @@ import BlogViewModel from "./BlogViewModel";
 import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
 
 export function BlogPage() {
-  const { posts } = BlogViewModel();
+  // Estado para paginación
+  const [simpleBlogsPerPage, setSimpleBlogsPerPage] = useState(3);
+  const [offset, setOffset] = useState(0);
+  const [allPosts, setAllPosts] = useState<any[]>([]);
+  const { posts, loading, pageInfo } = BlogViewModel({
+    simpleBlog: true,
+    offset,
+    simpleBlogsPerPage,
+  });
 
-  // Estado para controlar la cantidad de posts visibles
-  const [postsCount, setPostsCount] = useState(6);
-  const [loading, setLoading] = useState(true);
-
+  // Acumular posts al hacer load more
   useEffect(() => {
     if (posts && posts.length > 0) {
-      setLoading(false);
+      if (offset === 0) {
+        setAllPosts(posts);
+      } else {
+        setAllPosts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const newPosts = posts.filter((p) => !existingIds.has(p.id));
+          return [...prev, ...newPosts];
+        });
+      }
     }
-  }, [posts]);
+  }, [posts, offset]);
 
-  // Al montar el componente, se determina el dispositivo según window.innerWidth:
-  // - Mobile (<640px): 3 posts
-  // - Tablet (>=640px y <1024px): 4 posts
-  // - Desktop (>=1024px): 6 posts
-  useEffect(() => {
-    const width = window.innerWidth;
-    if (width < 640) {
-      setPostsCount(3);
-    } else if (width < 1024) {
-      setPostsCount(4);
-    } else {
-      setPostsCount(6);
-    }
-  }, []);
-
-  console.log(posts);
-
-  // Función para cargar 3 posts adicionales cada vez que se presiona el botón
+  // Load more: aumentar offset
   const handleLoadMore = () => {
-    setPostsCount((prev) => prev + 3);
+    setOffset((prev) => prev + simpleBlogsPerPage);
   };
 
   return (
@@ -62,37 +58,38 @@ export function BlogPage() {
       <section className="mt-14 mb-12">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {loading
-              ? Array.from({ length: postsCount }).map((_, idx) => (
-                <div key={idx} className="w-full flex justify-center">
-                  <HoverCardImageSkeleton />
-                </div>
-              ))
-              : posts.slice(0, postsCount).map((post, index) => (
-                <div key={index} className="w-full flex justify-center">
-                  <HoverCardImage
-                    title={post.title}
-                    content={post.content}
-                    // tag={post.tag}
-                    tag={index % 3 === 0 ? "Web Development" : index % 3 === 1 ? "Marketing" : "Design"}
-                    date={post.publicationDate.slice(0, 10)}
-                    // image={post.imageUrl || "fotos-prueba/webdevelpment.png"}
-                    image={"/images/portfolio/portafolioTestImg.webp"}
-                    href="/"
-                  />
-                </div>
-              ))}
+            {loading && allPosts.length === 0
+              ? Array.from({ length: simpleBlogsPerPage }).map((_, idx) => (
+                  <div key={idx} className="w-full flex justify-center">
+                    <HoverCardImageSkeleton />
+                  </div>
+                ))
+              : allPosts.map((post, index) => (
+                  <div key={index} className="w-full flex justify-center">
+                    <HoverCardImage
+                      title={post.title}
+                      content={post.resume}
+                      tag={post.topic}
+                      date={post.publicationDate.slice(0, 10)}
+                      image={post.imageUrl}
+                      href={`/blog/${post.id}`}
+                    />
+                  </div>
+                ))}
           </div>
         </div>
-        {
-          posts.length > 6 && (
-            <div className="flex justify-center mt-12 ">
-              <Button variant="outline" className="rounded-full" onClick={handleLoadMore}>
-                Load More Articles
-              </Button>
-            </div>
-          )
-        }
+        {pageInfo && allPosts.length < pageInfo.totalBlogs && (
+          <div className="flex justify-center mt-12 ">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all cursor-pointer"
+              onClick={handleLoadMore}
+            >
+              <span>Load More Articles</span>
+            </Button>
+          </div>
+        )}
       </section>
 
       {ContactInfo(1)}
