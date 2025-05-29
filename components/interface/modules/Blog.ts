@@ -13,6 +13,12 @@ export interface BlogContent {
   content2: string;
 }
 
+export interface User{
+  name:string;
+  email: string;
+  imageUrl: string;
+}
+
 export interface Blog {
   id: number;
   title: string;
@@ -27,7 +33,7 @@ export interface Blog {
   ImageReference: string;
   createdAt: string;
   updatedAt: string;
-  userId: number;
+  User: User;
 }
 
 export type { BlogPost };
