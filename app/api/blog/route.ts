@@ -347,6 +347,14 @@ export async function GET(req: Request) {
             topic: true,
             publicationDate: true,
             imageUrl: true,
+            userId: true,
+            User: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
           },
         }),
         db.blog.count(),
@@ -370,6 +378,15 @@ export async function GET(req: Request) {
         db.blog.findMany({
           skip: offset,
           take: simpleBlogsPerPage,
+          include: {
+            User: {
+              select: {
+                name: true,
+                email: true,
+                imageUrl: true,
+              },
+            },
+          },
         }),
         db.blog.count(),
       ]);
@@ -392,7 +409,18 @@ export async function GET(req: Request) {
       });
     }
     //Get by id
-    const blog = await db.blog.findUnique({ where: { id } });
+    const blog = await db.blog.findUnique({
+  where: { id },
+  include: {
+    User: {
+      select: {
+        name: true,
+        email: true,
+        imageUrl:true
+      },
+    },
+  },
+});
 
     if (!blog) {
       return createResponse({

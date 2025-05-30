@@ -3404,7 +3404,7 @@ fraction.js@^4.3.7:
 
 framer-motion@^12.15.0:
   version "12.15.0"
-  resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-12.15.0.tgz"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-12.15.0.tgz#6892283fc7967b071f537d6d160ab49e3d5e73ae"
   integrity sha512-XKg/LnKExdLGugZrDILV7jZjI599785lDIJZLxMiiIFidCsy0a4R2ZEf+Izm67zyOuJgQYTHOmodi7igQsw3vg==
   dependencies:
     motion-dom "^12.15.0"
