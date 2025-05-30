@@ -32,6 +32,8 @@ export const endpoints = {
     registerUser: `${API}/auth/register`, // Endpoint for user registration (POST)
     loginUser: `${API}/auth/login`, // Endpoint for user login (POST)
     logoutUser: `${API}/auth/logOut`, // Endpoint for user logout (POST)
+    updateUser: (id: string) => `${API}/user?id=${id}`, // Endpoint for user update (PATCH)
+    getUser: (id: string) => `${API}/user?id=${id}`, // Endpoint for user update (GET)
   },
   portfolio: {
     getProducts: `${API}/product`,
@@ -50,36 +52,34 @@ export const endpoints = {
 
   //ServiceArea endpoints
   servicearea: {
-
     getServiceAreas: `${API}/servicearea`, // Endpoint to get all service areas (GET)
     getServiceArea: (id: string) => `${API}/servicearea?id=${id}`, // Endpoint to get a specific service area by ID (GET)
     createServiceArea: `${API}/servicearea`, // Endpoint to create a new service area (POST)
     updateServiceArea: (id: string) => `${API}/servicearea?id=${id}`, // Endpoint to update a specific service area by ID (PATCH)
     getServiceAreasMock: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to get all service areas (GET)
-    getServiceAreaMock: (id: string) => `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
+    getServiceAreaMock: (id: string) =>
+      `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to get a specific service area by ID (GET)
     createServiceAreaMock: `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea`, // Endpoint to create a new service area (POST)
     updateServiceAreaMock: (id: string) =>
       `https://6818f3a05a4b07b9d1d17bbc.mockapi.io/ServiceArea/${id}`, // Endpoint to update a specific service area by ID (PATCH)
-
   },
 
   newsletter: {
     CreateNewsletter: `https://n8n-general.onrender.com/webhook/b82dfac6-6194-4177-ba5f-b485c6cad955`,
   },
-  contact_us:{
-    creatCalendarEvent:`https://n8n-general.onrender.com/webhook/4e962737-09f2-461d-9f4b-5264f424ea39`,
-
+  contact_us: {
+    creatCalendarEvent: `https://n8n-general.onrender.com/webhook/4e962737-09f2-461d-9f4b-5264f424ea39`,
   },
-  lead:{
+  lead: {
     createLead: `${API}/lead`,
   },
-  benefit:{
+  benefit: {
     getBenefits: `${API}/benefit`,
     getBenefit: (id: string) => `${API}/benefit?id=${id}`,
     createBenefit: `${API}/benefit`,
     updateBenefit: (id: string) => `${API}/benefit?id=${id}`,
     deleteBenefit: (id: string) => `${API}/benefit?id=${id}`,
-  }
+  },
 };
 
 // Header configurations

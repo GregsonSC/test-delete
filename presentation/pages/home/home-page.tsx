@@ -72,37 +72,84 @@ export function HomePage() {
         </div>
       </motion.div>
       {/* --- PARTNERS LOGOS SECTION --- */}
-      <section className="w-full bg-white py-8 lg:h-[150px]">
-        <div className="container mx-auto h-full flex items-center justify-center">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-5 lg:gap-0 xl:gap-5">
-            <img
-              src="images/home/googleAnalytic.webp"
-              alt="Google Analytics"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/webflow.webp"
-              alt="Webflow"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/shopify.webp"
-              alt="Shopify"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/paypal.webp"
-              alt="PayPal"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/stripe.webp"
-              alt="Stripe"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
+      <section className="w-full bg-white py-8 lg:h-[150px] overflow-hidden">
+        <div className="container mx-auto h-full flex items-center justify-center relative">
+          <div className="w-full overflow-hidden">
+            <div
+              className="flex gap-16 animate-partners-scroll"
+              style={{
+                minWidth: "fit-content",
+                animation: "partners-scroll 25s linear infinite",
+              }}
+            >
+              <img
+                src="images/home/googleAnalytic.webp"
+                alt="Google Analytics"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/webflow.webp"
+                alt="Webflow"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/shopify.webp"
+                alt="Shopify"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/paypal.webp"
+                alt="PayPal"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/stripe.webp"
+                alt="Stripe"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              {/* Duplicar para loop infinito */}
+              <img
+                src="images/home/googleAnalytic.webp"
+                alt="Google Analytics"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/webflow.webp"
+                alt="Webflow"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/shopify.webp"
+                alt="Shopify"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/paypal.webp"
+                alt="PayPal"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+              <img
+                src="images/home/stripe.webp"
+                alt="Stripe"
+                className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+              />
+            </div>
           </div>
         </div>
       </section>
+      <style jsx global>{`
+        @keyframes partners-scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-partners-scroll {
+          width: max-content;
+        }
+      `}</style>
       {/* --- END PARTNERS LOGOS SECTION --- */}
       {/* --- HERO VIDEO SECTION --- */}
       <section className="min-h-screen relative flex flex-col justify-center items-center">

@@ -57,6 +57,7 @@ interface LoginApiResponse {
     name: string;
     phone: string;
     address: string;
+    imageUrl?: string; // <-- Add this line
   };
   errors: string[];
 }
@@ -67,11 +68,60 @@ interface UserData {
   name: string;
   phone: string;
   address: string;
+  imageUrl?: string;
+  role?: UserRole;
 }
 
 interface UserContextProps {
   user: UserData | null;
   setUser: (user: UserData | null) => void;
+}
+
+/**
+ * Interface for the role object in the update user response
+ */
+interface UserRole {
+  id: number;
+  name: string;
+}
+
+/**
+ * Interface for the updated user object in the update user response
+ */
+interface UpdatedUser {
+  id: number;
+  name: string;
+  phone: string;
+  imageUrl: string;
+  address: string;
+  role: UserRole;
+}
+
+/**
+ * Interface for update user API response
+ */
+interface UpdateUserApiResponse {
+  success: boolean;
+  message: string;
+  data: UpdatedUser[];
+}
+
+// Estructura de respuesta del endpoint GET /user
+interface UserApiData {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  imageUrl: string;
+  address: string;
+  role: UserRole;
+}
+
+interface GetUserApiResponse {
+  success: boolean;
+  data: UserApiData[];
+  message: string;
+  errors: any[];
 }
 
 export type {
@@ -82,4 +132,9 @@ export type {
   LoginApiResponse,
   UserData,
   UserContextProps,
+  UpdateUserApiResponse,
+  UpdatedUser,
+  UserRole,
+  GetUserApiResponse,
+  UserApiData,
 };

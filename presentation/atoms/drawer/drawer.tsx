@@ -20,6 +20,7 @@ interface ProfileDrawerProps {
   profileName?: string;
   email?: string;
   phone?: string;
+  imageUrl?: string;
 }
 
 export function ProfileDrawer({
@@ -28,6 +29,7 @@ export function ProfileDrawer({
   profileName = "Profile Name",
   email = "example@gmail.com",
   phone = "+00 0000000000",
+  imageUrl,
 }: ProfileDrawerProps) {
   const router = useRouter();
   const { logout, loading } = AuthViewModel();
@@ -38,7 +40,15 @@ export function ProfileDrawer({
       <DrawerContent className="h-full w-[320px] right-0 left-auto fixed rounded-none bg-white z-[100] border-none shadow-none">
         <div className="flex flex-col items-center justify-between h-full py-8">
           <DrawerHeader className="flex flex-col items-center relative border-none shadow-none before:hidden after:hidden">
-            <div className="w-40 h-40 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] mb-4"></div>
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="Profile"
+                className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-[#8ECF0A]"
+              />
+            ) : (
+              <div className="w-40 h-40 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] mb-4"></div>
+            )}
             <DrawerClose asChild>
               <Button
                 size="icon"
