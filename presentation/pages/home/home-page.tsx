@@ -30,9 +30,9 @@ export function HomePage() {
     <MainLayout>
       {/* First Section - Hero */}
       <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
         style={{
           backgroundImage: "url('/images/home/hero-background.webp')",
@@ -41,8 +41,7 @@ export function HomePage() {
           opacity: 1,
         }}
       >
-        <div
-          className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
+        <div className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
           <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
             Web Design and Digital Marketing
             <br />
@@ -266,6 +265,7 @@ export function HomePage() {
       {/* //TODO: Esto hace que la pagina sea muy ancha, hay que ver como arreglarlo */}
       <ScheduleFreeConsultation />
       {/* Fourth Section - Blog/Resources */}
+
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}

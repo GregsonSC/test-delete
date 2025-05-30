@@ -42,7 +42,7 @@ export function ProfileDrawer({
             <DrawerClose asChild>
               <Button
                 size="icon"
-                className="absolute top-20 -left-20 h-8 w-8 rounded-full bg-[#99cc33] text-white hover:bg-[#99cc33] shadow-md flex items-center justify-center"
+                className="absolute top-20 -left-[55px] h-8 w-8 rounded-full bg-[#99cc33] text-white hover:bg-[#99cc33] shadow-md flex items-center justify-center"
                 onClick={onClose}
               >
                 <svg
