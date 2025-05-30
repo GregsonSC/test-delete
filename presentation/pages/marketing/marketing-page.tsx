@@ -20,14 +20,8 @@ export function MarketingPage() {
   // References for scroll animations
   const ref1 = React.useRef(null);
   const ref2 = React.useRef(null);
-  const ref3 = React.useRef(null);
-  const ref4 = React.useRef(null);
-  const ref5 = React.useRef(null);
   const isInView1 = useInView(ref1, { once: false, amount: 0.3 });
   const isInView2 = useInView(ref2, { once: false, amount: 0.1 });
-  const isInView3 = useInView(ref3, { once: false, amount: 0.1 });
-  const isInView4 = useInView(ref4, { once: false, amount: 0.3 });
-  const isInView5 = useInView(ref5, { once: false, amount: 0.1 });
 
   const { portfolioItems, loading, error } = PortfolioViewModel();
 
@@ -42,7 +36,7 @@ export function MarketingPage() {
           muted
           loop
           playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          className="absolute top-0 left-0 w-full h-full object-cover z-0 filter brightness-75"
         >
           <source src="/images/marketing/Marketing_HeroFrame.mp4" type="video/mp4" />
         </video>
@@ -65,7 +59,7 @@ export function MarketingPage() {
             Stop worrying about attracting clients—we make sure your business is always on the radar of those who need you most.
           </p>
           <Button
-            className="rounded-full px-8 py-10 text-3xl font-semibold bg-[#99CC33] text-[#0A1248] hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
+            className="rounded-full px-4 py-8 md:px-8 text-xl md:py-10 md:text-3xl font-semibold bg-[#99CC33] text-[#0A1248] hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
           >
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
@@ -166,11 +160,8 @@ export function MarketingPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
-        <motion.div
-          ref={ref3}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+        <div
+
           className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full"
         >
           <div className="max-w-5xl mx-auto w-full">
@@ -205,17 +196,10 @@ export function MarketingPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
         {ContactInfo(1)}
-      <motion.div
-        ref={ref4}
-        initial={{ opacity: 0, y: 30 }}
-        animate={isInView4 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-        transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-      >
         <ScheduleFreeConsultation />
-      </motion.div>
       {/* Fourth Section - Blog/Resources */}
       <section className=" flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}>
         <LatestNews />

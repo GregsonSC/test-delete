@@ -42,7 +42,7 @@ export function PortfolioPage() {
       {/* --- NEW PORTFOLIO SECTION --- */}
       <section className="bg-[#060B20] py-16 md:py-24">
         <motion.div
-        ref={ref1}
+          ref={ref1}
           initial={{ opacity: 0, y: 30 }}
           animate={isInView1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -102,11 +102,7 @@ export function PortfolioPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
-        <motion.div
-          ref={ref2}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+        <div
           className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
           <div className="max-w-5xl mx-auto w-full">
             {/* Content container */}
@@ -140,17 +136,11 @@ export function PortfolioPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
-        {ContactInfo(1)}
-      <motion.div
-      ref={ref3}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-    >
+      {ContactInfo(1)}
       <ScheduleFreeConsultation />
-      </motion.div>
+
       {/* Fourth Section - Blog/Resources */}
       <section
         className="flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
