@@ -199,11 +199,7 @@ export async function POST(request: NextRequest) {
   }
 
   const token = signToken({
-    id: user.id,
-    email: user.email,
     name: user.name,
-    phone: user.phone,
-    address: user.address,
   });
 
   const response = NextResponse.json({
