@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
     const imageUrlForm = form.get("imageUrl");
-    let serviceId = form.get("serviceId")
+    const serviceId = form.get("serviceId")
       ? parseInt(form.get("serviceId")!.toString(), 10)
       : undefined;
 
@@ -66,9 +66,6 @@ export async function POST(request: NextRequest) {
       if (!service) {
         return createResponse({ success: false, message: "Service not found.", status: 400 });
       }
-    }
-    if (serviceId == undefined) {
-      return createResponse({ success: false, message: "Service not found.", status: 400 });
     }
 
     if (!(imageUrlForm instanceof File)) {
@@ -94,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newProduct = await db.product.create({
-      data: { name, description, imageUrl, siteUrl, serviceId }, // Asegúrate de convertir serviceId a número
+      data: { name, description, imageUrl, siteUrl, serviceId },
     });
 
     return NextResponse.json(
@@ -201,7 +198,6 @@ export async function GET(request: Request) {
 
     const offset = Number(searchParams.get("offset")) || 0;
     let productsPerPage = Number(searchParams.get("productsPerPage")) || 10;
-
 
     // Obtener todos o filtrado por Service
     if (!requestId) {
@@ -377,7 +373,9 @@ export async function PATCH(request: Request) {
     const name = form.get("name")?.toString();
     const description = form.get("description")?.toString();
     const siteUrl = form.get("siteUrl")?.toString();
-    const serviceId = form.get("serviceId")?.toString();
+    const serviceId = form.get("serviceId")
+      ? parseInt(form.get("serviceId")!.toString(), 10)
+      : undefined;
 
     const imageUrlForm = form.get("imageUrl");
     const imageUrl = imageUrlForm instanceof File ? await createImage(imageUrlForm) : undefined;
@@ -406,6 +404,13 @@ export async function PATCH(request: Request) {
         { status: 404 }
       );
     }
+    if (serviceId) {
+      // Validate that the Service exists
+      const service = await db.service.findUnique({ where: { id: serviceId } });
+      if (!service) {
+        return createResponse({ success: false, message: "Service not found.", status: 400 });
+      }
+    }
 
     const updatedProduct = await db.product.update({
       where: { id },
@@ -414,6 +419,7 @@ export async function PATCH(request: Request) {
         ...(description && { description }),
         ...(imageUrl && { imageUrl }),
         ...(siteUrl && { siteUrl }),
+        ...(serviceId && { serviceId }),
       },
     });
 
