@@ -109,15 +109,9 @@ export function ProfileDrawer({
                 <span>{phone}</span>
               </div>
               <Button
-                onClick={() => {
-                  if (currentPath === "/dashboard") {
-                    onClose();
-                  } else {
-                    router.push("/dashboard");
-                  }
-                }}
                 variant="ghost"
-                className="flex items-center gap-2 text-black hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-center transition-colors w-full mt-6 mb-2 shadow-lg bg-white"
+                disabled
+                className="flex items-center gap-2 text-black bg-gray-200 hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-center transition-colors w-full mt-6 mb-1 shadow-lg opacity-60 cursor-not-allowed"
               >
                 <svg
                   className="h-4 w-4"
@@ -135,6 +129,22 @@ export function ProfileDrawer({
                 </svg>
                 Dashboard
               </Button>
+              <div className="flex items-center gap-1 mt-1 text-xs text-gray-500 justify-center w-full">
+                <svg
+                  className="w-4 h-4 text-yellow-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>Under development</span>
+              </div>
             </div>
           </DrawerHeader>
 
