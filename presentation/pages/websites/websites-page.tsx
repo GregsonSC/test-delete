@@ -12,6 +12,13 @@ import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedu
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
 import { reviewItems } from "@/lib/constants2";
 import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel";
+import { motion } from "framer-motion";
+
+// Variantes para animaciones suaves
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+};
 
 export function WebsitesPage() {
   const { portfolioItems, loading, error } = PortfolioViewModel();
@@ -20,44 +27,71 @@ export function WebsitesPage() {
       {/* First Section - Hero */}
       <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden bg-black">
         <div className="container mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto flex flex-col justify-center items-center flex-1 relative z-10 text-white">
-          <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
+          <motion.h1
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={fadeInUp}
+            className="text-[36px] md:text-[40px] font-[700] mb-12"
+          >
             Professional Web Design and Development in Miami
-          </Heading>
-          <p className="text-[16px] md:text-[18px] font-normal mb-12 max-w-4xl mx-auto">
+          </motion.h1>
+          <motion.p
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={fadeInUp}
+            className="text-[16px] md:text-[18px] font-normal mb-12 max-w-4xl mx-auto"
+          >
             Do you still not have a website, or is your current site not up to date with modern
             design standards? We specialize in creating websites designed to generate the maximum
             number of conversions. Every visitor to your site is an opportunity, and we ensure you
             don't miss any.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
+          </motion.p>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={fadeInUp}
           >
-            <Link href="/contact">Get a free consultation!</Link>
-          </Button>
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
+            >
+              <Link href="/contact">Get a free consultation!</Link>
+            </Button>
+          </motion.div>
         </div>
       </section>
 
       {/* Second Section */}
       <section
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
+        style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
-            <Heading
-              level="h2"
+            <motion.h2
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+              variants={fadeInUp}
               className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0"
             >
               Websites That Convert Visitors Into New Customers
-            </Heading>
-            <p className="text-[16px] font-[600] text-muted-foreground mb-24 text-left mx-2 sm:mx-10 md:mx-0">
+            </motion.h2>
+            <motion.p
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+              variants={fadeInUp}
+              className="text-[16px] font-[600] text-muted-foreground mb-24 text-left mx-2 sm:mx-10 md:mx-0"
+            >
               Convert your website into a lead-generating machine. We build websites that attract{" "}
               <br />
               your ideal clients and turn every visit into a golden opportunity.
-            </p>
-
+            </motion.p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-[200px] justify-items-center">
               {/* First Card */}
               <HoverCardWGC
@@ -66,7 +100,6 @@ export function WebsitesPage() {
                 content="Partner with our team to get a web design that combines cutting-edge technology, top-notch quality, and the innovation your business deserves. Each design is 100% customized and fully optimized for search engines."
                 link="/services/advertising"
               />
-
               {/* Second Card */}
               <HoverCardWGC
                 icon="/images/marketing/icon2.webp"
@@ -74,7 +107,6 @@ export function WebsitesPage() {
                 content="Managing website content has never been easier. Run your website while effortlessly updating daily content. Our clean-coded CMS web development services deliver a reliable and scalable platform for seamless content management."
                 link="/services/social-media"
               />
-
               {/* Third Card - Wrapped in a div for positioning */}
               <div className="flex justify-center w-full md:col-span-2 lg:col-span-1 md:flex md:justify-center items-start">
                 <HoverCardWGC
@@ -90,26 +122,37 @@ export function WebsitesPage() {
       </section>
 
       {/* Portfolio Section */}
-      <section className=" px-4 md:px-6 mx-auto relative">
+      <section className="px-4 md:px-6 mx-auto relative">
         <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
           <img
-            src="/images/marketing/portfolio-background.png"
+            src="/images/marketing/portfolio-background.webp"
             alt="Portfolio background"
             className="h-full object-contain"
           />
         </div>
         <div className="relative z-10">
-          <Heading
-            level="h2"
+          <motion.h2
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            variants={fadeInUp}
             className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
           >
             Portfolio
-          </Heading>
+          </motion.h2>
           <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
             {loading ? (
               <PortfolioCarousel items={[]} />
             ) : error ? (
-              <p className="text-red-500 text-center">Error loading portfolio: {error}</p>
+              <motion.p
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.5 }}
+                variants={fadeInUp}
+                className="text-red-500 text-center"
+              >
+                Error loading portfolio: {error}
+              </motion.p>
             ) : (
               <PortfolioCarousel items={portfolioItems} />
             )}
@@ -127,20 +170,30 @@ export function WebsitesPage() {
             {/* Content container */}
             <div className="bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-3xl p-8 md:p-12 mx-auto max-w-5xl relative overflow-hidden my-[120px]">
               <div className="text-center mb-8">
-                <h3 className="text-[32px] md:text-[36px] font-bold text-white mb-4">
+                <motion.h3
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.5 }}
+                  variants={fadeInUp}
+                  className="text-[32px] md:text-[36px] font-bold text-white mb-4"
+                >
                   Testimonials Section
-                </h3>
-                <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
+                </motion.h3>
+                <motion.p
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.5 }}
+                  variants={fadeInUp}
+                  className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto"
+                >
                   See the results of dozens of businesses in Miami that have trusted Senavia and
                   seen positive returns. We offer a unique experience where you are our #1 priority.
-                </p>
+                </motion.p>
               </div>
-
               {/* Google Reviews Summary */}
               <div className="flex justify-center mb-12">
                 <GoogleReviewCard rating={5.0} totalReviews={25} />
               </div>
-
               {/* Individual Reviews Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {reviewItems.map((review, index) => (
@@ -168,7 +221,15 @@ export function WebsitesPage() {
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
         {/* <LatestNews blogItems={blogItems} caseItems={caseItems} /> */}
-        <LatestNews />
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={fadeInUp}
+          className="w-full"
+        >
+          <LatestNews />
+        </motion.div>
       </section>
     </MainLayout>
   );
