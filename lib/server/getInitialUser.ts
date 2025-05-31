@@ -6,6 +6,23 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.senavia.com";
 const API_LOCAL = "http://localhost:3000/api";
 const API = process.env.NODE_ENV === "development" ? API_LOCAL : API_BASE;
 
+// Extrae datos mínimos del JWT si es posible
+function getMinimalUserFromToken(token: string) {
+  try {
+    const decoded: any = decodeJwt(token);
+    if (decoded && decoded.name) {
+      return {
+        id: String(decoded.id),
+        name: decoded.name,
+        error: true,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getInitialUser() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
@@ -18,7 +35,7 @@ export async function getInitialUser() {
   } catch {
     return null;
   }
-  if (!userId) return null;
+  if (!userId) return getMinimalUserFromToken(token); //TODO: Esto no deberia ocurrir nunca
 
   try {
     const res = await fetch(`${API}/user?id=${userId}`, {
@@ -41,7 +58,7 @@ export async function getInitialUser() {
     }
     return null;
   } catch {
-    // Si el servidor se cae o hay error, retorna null
-    return null; //TODO: Mirar que hacer si hay error
+    // Si el servidor se cae o hay error, retorna datos mínimos del JWT si es posible
+    return getMinimalUserFromToken(token);
   }
 }

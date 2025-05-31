@@ -64,12 +64,13 @@ interface LoginApiResponse {
 
 interface UserData {
   id: string;
-  email: string;
+  email?: string;
   name: string;
-  phone: string;
-  address: string;
+  phone?: string;
+  address?: string;
   imageUrl?: string;
   role?: UserRole;
+  error?: boolean;
 }
 
 interface UserContextProps {
