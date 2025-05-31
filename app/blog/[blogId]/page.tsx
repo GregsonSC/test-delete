@@ -145,7 +145,17 @@ export default function BlogDetailPage() {
             <div className="w-full lg:w-2/3">
               {/* Author info */}
               <div className="flex items-center gap-3 mb-[45px]">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center"></div>
+                {blog[0]?.User.imageUrl ? (
+                  <Image
+                    src={blog[0]?.User.imageUrl}
+                    alt={blog[0]?.User.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center"></div>
+                )}
                 <div className="flex flex-col">
                   <span className="font-semibold text-white">{blog[0]?.User.name}</span>
                   <span className="text-sm text-gray-400">{blog[0]?.publicationDate}</span>

@@ -29,7 +29,7 @@ export function PortfolioCardSmall({
 
         {/* Default state */}
         <div className="absolute inset-0 bg-[#0f1740]/70 flex items-end p-6 rounded-lg border border-[#8ECF0A] transition-opacity duration-1000 group-hover:opacity-0 sm:group-hover:opacity-0">
-          <h3 className="text-[48px] max-sm:text-[36px] font-bold text-white transition-opacity duration-2500 group-hover:opacity-0">
+          <h3 className="text-3xl max-sm:text-[36px] font-bold text-white transition-opacity duration-2500 group-hover:opacity-0">
             {name}
           </h3>
         </div>
