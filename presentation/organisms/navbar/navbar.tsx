@@ -548,6 +548,7 @@ export function Navbar({ className }: NavbarProps) {
         className={cn(
           "w-full py-4 shadow-lg lg:shadow-none",
           hasScrolled && "bg-[#020301de]",
+          "transition-colors duration-300",
           "fixed top-0 left-0 z-50",
           className
         )}
