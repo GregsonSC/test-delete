@@ -26,6 +26,17 @@ export function WebsitesPage() {
     <MainLayout>
       {/* First Section - Hero */}
       <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden bg-black">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover z-0 filter brightness-75"
+        >
+          <source src="/images/websites/WebService_HeroFrame.mp4" type="video/mp4" />
+        </video>
+        {/* Overlay para mejorar legibilidad */}
+        <div className="absolute top-0 left-0 w-full h-full bg-black/60 z-0" />
         <div className="container mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto flex flex-col justify-center items-center flex-1 relative z-10 text-white">
           <motion.h1
             initial="hidden"
