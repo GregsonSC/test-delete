@@ -9,8 +9,10 @@ import { HoverCardImage } from "@/presentation/molecules/hover-card-image/hover-
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import BlogViewModel from "./BlogViewModel";
 import { HoverCardImageSkeleton } from "@/presentation/molecules/hover-card-image/hover-card-image-skeleton";
+import { motion, useInView } from "framer-motion";
 
 export function BlogPage() {
+
   // Estado para paginación
   const [simpleBlogsPerPage, setSimpleBlogsPerPage] = useState(3);
   const [offset, setOffset] = useState(0);
@@ -20,6 +22,15 @@ export function BlogPage() {
     offset,
     simpleBlogsPerPage,
   });
+
+  //References for scroll animations
+  const ref1 = React.useRef(null);
+  const ref2 = React.useRef(null);
+  const isInView1 = useInView(ref1, { once: false, amount: 0.3 });
+  const isInView2 = useInView(ref2, { once: false, amount: 0.1 });
+
+
+
 
   // Acumular posts al hacer load more
   useEffect(() => {
@@ -45,25 +56,39 @@ export function BlogPage() {
     <MainLayout>
       {/* Hero Section */}
       <section className="py-20 relative overflow-hidden">
-        <div className="container px-4 md:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+          className="container px-4 md:px-6"
+        >
           <div className="text-center max-w-3xl mx-auto space-y-6">
             <Heading level="h1" className="text-5xl md:text-5xl lg:text-6xl font-bold mt-10">
               Blog
             </Heading>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Recent Posts */}
       <section className="mt-14 mb-12">
-        <div className="container mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="container mx-auto"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
             {loading && allPosts.length === 0
               ? Array.from({ length: simpleBlogsPerPage }).map((_, idx) => (
+
+
                   <div key={idx} className="w-full flex justify-center">
                     <HoverCardImageSkeleton />
                   </div>
                 ))
+
               : allPosts.map((post, index) => (
                   <div key={index} className="w-full flex justify-center">
                     <HoverCardImage
@@ -77,7 +102,7 @@ export function BlogPage() {
                   </div>
                 ))}
           </div>
-        </div>
+        </motion.div>
         {pageInfo && allPosts.length < pageInfo.totalBlogs && (
           <div className="flex justify-center mt-12 ">
             <Button
@@ -89,6 +114,7 @@ export function BlogPage() {
               <span>Load More Articles</span>
             </Button>
           </div>
+
         )}
       </section>
 
