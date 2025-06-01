@@ -1,3 +1,6 @@
+"use client";
+
+import React from "react";
 import { MainLayout } from "@/presentation/templates/main-layout";
 import { Heading } from "@/presentation/atoms/heading/heading";
 import { Button } from "@/presentation/atoms/button/button";
@@ -9,34 +12,58 @@ import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review
 import { LatestNews } from "@/presentation/molecules/news/latest-news";
 import { ScheduleFreeConsultation } from "@/presentation/organisms/layout/schedule-free-consultation";
 import { ContactInfo } from "@/presentation/molecules/contact-info/contact-info";
-import { portfolioItems, reviewItems, blogItems, caseItems } from "@/lib/constants2";
+import { reviewItems } from "@/lib/constants2";
+import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel";
+import { motion, useInView } from "framer-motion";
 
 export function MarketingPage() {
+  // References for scroll animations
+  const ref1 = React.useRef(null);
+  const ref2 = React.useRef(null);
+  const isInView1 = useInView(ref1, { once: false, amount: 0.3 });
+  const isInView2 = useInView(ref2, { once: false, amount: 0.1 });
+
+  const { portfolioItems, loading, error } = PortfolioViewModel();
 
   return (
     <MainLayout>
-
       {/* First Section - Hero */}
-      <section className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden" style={{ backgroundColor: "#020301" }}>
-
-        <div className="container px-4 md:px-6 text-center max-w-5xl mx-auto">
-          <Heading level="h1" className="text-[36px] md:text-[48px] font-[700] mb-6">
+      <section
+        className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
+      >
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover z-0 filter brightness-75"
+        >
+          <source src="/images/marketing/Marketing_HeroFrame.mp4" type="video/mp4" />
+        </video>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="container mb-5 px-4 md:px-6 text-center max-w-6xl mx-auto flex flex-col justify-center items-center flex-1 relative z-10 text-white"
+          style={{ marginTop: "-60px" }}
+        >
+          <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
             Boost Your Online Success
           </Heading>
-          <p className="text-[20px] md:text-[20px] font-[600] mb-8 max-w-4xl mx-auto font-white">
-            Would you like to have a constant and growing flow of clients interested in your services or products? We create highly effective advertising campaigns designed to deliver the best conversion rates. 
+          <p className="text-[16px] md:text-xl font-semibold mb-10 max-w-3xl mx-auto">
+            Would you like to have a constant and growing flow of clients interested in your
+            services or products? We create highly effective advertising campaigns designed to
+            deliver the best conversion rates.
           </p>
-          <p className="text-[20px] md:text-[20px] font-[600] mb-8 max-w-4xl mx-auto font-white">
+          <p className="text-[16px] md:text-xl font-semibold max-w-3xl mx-auto mb-12">
             Stop worrying about attracting clients—we make sure your business is always on the radar of those who need you most.
           </p>
           <Button
-            asChild
-            size="lg"
-            className="rounded-full px-8 py-8 text-3xl font-[600] text-[#0A1248]"
+            className="rounded-full px-4 py-8 md:px-8 text-xl md:py-10 md:text-3xl font-semibold bg-[#99CC33] text-[#0A1248] hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
           >
             <Link href="/contact">Get a free consultation!</Link>
           </Button>
-        </div>
+        </motion.div>
       </section>
 
       {/* Second Section */}
@@ -44,7 +71,12 @@ export function MarketingPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
-        <div className="container px-8 sm:px-4 md:px-6 mx-auto">
+        <motion.div
+          ref={ref1}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+          className="container px-8 sm:px-4 md:px-6 mx-auto">
           <div className="max-w-5xl mx-auto">
             <Heading
               level="h2"
@@ -87,7 +119,7 @@ export function MarketingPage() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
       {/* Portfolio Section */}
       <section className=" px-4 md:px-6 mx-auto relative">
@@ -98,7 +130,13 @@ export function MarketingPage() {
             className="h-full object-contain"
           />
         </div>
-        <div className="relative z-10">
+        <motion.div
+          ref={ref2}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+          className="relative z-10"
+        >
           <Heading
             level="h2"
             className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
@@ -106,9 +144,15 @@ export function MarketingPage() {
             Portfolio
           </Heading>
           <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
-            <PortfolioCarousel items={portfolioItems} />
+            {loading ? (
+              <PortfolioCarousel items={[]} />
+            ) : error ? (
+              <p className="text-red-500 text-center">Error loading portfolio: {error}</p>
+            ) : (
+              <PortfolioCarousel items={portfolioItems} />
+            )}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* New Section with same container and background */}
@@ -116,7 +160,10 @@ export function MarketingPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
-        <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
+        <div
+
+          className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full"
+        >
           <div className="max-w-5xl mx-auto w-full">
             {/* Content container */}
             <div className="bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-3xl p-8 md:p-12 mx-auto max-w-5xl relative overflow-hidden my-[120px]">
@@ -151,20 +198,12 @@ export function MarketingPage() {
           </div>
         </div>
       </section>
-
-
-      {ContactInfo(1)}
-
-      <ScheduleFreeConsultation />
-
+        {ContactInfo(1)}
+        <ScheduleFreeConsultation />
       {/* Fourth Section - Blog/Resources */}
-      <section
-        className=" flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
-      >
-        <LatestNews/>
+      <section className=" flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}>
+        <LatestNews />
       </section>
-
     </MainLayout>
   );
 }

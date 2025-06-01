@@ -50,7 +50,15 @@ const MobileUserProfile = ({ user, isMenuOpen }: { user: any; isMenuOpen: boolea
   return (
     <div className="sm:hidden">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center " />
+        {user?.imageUrl ? (
+          <img
+            src={user.imageUrl}
+            alt="Profile"
+            className="w-10 h-10 rounded-full object-cover border-2 border-[#8ECF0A]"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center" />
+        )}
         <div className="flex flex-col text-left">
           <span className="font-semibold text-[#060B20]">{user.name}</span>
           <span className="text-sm text-gray-500">{user.email}</span>
@@ -122,14 +130,14 @@ const DesktopAuthButtons = ({
   if (!isLoggedIn) {
     return (
       <>
-        <Link href="/register">
+        <Link href="/register" className="hidden sm:block">
           <Button className="rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center">
             Register
           </Button>
         </Link>
         <Link
           href="/login"
-          className="rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
+          className="hidden sm:block rounded-full bg-white text-[#8ECF0A] border border-[#8ECF0A] hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] px-5 py-1 font-bold text-[14px] h-8 transition-all flex items-center justify-center"
         >
           Log In
         </Link>
@@ -143,7 +151,15 @@ const DesktopAuthButtons = ({
         className="hidden sm:flex items-center cursor-pointer bg-[#ebedf2] px-3 py-2 rounded-full gap-2 group"
         onClick={onOpenDrawer}
       >
-        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
+        {user?.imageUrl ? (
+          <img
+            src={user.imageUrl}
+            alt="Profile"
+            className="w-7 h-7 rounded-full object-cover border-2 border-[#8ECF0A]"
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] flex items-center justify-center transition-all group-hover:shadow-[0_0_15px_rgba(142,207,10,0.7)]" />
+        )}
         <span className="text-[#13103A] font-semibold text-[13px]">{user?.name || "User"}</span>
       </div>
       <ProfileDrawer
@@ -152,6 +168,7 @@ const DesktopAuthButtons = ({
         profileName={user?.name}
         email={user?.email}
         phone={user?.phone}
+        imageUrl={user?.imageUrl}
       />
     </>
   );
@@ -402,11 +419,13 @@ const DesktopDropdown = ({ activeDropdown, navItems, setActiveDropdown }: any) =
         )}
 
         <div className="flex justify-end mt-8 mb-2">
-          <Link href="/contact">
-            <Button className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all">
-              Get a free consultation!
-            </Button>
-          </Link>
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full px-8 py-3 text-[16px] font-[600] bg-[#8ECF0A] text-black hover:bg-[#8ab82e] hover:text-white hover:shadow-[0_0_15px_rgba(142,207,10,0.7)] transition-all"
+          >
+            <Link href="/contact">Get a free consultation!</Link>
+          </Button>
         </div>
       </div>
     </div>
@@ -449,7 +468,6 @@ export function Navbar({ className }: NavbarProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
 
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useUser();
-  console.log("userNavbar", user);
   const { logout: authLogout } = AuthViewModel();
 
   useEffect(() => {
@@ -485,7 +503,7 @@ export function Navbar({ className }: NavbarProps) {
         setHasScrolled(false);
       }
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasScrolled]);
@@ -530,6 +548,7 @@ export function Navbar({ className }: NavbarProps) {
         className={cn(
           "w-full py-4 shadow-lg lg:shadow-none",
           hasScrolled && "bg-[#020301de]",
+          "transition-colors duration-300",
           "fixed top-0 left-0 z-50",
           className
         )}

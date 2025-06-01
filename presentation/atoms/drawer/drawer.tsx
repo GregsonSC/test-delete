@@ -20,6 +20,7 @@ interface ProfileDrawerProps {
   profileName?: string;
   email?: string;
   phone?: string;
+  imageUrl?: string;
 }
 
 export function ProfileDrawer({
@@ -28,6 +29,7 @@ export function ProfileDrawer({
   profileName = "Profile Name",
   email = "example@gmail.com",
   phone = "+00 0000000000",
+  imageUrl,
 }: ProfileDrawerProps) {
   const router = useRouter();
   const { logout, loading } = AuthViewModel();
@@ -38,11 +40,19 @@ export function ProfileDrawer({
       <DrawerContent className="h-full w-[320px] right-0 left-auto fixed rounded-none bg-white z-[100] border-none shadow-none">
         <div className="flex flex-col items-center justify-between h-full py-8">
           <DrawerHeader className="flex flex-col items-center relative border-none shadow-none before:hidden after:hidden">
-            <div className="w-40 h-40 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] mb-4"></div>
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="Profile"
+                className="w-40 h-40 rounded-full object-cover mb-4 border-4 border-[#8ECF0A]"
+              />
+            ) : (
+              <div className="w-40 h-40 rounded-full bg-gradient-to-r from-[#8ECF0A] via-[#39cac0] to-[#8ECF0A] mb-4"></div>
+            )}
             <DrawerClose asChild>
               <Button
                 size="icon"
-                className="absolute top-20 -left-20 h-8 w-8 rounded-full bg-[#99cc33] text-white hover:bg-[#99cc33] shadow-md flex items-center justify-center"
+                className="absolute top-20 -left-[55px] h-8 w-8 rounded-full bg-[#99cc33] text-white hover:bg-[#99cc33] shadow-md flex items-center justify-center"
                 onClick={onClose}
               >
                 <svg
@@ -99,15 +109,9 @@ export function ProfileDrawer({
                 <span>{phone}</span>
               </div>
               <Button
-                onClick={() => {
-                  if (currentPath === "/dashboard") {
-                    onClose();
-                  } else {
-                    router.push("/dashboard");
-                  }
-                }}
                 variant="ghost"
-                className="flex items-center gap-2 text-black hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-center transition-colors w-full mt-6 mb-2 shadow-lg bg-white"
+                disabled
+                className="flex items-center gap-2 text-black bg-gray-200 hover:bg-gray-200 rounded-full py-2 px-6 text-lg font-semibold justify-center transition-colors w-full mt-6 mb-1 shadow-lg opacity-60 cursor-not-allowed"
               >
                 <svg
                   className="h-4 w-4"
@@ -125,6 +129,22 @@ export function ProfileDrawer({
                 </svg>
                 Dashboard
               </Button>
+              <div className="flex items-center gap-1 mt-1 text-xs text-gray-500 justify-center w-full">
+                <svg
+                  className="w-4 h-4 text-yellow-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>Under development</span>
+              </div>
             </div>
           </DrawerHeader>
 

@@ -1,7 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface PortfolioCardProps {
   title: string;
@@ -21,20 +21,17 @@ export function PortfolioCard({
   className,
 }: PortfolioCardProps) {
   return (
-    <div className={cn(
-      "grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-lg p-4",
-      "bg-[#0A1248] text-white border border-[#8ECF0A] shadow-[0_0_15px_rgba(142,207,10,0.5)]",
-      "max-w-[1000px] mx-auto", // Reduced max width from 1142px
-      className
-    )}>
+    <div
+      className={cn(
+        "grid grid-cols-1 md:grid-cols-5 overflow-hidden rounded-lg p-4",
+        "bg-[#0A1248] text-white",
+        "max-w-[1000px] mx-auto", // Reduced max width from 1142px
+        className
+      )}
+    >
       {/* Image section - takes up full width on mobile, 3/5 on desktop */}
       <div className="relative w-full h-[240px] md:h-[500px] max-h-[500px] md:col-span-3">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover"
-        />
+        <Image src={imageUrl} alt={title} fill className="object-cover" />
       </div>
 
       {/* Content section - takes up full width on mobile, 2/5 on desktop */}
@@ -42,8 +39,8 @@ export function PortfolioCard({
         {/* Tags section - aligned left */}
         <div className="flex flex-wrap gap-2">
           {tags.map((tag, index) => (
-            <span 
-              key={index} 
+            <span
+              key={index}
               className="px-3 py-1 bg-white text-[#0f1740] rounded-full text-[12px] font-medium"
             >
               {tag}
@@ -59,8 +56,8 @@ export function PortfolioCard({
 
         {/* Button section - aligned left */}
         <div>
-          <Link 
-            href={href} 
+          <Link
+            href={href}
             className="inline-block px-4 py-2 h-auto rounded-full bg-[#8ECF0A] text-[#060B20] hover:text-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] font-bold text-[16px] transition-all flex items-center justify-center"
           >
             View Page

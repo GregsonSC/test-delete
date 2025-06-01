@@ -6,7 +6,7 @@ import { ReviewCardUser } from "@/presentation/molecules/review-card-user/review
 export function ReviewSummary() {
     return (
         <section
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
+        className=" flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
         <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">

@@ -12,9 +12,20 @@ import { PortfolioCardSmallSkeleton } from "@/presentation/atoms/portfolio-card/
 import { reviewItems } from "@/lib/constants2";
 import PortfolioViewModel from "./PortfolioViewModel";
 import { Button } from "@/presentation/atoms/button/button"; // Import Button component
+import { motion, useInView } from "framer-motion";
 
 // !CH008 [ADD] Endpoint para los card de portafolio, reemplazar por el endpoint real en un viewModel
 export function PortfolioPage() {
+  const ref1 = React.useRef(null);
+  const ref2 = React.useRef(null);
+  const ref3 = React.useRef(null);
+  const ref4 = React.useRef(null);
+  const ref5 = React.useRef(null);
+  const isInView1 = useInView(ref1, { once: false, amount: 0.3 });
+  const isInView2 = useInView(ref2, { once: false, amount: 0.1 });
+  const isInView3 = useInView(ref3, { once: false, amount: 0.1 });
+  const isInView4 = useInView(ref4, { once: false, amount: 0.3 });
+  const isInView5 = useInView(ref5, { once: false, amount: 0.1 });
   const { portfolioItems, loading, error } = PortfolioViewModel();
 
   // Number of items to show initially and load each time
@@ -30,7 +41,12 @@ export function PortfolioPage() {
     <MainLayout>
       {/* --- NEW PORTFOLIO SECTION --- */}
       <section className="bg-[#060B20] py-16 md:py-24">
-        <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
+        <motion.div
+          ref={ref1}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="container px-4 sm:px-6 lg:px-8 mx-auto">
           {/* Section Title */}
           <h2 className="text-5xl font-bold text-white text-center mb-16 md:mb-20">
             Explore Our Web Portfolio
@@ -77,7 +93,7 @@ export function PortfolioPage() {
               </Button>
             </div>
           )}
-        </div>
+        </motion.div>
       </section>
       {/* --- END NEW PORTFOLIO SECTION --- */}
 
@@ -86,7 +102,8 @@ export function PortfolioPage() {
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
-        <div className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
+        <div
+          className="container px-8 sm:px-4 md:px-6 mx-auto flex items-center justify-center h-full">
           <div className="max-w-5xl mx-auto w-full">
             {/* Content container */}
             <div className="bg-white/5 backdrop-blur-sm border-2 border-white/20 rounded-3xl p-8 md:p-12 mx-auto max-w-5xl relative overflow-hidden my-[120px]">
@@ -121,14 +138,12 @@ export function PortfolioPage() {
           </div>
         </div>
       </section>
-
       {ContactInfo(1)}
-
       <ScheduleFreeConsultation />
 
       {/* Fourth Section - Blog/Resources */}
       <section
-        className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
+        className="flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.png')" }}
       >
         <LatestNews />

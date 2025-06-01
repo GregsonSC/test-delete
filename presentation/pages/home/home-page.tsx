@@ -17,6 +17,12 @@ import { reviewItems } from "@/lib/constants2"; // Removed portfolioItems from h
 import PortfolioViewModel from "@/presentation/pages/portfolio/PortfolioViewModel"; // Import the ViewModel
 import { motion, useInView } from "framer-motion";
 
+// Variantes para animaciones suaves
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+};
+
 export function HomePage() {
   // References for scroll animations
   const ref1 = React.useRef(null);
@@ -30,9 +36,10 @@ export function HomePage() {
     <MainLayout>
       {/* First Section - Hero */}
       <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeInUp}
         className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden"
         style={{
           backgroundImage: "url('/images/home/hero-background.webp')",
@@ -41,9 +48,11 @@ export function HomePage() {
           opacity: 1,
         }}
       >
-        <div
-          className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
-          <Heading level="h1" className="text-[36px] md:text-[40px] font-[700] mb-12">
+        <div className="container  mb-5 px-4 md:px-6 text-center  max-w-6xl mx-auto relative z-10 text-white lg:mt-[140px]">
+          <Heading
+            level="h1"
+            className="text-[36px] md:text-[40px] font-[700] mb-12 mt-[20px] md:mt-0"
+          >
             Web Design and Digital Marketing
             <br />
             Agency in Miami
@@ -73,40 +82,104 @@ export function HomePage() {
         </div>
       </motion.div>
       {/* --- PARTNERS LOGOS SECTION --- */}
-      <section className="w-full bg-white py-8 lg:h-[150px]">
-        <div className="container mx-auto h-full flex items-center justify-center">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-5 lg:gap-0 xl:gap-5">
-            <img
-              src="images/home/googleAnalytic.webp"
-              alt="Google Analytics"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/webflow.webp"
-              alt="Webflow"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/shopify.webp"
-              alt="Shopify"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/paypal.webp"
-              alt="PayPal"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
-            <img
-              src="images/home/stripe.webp"
-              alt="Stripe"
-              className="h-8 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
-            />
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+        className="w-full bg-white py-8 lg:h-[150px] overflow-hidden"
+      >
+        <div className="w-full h-full flex items-center justify-center relative">
+          <div className="w-full overflow-hidden">
+            <div
+              className="flex animate-partners-scroll"
+              style={{
+                width: "max-content",
+                animation: "partners-scroll 25s linear infinite",
+              }}
+            >
+              {/* Primer set de logos */}
+              <div className="flex gap-48">
+                <img
+                  src="images/home/googleAnalytic.webp"
+                  alt="Google Analytics"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/webflow.webp"
+                  alt="Webflow"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/shopify.webp"
+                  alt="Shopify"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/paypal.webp"
+                  alt="PayPal"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/stripe.webp"
+                  alt="Stripe"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48 mr-48"
+                />
+              </div>
+              {/* Segundo set de logos (idéntico al primero) */}
+              <div className="flex gap-48">
+                <img
+                  src="images/home/googleAnalytic.webp"
+                  alt="Google Analytics"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/webflow.webp"
+                  alt="Webflow"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/shopify.webp"
+                  alt="Shopify"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/paypal.webp"
+                  alt="PayPal"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48"
+                />
+                <img
+                  src="images/home/stripe.webp"
+                  alt="Stripe"
+                  className="h-16 md:h-[100px] md:w-auto xl:h-[120px] lg:w-48 mr-48"
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+        <style jsx global>{`
+          @keyframes partners-scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          .animate-partners-scroll {
+            width: max-content;
+          }
+        `}</style>
+      </motion.section>
       {/* --- END PARTNERS LOGOS SECTION --- */}
       {/* --- HERO VIDEO SECTION --- */}
-      <section className="min-h-screen relative flex flex-col justify-center items-center">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+        className="min-h-screen relative flex flex-col justify-center items-center"
+      >
         <video
           className="absolute top-0 left-0 w-full h-full object-cover z-1"
           src="/fondos/blog-video-background.mp4"
@@ -122,10 +195,10 @@ export function HomePage() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="relative z-2 text-center w-full max-w-4xl mx-auto px-4 mt-5 mb-8"
         >
-          <h1 className="text-3xl md:text-5xl font-bold text-[#181C3A] text-center mb-4 mt-4">
+          <h1 className="text-[32px] md:text-[36px] font-bold text-[#181C3A] text-center mb-4 mt-4">
             5-Star Digital Marketing Agency
           </h1>
-          <p className="text-base md:text-lg text-[#181C3A] text-center max-w-xl mx-auto mb-8">
+          <p className="text-[18px] md:text-[20px] text-[#181C3A] text-center max-w-xl mx-auto mb-8">
             Located in the heart of South Florida, Senavia Corp. is a full-service agency, providing
             standout design, web development, and marketing solutions tailored to meet your business
             needs.
@@ -143,10 +216,14 @@ export function HomePage() {
             </div>
           </div>
         </motion.div>
-      </section>
+      </motion.section>
       {/* --- END HERO VIDEO SECTION --- */}
       {/* Second Section */}
-      <section
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
@@ -160,9 +237,9 @@ export function HomePage() {
           <div className="max-w-5xl mx-auto">
             <Heading
               level="h2"
-              className="text-[32px] md:text-[42px] font-[700] mb-10 text-left mt-[200px] mx-2 sm:mx-10 md:mx-0"
+              className="text-[32px] md:text-[36px] font-[700] mb-10 text-center max-w-2xl mx-auto mt-[200px]"
             >
-              Digital Services That Will Lead You To Online Success
+              Digital Services That Will <br /> Lead You To Online Success
             </Heading>
 
             {/* ! CH005 [URL] Agregar urls para navegar donde se requiere */}
@@ -196,9 +273,15 @@ export function HomePage() {
             </div>
           </div>
         </motion.div>
-      </section>
+      </motion.section>
       {/* Portfolio Section */}
-      <section className=" px-4 md:px-6 mx-auto relative">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+        className="px-4 md:px-6 mx-auto relative"
+      >
         <div className="absolute right-0 top-[40%] transform -translate-y-1/2 h-full max-h-[70%] z-0 hidden md:block">
           <img
             src="/images/marketing/portfolio-background.webp"
@@ -209,21 +292,25 @@ export function HomePage() {
         <div className="relative z-10">
           <Heading
             level="h2"
-            className="text-[32px] md:text-[42px] font-[700] mb-10 text-center mt-[150px]"
+            className="text-[32px] md:text-[36px] font-[700] mb-10 text-center max-w-2xl mx-auto mt-[150px]"
           >
-            Our Web Design & Development Portfolio
+            Our Web Design & <br /> Development Portfolio
           </Heading>
-          <p className="text-[24px] md:text-[20px] font-[600] text-center  mb-8 max-w-4xl mx-auto">
+          <p className="text-[18px] md:text-[20px] font-[600] text-center  mb-8 max-w-4xl mx-auto">
             Fuel your creativity with our latest web design & development masterpieces!
           </p>
           <div className="mt-[50px] max-w-6xl mx-auto mb-[150px]">
             <PortfolioCarousel items={portfolioItems} />
           </div>
         </div>
-      </section>
+      </motion.section>
       <ExpandingColumns />
       {/* New Section with same container and background */}
-      <section
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat mb-[150px]"
         style={{ backgroundImage: "url('/images/marketing/reviews.jpg')" }}
       >
@@ -235,7 +322,7 @@ export function HomePage() {
                 <h3 className="text-[32px] md:text-[36px] font-bold text-white mb-4">
                   Testimonials Section
                 </h3>
-                <p className="text-[16px] md:text-[18px] text-gray-300 max-w-2xl mx-auto">
+                <p className="text-[18px] md:text-[20px] text-gray-300 max-w-2xl mx-auto">
                   See the results of dozens of businesses in Miami that have trusted Senavia and
                   seen positive returns. We offer a unique experience where you are our #1 priority.
                 </p>
@@ -261,17 +348,29 @@ export function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
       {ContactInfo(1)}
       {/* //TODO: Esto hace que la pagina sea muy ancha, hay que ver como arreglarlo */}
-      <ScheduleFreeConsultation />
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
+      >
+        <ScheduleFreeConsultation />
+      </motion.div>
       {/* Fourth Section - Blog/Resources */}
-      <section
+
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeInUp}
         className="min-h-screen flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/marketing/background-marketing.webp')" }}
       >
         <LatestNews />
-      </section>
+      </motion.section>
     </MainLayout>
   );
 }

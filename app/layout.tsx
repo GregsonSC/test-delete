@@ -5,10 +5,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import Analytics from "./analytics";
 import { Suspense } from "react";
-import { cookies } from "next/headers";
-import { decodeJwt } from "jose";
+import { getInitialUser } from "@/lib/server/getInitialUser";
 import { UserProvider } from "@/context/UserContext";
-import TokenValidator from '@/components/auth/TokenValidator';
+import TokenValidator from "@/components/auth/TokenValidator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,27 +17,7 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Hydrate user from server-side cookie
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  let initialUser = null;
-
-  if (token) {
-    try {
-      const decoded: any = decodeJwt(token);
-      initialUser = {
-        id: decoded.id || "",
-        email: decoded.email || "",
-        name: decoded.name || "",
-        phone: decoded.phone || "",
-        address: decoded.address || "",
-        // Add other fields as needed
-      };
-      console.log("Initial User:", initialUser);
-    } catch (e) {
-      initialUser = null;
-    }
-  }
+  const initialUser = await getInitialUser();
 
   return (
     <html lang="en" suppressHydrationWarning className="dark">
@@ -70,6 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           <UserProvider initialUser={initialUser}>
             <TokenValidator />
+            {/*Este componente se encarga de validar el token y si es invalido, redirige al usuario a la pagina de login*/}
             {children}
           </UserProvider>
         </ThemeProvider>

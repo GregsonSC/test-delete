@@ -284,11 +284,21 @@ export function RegisterPage() {
                     placeholder="Password"
                     className={`w-full rounded-lg bg-background pl-12 placeholder:text-[#A2ABE7] h-10 border ${getBorderStyle("password")} outline-none`}
                     value={password}
-                    onChange={(e) => handleInputChange(e, "password")}
+                    onChange={(e) =>
+                      handleInputChange(
+                        { ...e, target: { ...e.target, value: e.target.value.replace(/\s/g, "") } },
+                        "password"
+                      )
+                    }
                     onFocus={() => setFocusedField("password")}
                     onBlur={() => setFocusedField("")}
                     required
                     minLength={8}
+                    onKeyDown={(e) => {
+                      if (e.key === " ") {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                   <button
                     type="button"
