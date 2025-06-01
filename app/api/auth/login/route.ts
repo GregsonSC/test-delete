@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
       { status: 401 }
     );
   }
-
+  //Aceptar solo dos valores el name y el id
   const token = signToken({
     id: user.id,
     name: user.name,
