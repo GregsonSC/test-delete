@@ -4,5 +4,10 @@
     "env": {
       "PRISMA_GENERATE": "true"
     }
+  },
+  "functions": {
+    "app/api/**": {
+      "excludeFiles": ".next,*.cache,node_modules,public,app/**"
+    }
   }
 }
